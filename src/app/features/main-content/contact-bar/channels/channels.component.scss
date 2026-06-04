@@ -129,6 +129,12 @@ section {
   @include flexBox("", left, center, 15);
 }
 
+// Optische Markierung des Hashtag-Icon für neue/ungelesene Nachrichten
+.everyChannel.hasUnread .hashtagIcon {
+  color: var(--indicatorNewMessage);
+  border: solid 2px var(--indicatorNewMessage);
+}
+
 .newChannels {
   @include flexBox(column, "", "", 25);
   margin-top: 25px;

@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Input, Output, EventEmitter, Injector, inject, runInInjectionContext } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, Injector, inject, runInInjectionContext } from '@angular/core';
 import { Firestore, collectionData, collection, query } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { User } from '../../../../shared/interfaces/user.interface';
+import { NotificationService } from '../../../../shared/services/notification.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -14,14 +15,19 @@ import { ActivatedRoute } from '@angular/router';
   styleUrl: './direct-message.component.scss',
 })
 
-export class DirectMessageComponent implements OnInit {
+export class DirectMessageComponent implements OnInit, OnDestroy {
   showMessages = false;
   activeUser?: User;
   activeUsers$!: Observable<any[]>;
   inactiveUsers$!: Observable<any[]>;
+  /** UIDs der Gesprächspartner mit ungelesenen Nachrichten (blinkende Markierung). */
+  unreadChats = new Set<string>();
   @Input() activeUserId!: string | null;
   @Output() openChat = new EventEmitter<{ chatType: 'private' | 'channel'; chatId: string }>();
   @Output() toggleMessage = new EventEmitter<boolean>();
+
+  private notificationService = inject(NotificationService);
+  private unreadSub?: Subscription;
 
   someAction() {
     const screenWidth = window.innerWidth;
@@ -39,8 +45,14 @@ export class DirectMessageComponent implements OnInit {
   ngOnInit(): void {
     if (this.activeUserId) {
       this.loadUsers();
-  
     }
+    this.unreadSub = this.notificationService.unread$.subscribe((set) => {
+      this.unreadChats = set;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.unreadSub?.unsubscribe();
   }
 
 
@@ -75,6 +87,7 @@ export class DirectMessageComponent implements OnInit {
 
   
   selectPrivateChat(userId: string) {
+    this.notificationService.markAsRead(userId);
     this.openChat.emit({
       chatType: 'private',
       chatId: userId,

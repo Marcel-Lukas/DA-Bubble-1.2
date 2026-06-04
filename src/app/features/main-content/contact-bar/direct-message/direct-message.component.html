@@ -26,12 +26,19 @@
         <span>{{ user.uName }} (Du)</span>
       </button>
       @for (user of inactiveUsers$ | async; track user) {
-        <button (click)="selectPrivateChat(user.uId); someAction()" class="directUser">
+        <button
+          (click)="selectPrivateChat(user.uId); someAction()"
+          class="directUser"
+          [class.hasUnread]="unreadChats.has(user.uId)"
+        >
           <div class="user-img-status">
             <img [src]="user.uUserImage" alt="" />
             <span [ngClass]="user.uStatus === 'true' || user.uStatus === true ? 'online' : 'offline'"></span>
           </div>
           <span>{{ user.uName }}</span>
+          @if (unreadChats.has(user.uId)) {
+          <span class="unreadDot unreadDot--trailing" aria-label="Neue Nachricht"></span>
+          }
         </button>
       }
     }

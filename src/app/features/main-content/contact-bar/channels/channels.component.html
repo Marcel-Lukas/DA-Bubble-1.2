@@ -24,12 +24,16 @@
       <button
         (click)="selectChannel(channel.id); someAction()"
         class="everyChannel"
+        [class.hasUnread]="unreadChannels.has(channel.id)"
       >
         <div class="tagName">
           <div class="tagImage">
             <div class="material-symbols hashtagIcon">tag</div>
           </div>
           <span>{{ channel.name }}</span>
+          @if (unreadChannels.has(channel.id)) {
+          <span class="unreadDot" aria-label="Neue Nachricht"></span>
+          }
         </div>
         @if (channel.name != 'Willkommen' && channel.createdBy === activeUserId) {
         <button

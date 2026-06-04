@@ -7,6 +7,7 @@ import { MessageAreaComponent } from './message-area/message-area.component';
 import { SearchBarComponent } from './header/search-bar/search-bar.component';
 import { DeviceVisibleComponent } from '../../shared/services/responsive';
 import { AuthentificationService } from '../../shared/services/authentification.service';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-main-content',
@@ -24,6 +25,7 @@ import { AuthentificationService } from '../../shared/services/authentification.
 export class MainContentComponent {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthentificationService);
+  private notificationService = inject(NotificationService);
 
   smallSize = false;
   messageIn = false;
@@ -44,8 +46,15 @@ export class MainContentComponent {
 
     if (this.authService.currentUid === null) this.authService.currentUid = this.activeUserId;
 
+    this.notificationService.start(this.activeUserId);
+    this.notificationService.setActiveChat(this.chatType, this.chatId);
+
     this.updateScreenSize();
     window.addEventListener('resize', () => this.updateScreenSize());
+  }
+
+  ngOnDestroy(): void {
+    this.notificationService.stop();
   }
 
   toggleSection() {
@@ -64,6 +73,7 @@ export class MainContentComponent {
     this.chatId = event.chatId;
     this.isThreadOpen = false;
     this.threadId = '';
+    this.notificationService.setActiveChat(this.chatType, this.chatId);
   }
 
   handleOpenThread(event: {
@@ -75,6 +85,7 @@ export class MainContentComponent {
     this.chatId = event.chatId;
     this.isThreadOpen = true;
     this.threadId = event.threadId;
+    this.notificationService.setActiveChat(this.chatType, this.chatId);
   }
 
   handleChannelDeleted() {

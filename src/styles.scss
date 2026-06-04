@@ -14,6 +14,10 @@
   scroll-behavior: smooth;
 }
 
+:root {
+  --indicatorNewMessage: #797EF3;
+}
+
 html,
 body {
   font-family: "Nunito", sans-serif;
@@ -116,6 +120,39 @@ textarea {
 
 .online {
   background-color: #92c83e;
+}
+
+// Optische Markierung für neue/ungelesene Nachrichten (Channels + DMs).
+.hasUnread span {
+  font-weight: 700;
+}
+
+.unreadDot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--indicatorNewMessage);
+  animation: unreadBlink 1444ms ease-in-out infinite;
+}
+
+// Variante für die Direktnachrichten-Liste: Punkt rechts ausrichten.
+.unreadDot--trailing {
+  min-width: 10px;
+  margin-left: auto;
+  margin-right: 16px;
+}
+
+@keyframes unreadBlink {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(0.7);
+  }
 }
 
 @mixin fontStyle($size, $fontColor, $fontWeight) {
