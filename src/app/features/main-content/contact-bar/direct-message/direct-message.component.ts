@@ -65,9 +65,11 @@ export class DirectMessageComponent implements OnInit, OnDestroy {
         map((users: any[]) => users.map(user => user as User))
       );
     });
-    // Fremde Gast-Konten (leere E-Mail) ausblenden – nur der eigene Gast bleibt sichtbar.
+    // Verwaiste/offline Gast-Konten (leere E-Mail) ausblenden. Ein aktiver Gast
+    // (uStatus === true) bleibt für alle sichtbar, damit ihm geschrieben werden
+    // kann. Das eigene Konto ist immer sichtbar.
     const visibleUsers$ = users$.pipe(
-      map(users => users.filter(user => user.uEmail !== '' || user.uId === this.activeUserId))
+      map(users => users.filter(user => this.isVisibleUser(user)))
     );
     this.activeUsers$ = visibleUsers$.pipe(
       map(users => users.filter(user => user.uId === this.activeUserId))
@@ -80,6 +82,25 @@ export class DirectMessageComponent implements OnInit, OnDestroy {
     });
   }
 
+
+  /**
+   * Entscheidet, ob ein Nutzer in der Direktnachrichten-Liste sichtbar ist.
+   * - Das eigene Konto ist immer sichtbar.
+   * - Registrierte Nutzer (mit E-Mail) sind immer sichtbar.
+   * - Gäste (leere E-Mail) sind nur sichtbar, wenn sie aktuell online sind,
+   *   damit verwaiste Gast-Dokumente nicht auftauchen, ein aktiver Gast aber
+   *   angeschrieben werden kann.
+   */
+  private isVisibleUser(user: User): boolean {
+    if (user.uId === this.activeUserId) return true;
+    if (user.uEmail !== '') return true;
+    return this.isOnline(user.uStatus);
+  }
+
+  /** Normalisiert den Status, der als Boolean oder String vorliegen kann. */
+  private isOnline(status: unknown): boolean {
+    return status === true || status === 'true';
+  }
 
   showAllMessages() {
     this.showMessages = !this.showMessages;
