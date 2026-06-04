@@ -11,7 +11,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Message } from '../../../../shared/interfaces/message.interface';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from '@angular/fire/firestore';
 import { UserService } from '../../../../shared/services/user.service';
 import { User } from '../../../../shared/interfaces/user.interface';
 import {

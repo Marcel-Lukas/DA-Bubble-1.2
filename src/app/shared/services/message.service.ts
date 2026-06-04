@@ -10,10 +10,6 @@ import {
   DocumentData,
   QuerySnapshot,
   Timestamp,
-} from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { Message } from '../interfaces/message.interface';
-import {
   addDoc,
   doc,
   getDoc,
@@ -22,7 +18,9 @@ import {
   getDocs,
   deleteDoc,
   writeBatch,
-} from 'firebase/firestore';
+} from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+import { Message } from '../interfaces/message.interface';
 import { Reaction } from '../interfaces/reaction.interface';
 
 @Injectable({

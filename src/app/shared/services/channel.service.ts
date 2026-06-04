@@ -1,6 +1,21 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collectionData, deleteDoc  } from '@angular/fire/firestore';
-import { collection, doc, getDoc, getDocs, setDoc,updateDoc ,serverTimestamp, onSnapshot, query, where, arrayUnion, writeBatch} from 'firebase/firestore';
+import {
+  Firestore,
+  collectionData,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+  onSnapshot,
+  query,
+  where,
+  arrayUnion,
+  writeBatch,
+} from '@angular/fire/firestore';
 import { Channel } from '../interfaces/channel.interface';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';

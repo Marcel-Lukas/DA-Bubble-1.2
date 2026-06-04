@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { UserInterface } from '../interfaces/user.interface';
 import {
+  arrayUnion,
+  collection,
   deleteDoc,
   doc,
   Firestore,
@@ -21,7 +23,6 @@ import {
   signInWithPopup,
   UserCredential,
 } from '@angular/fire/auth';
-import { arrayUnion, collection } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
