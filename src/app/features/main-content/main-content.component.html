@@ -53,6 +53,7 @@
           (closeThread)="closeThread()"
           (openChat)="handleOpenChat($event)"
           (channelDeleted)="handleChannelDeleted()"
+          (chatPartnerDeleted)="handleChatPartnerDeleted()"
         >
         </app-message-area>
 
@@ -83,6 +84,7 @@
       (openThread)="openThread($event)"
       (closeThread)="closeThread()"
       (channelDeleted)="handleChannelDeleted()"
+      (chatPartnerDeleted)="handleChatPartnerDeleted()"
     >
     </app-message-area>
     @if (isThreadOpen) {

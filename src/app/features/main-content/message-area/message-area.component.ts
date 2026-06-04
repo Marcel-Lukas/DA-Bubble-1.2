@@ -64,6 +64,12 @@ export class MessageAreaComponent implements OnChanges, OnDestroy {
   }>();
   /** Wird ausgelöst, wenn der aktuell geöffnete Channel gelöscht wurde. */
   @Output() channelDeleted = new EventEmitter<void>();
+  /**
+   * Wird ausgelöst, wenn der Gesprächspartner des offenen Privat-Chats nicht
+   * mehr existiert (z.B. ein Gast hat sich abgemeldet -> sein Dokument wurde
+   * gelöscht). Der Chat soll dann beim Gegenüber geschlossen werden.
+   */
+  @Output() chatPartnerDeleted = new EventEmitter<void>();
 
   @ViewChild('scrollContainer') private scrollCont!: ElementRef<HTMLDivElement>;
   @ViewChild('composer')
@@ -187,9 +193,28 @@ export class MessageAreaComponent implements OnChanges, OnDestroy {
     this.chatPartnerSub = this.userService
       .getUserRealtime(this.chatId)
       .subscribe({
-        next: (u) => (this.chatPartner = u),
+        next: (u) => {
+          if (!u) {
+            // Gesprächspartner existiert nicht mehr (z.B. Gast hat sich
+            // ausgeloggt -> sein Dokument wurde gelöscht). Chat schließen.
+            this.handleDeletedChatPartner();
+            return;
+          }
+          this.chatPartner = u;
+        },
         error: (err) => console.error('User-Live', err),
       });
+  }
+
+  private handleDeletedChatPartner() {
+    this.chatPartnerSub?.unsubscribe();
+    this.messagesSub?.unsubscribe();
+
+    this.chatPartner = null;
+    this.resetMessages();
+    this.isProfilOpen = false;
+
+    this.chatPartnerDeleted.emit();
   }
 
   private subscribeChannelRealtime() {

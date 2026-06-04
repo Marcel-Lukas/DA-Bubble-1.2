@@ -95,6 +95,17 @@ export class MainContentComponent {
     this.threadId = '';
     this.chatType = 'private';
     this.chatId = this.activeUserId;
+    this.notificationService.setActiveChat(this.chatType, this.chatId);
+  }
+
+  handleChatPartnerDeleted() {
+    // Der Gesprächspartner (z.B. ein Gast) existiert nicht mehr -> offenen
+    // Privat-Chat schließen und auf den eigenen Zustand zurücksetzen.
+    this.isThreadOpen = false;
+    this.threadId = '';
+    this.chatType = 'private';
+    this.chatId = this.activeUserId;
+    this.notificationService.setActiveChat(this.chatType, this.chatId);
   }
 
   openThread(threadId: string) {
