@@ -197,7 +197,10 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
     let ids: string[];
     if (this.selectedOption === 'option1') {
       const allUsers = await this.userService.allUsers();
+      // Gäste (leere E-Mail) werden bei "Alle Mitglieder hinzufügen" nicht
+      // mitgezählt – nur echte, registrierte Nutzer kommen in den Channel.
       ids = allUsers
+        .filter((u) => u.uEmail !== '')
         .map((u) => u.uId)
         .filter((id): id is string => typeof id === 'string');
     } else {
