@@ -1,0 +1,39 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "messages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "mChannelId", "order": "ASCENDING" },
+        { "fieldPath": "mTime", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "messages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "mThreadId", "order": "ASCENDING" },
+        { "fieldPath": "mTime", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "messages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "mUserId", "order": "ASCENDING" },
+        { "fieldPath": "mSenderId", "order": "ASCENDING" },
+        { "fieldPath": "mTime", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "messages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "mSenderId", "order": "ASCENDING" },
+        { "fieldPath": "mUserId", "order": "ASCENDING" },
+        { "fieldPath": "mTime", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, Injector, inject, runInInjectionContext } from '@angular/core';
 import { Firestore, collectionData, collection, query } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -31,6 +31,8 @@ export class DirectMessageComponent implements OnInit {
     }
   }
   
+  private injector = inject(Injector);
+
   constructor(private firestore: Firestore, private route: ActivatedRoute) {}
 
 
@@ -44,11 +46,13 @@ export class DirectMessageComponent implements OnInit {
 
 
   loadUsers(): void {
-    const usersCollection = collection(this.firestore, 'users');
-    const usersQuery = query(usersCollection);
-    const users$ = collectionData(usersQuery, { idField: 'uId' }).pipe(
-      map((users: any[]) => users.map(user => user as User))
-    );
+    const users$ = runInInjectionContext(this.injector, () => {
+      const usersCollection = collection(this.firestore, 'users');
+      const usersQuery = query(usersCollection);
+      return collectionData(usersQuery, { idField: 'uId' }).pipe(
+        map((users: any[]) => users.map(user => user as User))
+      );
+    });
     this.activeUsers$ = users$.pipe(
       map(users => users.filter(user => user.uId === this.activeUserId))
     );

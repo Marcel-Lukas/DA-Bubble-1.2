@@ -46,9 +46,10 @@ export class AuthentificationService {
   constructor() {}
 
   async prepareRegistration(email: string, password: string, username: string): Promise<void | UserCredential> {
-    const usersCollection = collection(this.firestore, 'users');
-    const q = query(usersCollection, where('uEmail', '==', email));
-    return getDocs(q).then((querySnapshot) => {
+    return this.runInContext(async () => {
+      const usersCollection = collection(this.firestore, 'users');
+      const q = query(usersCollection, where('uEmail', '==', email));
+      const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) return Promise.reject('User with this email is found');
       this.registrationData = {
         email,
@@ -73,23 +74,25 @@ export class AuthentificationService {
     );
     const uid = userCredential.user.uid;
   
-    const userData: UserInterface = {
-      uId:            uid,
-      uName:          username,
-      uEmail:         email,
-      uUserImage:     'assets/img/' + profilePictureUrl,
-      uStatus:        false,
-      uLastReactions: ['👍', '😊'],
-    };
-  
-    const userRef    = collection(this.firestore, 'users');
-    const userDocRef = doc(userRef, uid);
-    await setDoc(userDocRef, userData);
-  
-    const defaultChannelId = '4ViNXTttFDYKlytrxQw4';
-    const channelRef       = doc(this.firestore, 'channels', defaultChannelId);
-    await updateDoc(channelRef, {
-      cUserIds: arrayUnion(uid),
+    await this.runInContext(async () => {
+      const userData: UserInterface = {
+        uId:            uid,
+        uName:          username,
+        uEmail:         email,
+        uUserImage:     'assets/img/' + profilePictureUrl,
+        uStatus:        false,
+        uLastReactions: ['👍', '😊'],
+      };
+
+      const userRef    = collection(this.firestore, 'users');
+      const userDocRef = doc(userRef, uid);
+      await setDoc(userDocRef, userData);
+
+      const defaultChannelId = '4ViNXTttFDYKlytrxQw4';
+      const channelRef       = doc(this.firestore, 'channels', defaultChannelId);
+      await updateDoc(channelRef, {
+        cUserIds: arrayUnion(uid),
+      });
     });
   
     this.registrationData = null;
@@ -100,9 +103,11 @@ export class AuthentificationService {
     return signInWithEmailAndPassword(this.auth, email, password)
     .then(async (result) => {
       this.currentUid = result.user.uid;
-      const userRef = collection(this.firestore, 'users');
-      const userDocRef = doc(userRef, this.currentUid);
-      await updateDoc(userDocRef, { uStatus: true });
+      await this.runInContext(async () => {
+        const userRef = collection(this.firestore, 'users');
+        const userDocRef = doc(userRef, this.currentUid!);
+        await updateDoc(userDocRef, { uStatus: true });
+      });
       return result;
     });
   }
@@ -112,20 +117,22 @@ export class AuthentificationService {
     return signInWithPopup(this.auth, provider)
     .then(async (result) => {
       this.currentUid = result.user.uid;
-      const userData: UserInterface = {
-        uId: this.currentUid,
-        uName: result.user.displayName || '',
-        uEmail: result.user.email || '',
-        uUserImage: result.user.photoURL || 'assets/img/profile.png',
-        uStatus: true,
-        uLastReactions: ['👍', '😊']
-      };
-      const userRef = collection(this.firestore, 'users');
-      const userDocRef = doc(userRef, result.user.uid);
-      await setDoc(userDocRef, userData, { merge: true });
-      const defaultChannelId = '4ViNXTttFDYKlytrxQw4';
-      const channelRef = doc(this.firestore, 'channels', defaultChannelId);
-      await updateDoc(channelRef, { cUserIds: arrayUnion(this.currentUid) });
+      await this.runInContext(async () => {
+        const userData: UserInterface = {
+          uId: this.currentUid!,
+          uName: result.user.displayName || '',
+          uEmail: result.user.email || '',
+          uUserImage: result.user.photoURL || 'assets/img/profile.png',
+          uStatus: true,
+          uLastReactions: ['👍', '😊']
+        };
+        const userRef = collection(this.firestore, 'users');
+        const userDocRef = doc(userRef, result.user.uid);
+        await setDoc(userDocRef, userData, { merge: true });
+        const defaultChannelId = '4ViNXTttFDYKlytrxQw4';
+        const channelRef = doc(this.firestore, 'channels', defaultChannelId);
+        await updateDoc(channelRef, { cUserIds: arrayUnion(this.currentUid) });
+      });
       return result;
     });
   }
@@ -134,31 +141,34 @@ export class AuthentificationService {
     return signInAnonymously(this.auth)
     .then(async (result) => {
       this.currentUid = result.user.uid;
-      const guestData: UserInterface = {
-        uId: this.currentUid,
-        uName: 'Gast',
-        uEmail: '',
-        uUserImage: 'assets/img/profile.png',
-        uStatus: true,
-        uLastReactions: ['👍', '😊']
-      };
-      const userRef = collection(this.firestore, 'users');
-      const userDocRef = doc(userRef, this.currentUid);
-      await setDoc(userDocRef, guestData, { merge: true });
-      const defaultChannelId = '4ViNXTttFDYKlytrxQw4';
-      const channelRef = doc(this.firestore, 'channels', defaultChannelId);
-      await updateDoc(channelRef, { cUserIds: arrayUnion(this.currentUid) });
+      await this.runInContext(async () => {
+        const guestData: UserInterface = {
+          uId: this.currentUid!,
+          uName: 'Gast',
+          uEmail: '',
+          uUserImage: 'assets/img/profile.png',
+          uStatus: true,
+          uLastReactions: ['👍', '😊']
+        };
+        const userRef = collection(this.firestore, 'users');
+        const userDocRef = doc(userRef, this.currentUid!);
+        await setDoc(userDocRef, guestData, { merge: true });
+        const defaultChannelId = '4ViNXTttFDYKlytrxQw4';
+        const channelRef = doc(this.firestore, 'channels', defaultChannelId);
+        await updateDoc(channelRef, { cUserIds: arrayUnion(this.currentUid) });
+      });
       return result;
     });
   }
 
   async sendResetPasswordEmail(email: string): Promise<void> {
-    const usersCollection = collection(this.firestore, 'users');
-    const q = query(usersCollection, where('uEmail', '==', email));
-    return getDocs(q).then((querySnapshot) => {
-      if (querySnapshot.empty) return Promise.reject('No user with this email found');
-      return sendPasswordResetEmail(this.auth, email);
+    const querySnapshot = await this.runInContext(async () => {
+      const usersCollection = collection(this.firestore, 'users');
+      const q = query(usersCollection, where('uEmail', '==', email));
+      return getDocs(q);
     });
+    if (querySnapshot.empty) return Promise.reject('No user with this email found');
+    return sendPasswordResetEmail(this.auth, email);
   }
 
   async confirmResetPassword(oobCode: string, newPassword: string): Promise<void> {
@@ -176,9 +186,11 @@ export class AuthentificationService {
 
   private async handleAnonymousGuest(user: any | null, uid: string | null): Promise<void> {
     if (user?.isAnonymous && uid) {
-      const userDocRef = doc(collection(this.firestore, 'users'), uid);
       try {
-        await deleteDoc(userDocRef);
+        await this.runInContext(async () => {
+          const userDocRef = doc(collection(this.firestore, 'users'), uid);
+          await deleteDoc(userDocRef);
+        });
         await user.delete();
       } catch (deleteErr) {
         console.warn('Gast-Löschen fehlgeschlagen, weiter mit Sign-Out', deleteErr);
@@ -189,9 +201,11 @@ export class AuthentificationService {
   private async updateUserStatus(uid: string | null): Promise<void> {
     if (!uid) return;
 
-    const userDoc = doc(collection(this.firestore, 'users'), uid);
     try {
-      await updateDoc(userDoc, { uStatus: false });
+      await this.runInContext(async () => {
+        const userDoc = doc(collection(this.firestore, 'users'), uid);
+        await updateDoc(userDoc, { uStatus: false });
+      });
     } catch (err) {
       console.warn('Status-Update fehlgeschlagen (Dokument evtl. gelöscht)', err);
     }
