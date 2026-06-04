@@ -1,4 +1,6 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   inject,
@@ -24,8 +26,14 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { PermanentDeleteComponent } from '../../../general-components/permanent-delete/permanent-delete.component';
 import { FormsModule } from '@angular/forms';
 
+// NOTE: `<emoji-mart>` is only referenced inside a `@defer` block in the
+// template. Angular therefore emits `@ctrl/ngx-emoji-mart` (and its CSS) as
+// its own lazy chunk that is only fetched the first time the user opens the
+// emoji picker.
+
 @Component({
   selector: 'app-message',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PickerComponent, PermanentDeleteComponent, FormsModule],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
@@ -33,6 +41,10 @@ import { FormsModule } from '@angular/forms';
 export class MessageComponent implements OnInit {
   private userService = inject(UserService);
   private messageService = inject(MessageService);
+  // With OnPush change detection, asynchronously assigned fields (sender,
+  // active user, thread info) don't trigger a re-render automatically. We
+  // call `cdr.markForCheck()` after each async update.
+  private cdr = inject(ChangeDetectorRef);
   private userSub?: Subscription;
   private threadSub?: Subscription;
   private senderSub?: Subscription;
@@ -89,7 +101,10 @@ export class MessageComponent implements OnInit {
     this.senderSub = this.userService
       .getUserRealtime(this.message.mSenderId!)
       .subscribe({
-        next: (u) => (this.senderData = u),
+        next: (u) => {
+          this.senderData = u;
+          this.cdr.markForCheck();
+        },
         error: (err) => console.error('Sender-Live', err),
       });
   }
@@ -100,7 +115,10 @@ export class MessageComponent implements OnInit {
     this.userSub = this.userService
       .getUserRealtime(this.activeUserId)
       .subscribe({
-        next: (u) => (this.activeUserData = u),
+        next: (u) => {
+          this.activeUserData = u;
+          this.cdr.markForCheck();
+        },
         error: (err) => console.error('User-Live', err),
       });
   }
@@ -118,6 +136,7 @@ export class MessageComponent implements OnInit {
         const replies = msgs.filter((m) => m.mId !== this.message.mId);
         this.replyCount = replies.length;
         this.lastReplyTime = (replies.at(-1)?.mTime as Timestamp) ?? null;
+        this.cdr.markForCheck();
       });
   }
 

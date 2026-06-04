@@ -1,7 +1,10 @@
-@if (isEmojiPickerOpen) {
-<emoji-mart #emojiPicker (emojiClick)="addEmoji($event)"></emoji-mart>
+@defer (when isEmojiPickerOpen) {
+  @if (isEmojiPickerOpen) {
+    <emoji-mart #emojiPicker (emojiClick)="addEmoji($event)"></emoji-mart>
+  }
+}
 
-} @if (displaySuggestions) {
+@if (displaySuggestions) {
 <div class="suggestions">
   @for(user of foundUsers; track user) {
   <div (click)="insertUserSuggestion(user)">

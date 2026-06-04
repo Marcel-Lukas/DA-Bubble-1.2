@@ -13,6 +13,11 @@ import { FormsModule } from '@angular/forms';
 
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 
+// NOTE: `<emoji-mart>` is only referenced inside a `@defer` block in the
+// template. Angular therefore emits `@ctrl/ngx-emoji-mart` (and its CSS) as
+// its own lazy chunk that is only fetched the first time the user opens the
+// emoji picker.
+
 import { UserService } from '../../../../shared/services/user.service';
 import { ChannelService } from '../../../../shared/services/channel.service';
 import { User } from '../../../../shared/interfaces/user.interface';
