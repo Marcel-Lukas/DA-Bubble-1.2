@@ -6,7 +6,7 @@
     "outDir": "./dist/out-tsc",
     "rootDir": "./src",
     "types": [
-      "vitest/globals"
+      "jasmine"
     ],
     "strict": true,
     "noImplicitOverride": true,
