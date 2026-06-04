@@ -1,4 +1,4 @@
-@import "../../../../styles.scss";
+@use "../../../shared/scss/global" as *;
 
 header {
   @include flexBox("", space-between, center, 45);

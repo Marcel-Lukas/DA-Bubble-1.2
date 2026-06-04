@@ -45,3 +45,8 @@ Thumbs.db
 .firebase
 *-debug.log
 .runtimeconfig.json
+
+# Local Firebase / environment credentials (keep real keys out of Git).
+# Use environment.example.ts as a template.
+/src/environments/environment.ts
+/src/environments/environment.prod.ts

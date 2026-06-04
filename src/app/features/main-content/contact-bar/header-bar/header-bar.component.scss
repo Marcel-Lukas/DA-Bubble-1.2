@@ -1,4 +1,4 @@
-@import '../../../../../styles.scss';
+@use '../../../../shared/scss/global' as *;
 header{
     width: 310px;
     padding-top: 30px

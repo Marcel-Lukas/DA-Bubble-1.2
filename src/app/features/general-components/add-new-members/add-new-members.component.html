@@ -41,7 +41,7 @@
       <div class="addInputField" #inputWrapper>
         @if (selectedMembers.length > 0) {
         <div class="inputNamePush" #memberInput>
-          @for (member of selectedMembers | slice:0:displayCount; track trackById) {
+          @for (member of selectedMembers | slice:0:displayCount; track trackById($index, member)) {
           <div class="containerDelete">
             <div class="inputNameImgPush">
               <img src="{{ member.uUserImage }}" alt="{{ member.uName }}" />
@@ -67,7 +67,7 @@
         } 
         @if (showMember ) {
           <div class="showMembers" (click)="$event.stopPropagation()">
-            @for(member of filteredMembers; track trackById) {
+            @for(member of filteredMembers; track trackById($index, member)) {
             <button (mousedown)="toggleMember(member)" [class.selected]="selectedMemberIds.includes(member.uId!)" class="memberItem">
               <div class="user-img-status">
                 <img src="{{ member.uUserImage }}" alt="" />

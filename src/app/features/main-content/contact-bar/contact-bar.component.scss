@@ -1,4 +1,4 @@
-@import "../../../../styles.scss";
+@use "../../../shared/scss/global" as *;
 
 main {
   @include flexBox(column, initial, initial, 25);

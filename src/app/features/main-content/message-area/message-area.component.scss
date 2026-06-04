@@ -1,4 +1,4 @@
-@import "../../../../styles.scss";
+@use "../../../shared/scss/global" as *;
 
 .loading-screen {
   height: 100%;
