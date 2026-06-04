@@ -6,8 +6,10 @@ import {
   deleteDoc,
   doc,
   Firestore,
+  getDoc,
   getDocs,
   query,
+  serverTimestamp,
   setDoc,
   updateDoc,
   where,
@@ -42,6 +44,9 @@ export class AuthentificationService {
     password: string;
     username: string;
   } | null = null;
+
+  /** ID des Standard-Channels, dem jeder neue/eingeloggte Nutzer beitritt. */
+  private readonly defaultChannelId = '4ViNXTttFDYKlytrxQw4';
 
   constructor() {}
 
@@ -85,14 +90,10 @@ export class AuthentificationService {
       const userRef    = collection(this.firestore, 'users');
       const userDocRef = doc(userRef, uid);
       await setDoc(userDocRef, userData);
-
-      const defaultChannelId = '4ViNXTttFDYKlytrxQw4';
-      const channelRef       = doc(this.firestore, 'channels', defaultChannelId);
-      await updateDoc(channelRef, {
-        cUserIds: arrayUnion(uid),
-      });
     });
-  
+
+    await this.addUserToDefaultChannel(uid);
+
     this.registrationData = null;
     return userCredential;
   }
@@ -124,9 +125,7 @@ export class AuthentificationService {
       const userRef = collection(this.firestore, 'users');
       const userDocRef = doc(userRef, result.user.uid);
       await setDoc(userDocRef, userData, { merge: true });
-      const defaultChannelId = '4ViNXTttFDYKlytrxQw4';
-      const channelRef = doc(this.firestore, 'channels', defaultChannelId);
-      await updateDoc(channelRef, { cUserIds: arrayUnion(this.currentUid) });
+      await this.addUserToDefaultChannel(this.currentUid!);
       return result;
     });
   }
@@ -147,9 +146,7 @@ export class AuthentificationService {
       const userRef = collection(this.firestore, 'users');
       const userDocRef = doc(userRef, this.currentUid!);
       await setDoc(userDocRef, guestData, { merge: true });
-      const defaultChannelId = '4ViNXTttFDYKlytrxQw4';
-      const channelRef = doc(this.firestore, 'channels', defaultChannelId);
-      await updateDoc(channelRef, { cUserIds: arrayUnion(this.currentUid) });
+      await this.addUserToDefaultChannel(this.currentUid!);
       return result;
     });
   }
@@ -172,6 +169,34 @@ export class AuthentificationService {
       });
     } catch (cleanupErr) {
       console.warn('Bereinigung alter Gast-Dokumente fehlgeschlagen', cleanupErr);
+    }
+  }
+
+  /**
+   * Fügt den Nutzer dem Standard-Channel hinzu. Schlägt fehlertolerant fehl:
+   * Wenn der Channel nicht existiert (z.B. versehentlich gelöscht), wird er
+   * neu angelegt, statt den gesamten Login abzubrechen.
+   */
+  private async addUserToDefaultChannel(uid: string): Promise<void> {
+    try {
+      await this.runInContext(async () => {
+        const channelRef = doc(this.firestore, 'channels', this.defaultChannelId);
+        const channelSnap = await getDoc(channelRef);
+
+        if (channelSnap.exists()) {
+          await updateDoc(channelRef, { cUserIds: arrayUnion(uid) });
+        } else {
+          await setDoc(channelRef, {
+            cName: 'Allgemein',
+            cDescription: 'Standard-Channel für alle Mitglieder.',
+            cCreatedByUser: uid,
+            cUserIds: [uid],
+            cTime: serverTimestamp(),
+          });
+        }
+      });
+    } catch (channelErr) {
+      console.warn('Beitritt zum Standard-Channel fehlgeschlagen (Login wird fortgesetzt)', channelErr);
     }
   }
 
