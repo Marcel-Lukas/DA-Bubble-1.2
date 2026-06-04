@@ -1,0 +1,35 @@
+@use "../../../shared/scss/mixins" as mixin;
+@use "../../../shared/scss/variables" as vari;
+
+:host {
+  position: relative;
+}
+
+.arrow {
+  @include mixin.arrow($bg-color: vari.$sky-grey, $icon-color: vari.$purple);
+}
+
+form {
+  @include mixin.dFlex($gap: 30px, $direction: column);
+
+  > h1 {
+    @include mixin.accHead(vari.$dark-blue);
+  }
+
+  > p {
+    font-size: clamp(16px, 2.5vw, 20px);
+    text-align: center;
+  }
+  @media (max-width: 700px) {
+    @include mixin.dFlex($gap: 16px, $direction: column);
+    }
+}
+
+.input-container {
+  @include mixin.errMess($text-color: vari.$rose);
+}
+
+.btn-container {
+  width: 100%;
+  @include mixin.dFlex($justify: flex-end);
+}

@@ -1,0 +1,32 @@
+<main class="search-bar-wrapper" #searchWrapper>
+    <app-device-visible mode="tabletBig">
+      <input (keyup)="onKey($event)" [(ngModel)]="searchValue" type="text" placeholder="Gehe zu..." #inputRef/>
+    </app-device-visible>
+  
+    <app-device-visible mode="desktopBig">
+      <input (keyup)="onKey($event)" [(ngModel)]="searchValue" type="text" placeholder="Devspace durchsuchen" #inputRef/>
+    </app-device-visible>
+  
+    <div class="searchButton">
+      <img src="assets/icons/search.svg" />
+    </div>
+    @if (showInformation) {
+      <app-search-information
+      [searchText]="searchValue"
+      (close)="closeSearchInfo()"
+      (openChat)="openChat.emit($event)"
+      (openThread)="openThread.emit($event)">
+    </app-search-information>
+    }
+  
+</main>
+
+@if (showInformation) {
+  <div 
+  class="backdrop" 
+  (click)="closeSearchInfo()">
+</div>
+}
+ 
+
+

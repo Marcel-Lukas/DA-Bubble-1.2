@@ -1,0 +1,128 @@
+@import '../../../../styles.scss';
+
+main {
+    position: absolute;
+    top: 90%;
+    left: 5%;
+    background-color: white;
+    height: 400px;
+    width: 90%;
+    border-radius: 0 30px 30px 30px;
+    padding: 40px;
+    box-shadow: 4px 4px 7px 4px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    z-index: 80;
+}
+
+h1{
+    margin-bottom: 8px;
+}
+
+main::-webkit-scrollbar-track{
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+section{
+    @include flexBox(column, center, left, 30);
+}
+
+.userPhoto{
+    @include flexBox('', left, center, 8);
+    background-color: white;
+    padding: 0px 24px;
+    min-width: 250px;
+    border: none;
+    cursor: pointer;
+    border-radius: 25px;
+    margin-top: 8px;
+    img{
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+    }
+    &:hover{
+        background-color: #ECEEFE;
+    }
+    span{
+        @include fontStyle(20px, black, 500);
+    }
+}
+
+.channelName{
+    @include flexBox("", left, center, 4);
+    background-color: white;
+    width: 220px;
+    padding: 8px 24px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    &:hover{
+        background-color: #ECEEFE;
+    }
+}
+
+.messagesInChannels{
+    @include flexBox("", left, center, 4);
+    background-color: white;
+    width: fit-content;
+    padding: 8px 24px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    &:hover{
+        background-color: #ECEEFE;
+    }
+}
+
+.everyChannelButton{
+    @include flexBox(column, center, left, 10);
+}
+
+.everyInfo{
+    @include flexBox(column, center, left, 4);
+    background-color: white;
+    padding: 4px 16px;
+    border: none;
+    &:hover{
+        background-color: #ECEEFE;
+    }
+}
+
+.headline{
+    @include flexBox('', left, top, '');
+    @include fontStyle(16px, black, 400);
+}
+
+.messageButton span{
+    display: block; 
+    text-align: left;
+}
+
+.messageButton{
+    @include flexBox(column, '', '', 4);
+    background-color: white;
+    width: fit-content;
+    padding: 8px 24px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    &:hover{
+        background-color: #ECEEFE;
+    }
+}
+
+@media(max-width: 1000px){
+    main {
+        top: -8px;
+        left: 1%;
+        width: 98%;
+        border-radius: 30px;
+    }
+}
+
+@media(max-width: 450px){
+    main{
+        padding: 40px 24px;
+    }
+}

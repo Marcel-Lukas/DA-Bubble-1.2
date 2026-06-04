@@ -1,0 +1,40 @@
+
+
+<main>
+  <button class="directMessageButton" (click)="showAllMessages()">
+    <button class="keyDownUser">
+      @if (!showMessages) {
+        <div class="material-symbols showMessagesIcon">arrow_drop_down</div>
+      }
+      @else {
+      <div class="material-symbols showMessagesIcon">arrow_right</div>
+    }
+  </button>
+  <div class="directMessage">
+    <div class="material-symbols accountCircle">account_circle</div>
+    <h2>Direktnachrichten</h2>
+  </div>
+</button>
+@if (!showMessages) {
+  <section>
+    @for (user of activeUsers$ | async; track $index) {
+      <button (click)="selectPrivateChat(user.uId); someAction()" class="directUser">
+        <div class="user-img-status">
+          <img [src]="user.uUserImage" alt="" />
+          <span [ngClass]="user.uStatus === 'true' || user.uStatus === true ? 'online' : 'offline'"></span>
+        </div>
+        <span>{{ user.uName }} (Du)</span>
+      </button>
+      @for (user of inactiveUsers$ | async; track user) {
+        <button (click)="selectPrivateChat(user.uId); someAction()" class="directUser">
+          <div class="user-img-status">
+            <img [src]="user.uUserImage" alt="" />
+            <span [ngClass]="user.uStatus === 'true' || user.uStatus === true ? 'online' : 'offline'"></span>
+          </div>
+          <span>{{ user.uName }}</span>
+        </button>
+      }
+    }
+  </section>
+}
+</main>

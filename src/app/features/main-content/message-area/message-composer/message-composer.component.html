@@ -1,0 +1,44 @@
+@if (isEmojiPickerOpen) {
+<emoji-mart #emojiPicker (emojiClick)="addEmoji($event)"></emoji-mart>
+
+} @if (displaySuggestions) {
+<div class="suggestions">
+  @for(user of foundUsers; track user) {
+  <div (click)="insertUserSuggestion(user)">
+    <div class="user-img-status">
+      <img src="{{ user?.uUserImage }}" alt="" />
+      <span [ngClass]="user?.uStatus ? 'online' : 'offline'"></span>
+    </div>
+    <span>{{ user?.uName }}</span>
+  </div>
+  } @for(channel of foundChannels; track channel) {
+  <div (click)="insertChannelSuggestion(channel)">#{{ channel?.cName }}</div>
+  }
+</div>
+}
+
+<textarea
+  type="text"
+  [placeholder]="getPlaceholder()"
+  [(ngModel)]="newMessageText"
+  #messageInput
+  (input)="onTextChange($event)"
+  (keydown)="handleKeyDown($event)"
+  rows="2"
+></textarea>
+
+<div class="textfield-buttons">
+  <div>
+    <button class="icon-button blue-hover" (click)="toggleEmojiPicker($event)">
+      <div class="material-symbols textfield-icon">sentiment_satisfied</div>
+    </button>
+
+    <button class="icon-button blue-hover" (click)="openUserSuggestions()">
+      <div class="material-symbols textfield-icon">alternate_email</div>
+    </button>
+  </div>
+
+  <button class="icon-button" [disabled]="!newMessageText.trim()">
+    <div class="material-symbols send-icon" (click)="sendMessage()">send</div>
+  </button>
+</div>

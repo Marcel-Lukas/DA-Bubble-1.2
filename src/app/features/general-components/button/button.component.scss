@@ -1,0 +1,97 @@
+@use "../../../shared/scss/mixins" as mixin;
+@use "../../../shared/scss/variables" as vari;
+
+:host {
+  display: inline-block;
+
+  &.full-width-host {
+    display: block;
+    width: 100%;
+  }
+}
+
+button {
+  @include mixin.dFlex($gap: clamp(10px, 2.5vw, 20px));
+  font-size: clamp(16px, 2.5vw, 18px);
+  padding: clamp(10px, 2.5vw, 12px) clamp(18px, 2.5vw, 25px);
+  border: 1px solid;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-blue {
+  @include mixin.btnColor($bg-color: vari.$dark-blue, $bor-color: vari.$dark-blue, $text-color: vari.$white);
+
+  &:hover:not(:disabled) {
+    @include mixin.btnColor($bg-color: vari.$light-blue, $bor-color: vari.$light-blue, $text-color: vari.$white);
+  }
+
+  &:active:not(:disabled) {
+    @include mixin.btnColor($bg-color: vari.$dark-blue, $bor-color: vari.$dark-blue, $text-color: vari.$white);
+  }
+
+  &:disabled {
+    @include mixin.btnColor($bg-color: vari.$gray, $bor-color: vari.$gray, $text-color: vari.$white);
+  }
+}
+
+.btn-white {
+  @include mixin.btnColor($bg-color: transparent, $bor-color: vari.$light-blue, $text-color: vari.$dark-blue);
+
+  &:hover:not(:disabled) {
+    @include mixin.btnColor($bg-color: vari.$purple, $bor-color: vari.$purple, $text-color: vari.$white);
+  }
+
+  &:active:not(:disabled) {
+    @include mixin.btnColor($bg-color: vari.$dark-blue, $bor-color: vari.$dark-blue, $text-color: vari.$white);
+  }
+
+  &:disabled {
+    @include mixin.btnColor($bg-color: transparent, $bor-color: vari.$gray, $text-color: vari.$gray);
+  }
+}
+
+.btn-gray {
+  @include mixin.btnColor($bg-color: vari.$sky-grey, $bor-color: vari.$sky-grey, $text-color: vari.$dark-blue);
+  width: 100%;
+
+  &:hover:not(:disabled) {
+    border-color: vari.$dark-blue;
+  }
+
+  &:active:not(:disabled) {
+    border-color: vari.$gray;
+  }
+
+  &:disabled {
+    border-color: vari.$gray;
+    color: vari.$gray;
+  }
+}
+
+.btn-transparent {
+  padding: 10px 15px;
+  @include mixin.btnColor($bg-color: transparent, $bor-color: transparent, $text-color: vari.$light-blue);
+
+  &:hover:not(:disabled) {
+    @include mixin.btnColor($bg-color: transparent, $bor-color: #adb0d9, $text-color: vari.$dark-blue);
+  }
+
+  &:disabled {
+    color: vari.$gray;
+  }
+}
+
+.btn-sky-grey {
+  padding: 5px 15px;
+  @include mixin.btnColor($bg-color: transparent, $bor-color: transparent, $text-color: vari.$light-blue);
+
+  &:hover:not(:disabled) {
+    @include mixin.btnColor($bg-color: vari.$sky-grey, $bor-color: transparent, $text-color: vari.$dark-blue);
+  }
+
+  &:disabled {
+    color: vari.$gray;
+  }
+}

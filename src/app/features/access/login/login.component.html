@@ -1,0 +1,148 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <h1>Anmeldung</h1>
+
+  <p>
+    Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
+    verwendest.
+  </p>
+
+  <div class="input-container">
+    <app-custom-input
+      type="email"
+      name="email"
+      placeholder="beispielname@email.com"
+      formControlName="email"
+    >
+      <svg
+        icon
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <mask
+          id="mask0_125160_4856"
+          style="mask-type: alpha"
+          maskUnits="userSpaceOnUse"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        >
+          <rect width="24" height="24" fill="#D9D9D9" />
+        </mask>
+        <g mask="url(#mask0_125160_4856)">
+          <path
+            d="M4 20C3.45 20 2.97933 19.8043 2.588 19.413C2.196 19.021 2 18.55 2 18V6C2 5.45 2.196 4.97933 2.588 4.588C2.97933 4.196 3.45 4 4 4H20C20.55 4 21.021 4.196 21.413 4.588C21.8043 4.97933 22 5.45 22 6V18C22 18.55 21.8043 19.021 21.413 19.413C21.021 19.8043 20.55 20 20 20H4ZM20 8L12.525 12.675C12.4417 12.725 12.354 12.7623 12.262 12.787C12.1707 12.8123 12.0833 12.825 12 12.825C11.9167 12.825 11.8293 12.8123 11.738 12.787C11.646 12.7623 11.5583 12.725 11.475 12.675L4 8V18H20V8ZM12 11L20 6H4L12 11ZM4 8.25V6.775V6.8V6.787V8.25Z"
+            style="fill: var(--icon-color)"
+          />
+        </g>
+      </svg>
+    </app-custom-input>
+
+    @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+      @if (loginForm.get('email')?.errors?.['required']) {
+        <small>*E-Mail ist erforderlich.</small>
+      }
+      @if (loginForm.get('email')?.errors?.['email'] || loginForm.get('email')?.errors?.['pattern']) {
+        <small>*Bitte gib eine gültige E-Mail-Adresse ein.</small>
+      }
+    }
+  </div>
+
+  <div class="input-container">
+    <app-custom-input
+      type="password"
+      name="password"
+      placeholder="Passwort"
+      formControlName="password"
+    >
+      <svg
+        icon
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <mask
+          id="mask0_124835_14644"
+          style="mask-type: alpha"
+          maskUnits="userSpaceOnUse"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        >
+          <rect width="24" height="24" fill="#D9D9D9" />
+        </mask>
+        <g mask="url(#mask0_124835_14644)">
+          <path
+            d="M6 22C5.45 22 4.97933 21.8043 4.588 21.413C4.196 21.021 4 20.55 4 20V10C4 9.45 4.196 8.979 4.588 8.587C4.97933 8.19567 5.45 8 6 8H7V6C7 4.61667 7.48767 3.43733 8.463 2.462C9.43767 1.48733 10.6167 1 12 1C13.3833 1 14.5627 1.48733 15.538 2.462C16.5127 3.43733 17 4.61667 17 6V8H18C18.55 8 19.021 8.19567 19.413 8.587C19.8043 8.979 20 9.45 20 10V20C20 20.55 19.8043 21.021 19.413 21.413C19.021 21.8043 18.55 22 18 22H6ZM6 20H18V10H6V20ZM12 17C12.55 17 13.021 16.8043 13.413 16.413C13.8043 16.021 14 15.55 14 15C14 14.45 13.8043 13.979 13.413 13.587C13.021 13.1957 12.55 13 12 13C11.45 13 10.9793 13.1957 10.588 13.587C10.196 13.979 10 14.45 10 15C10 15.55 10.196 16.021 10.588 16.413C10.9793 16.8043 11.45 17 12 17ZM9 8H15V6C15 5.16667 14.7083 4.45833 14.125 3.875C13.5417 3.29167 12.8333 3 12 3C11.1667 3 10.4583 3.29167 9.875 3.875C9.29167 4.45833 9 5.16667 9 6V8Z"
+            style="fill: var(--icon-color)"
+          />
+        </g>
+      </svg>
+    </app-custom-input>
+
+    @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+      @if (loginForm.get('password')?.errors?.['required']) {
+        <small>*Passwort ist erforderlich.</small>
+      }
+      @if (loginForm.get('password')?.errors?.['minlength']) {
+        <small>*Passwort muss mindestens 8 Zeichen lang sein.</small>
+      }
+    }
+
+    @if (authError) {
+      <small>{{ authError }}</small>
+    }
+  </div>
+
+  <app-button color="sky-grey" [disabled]="!isButtonVisible()" (click)="changeComponent('conMail')">
+    Passwort vergessen?
+  </app-button>
+
+  <div class="or-container">
+    <span> ODER </span>
+  </div>
+
+  <app-button color="gray" [disabled]="!isButtonVisible()" (clicked)="onLoginWithGoogle()">
+    <svg
+      class="google"
+      viewBox="0 0 38 38"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M34.5255 15.8991H33.2501V15.8334H19.0001V22.1667H27.9483C26.6428 25.8535 23.135 28.5001 19.0001 28.5001C13.7537 28.5001 9.50008 24.2465 9.50008 19.0001C9.50008 13.7537 13.7537 9.50008 19.0001 9.50008C21.4218 9.50008 23.625 10.4137 25.3025 11.906L29.781 7.4275C26.9532 4.79204 23.1706 3.16675 19.0001 3.16675C10.2561 3.16675 3.16675 10.2561 3.16675 19.0001C3.16675 27.744 10.2561 34.8334 19.0001 34.8334C27.744 34.8334 34.8334 27.744 34.8334 19.0001C34.8334 17.9385 34.7242 16.9022 34.5255 15.8991Z"
+        fill="#FFC107"
+      />
+      <path
+        d="M4.99219 11.6305L10.1942 15.4455C11.6018 11.9606 15.0107 9.50008 18.9999 9.50008C21.4216 9.50008 23.6249 10.4137 25.3024 11.906L29.7809 7.4275C26.953 4.79204 23.1704 3.16675 18.9999 3.16675C12.9184 3.16675 7.64427 6.60021 4.99219 11.6305Z"
+        fill="#FF3D00"
+      />
+      <path
+        d="M18.9999 34.8334C23.0897 34.8334 26.8058 33.2683 29.6154 30.7231L24.715 26.5763C23.1253 27.7804 21.1493 28.5001 18.9999 28.5001C14.8817 28.5001 11.3849 25.8741 10.0675 22.2095L4.9043 26.1876C7.52471 31.3152 12.8463 34.8334 18.9999 34.8334Z"
+        fill="#4CAF50"
+      />
+      <path
+        d="M34.5254 15.899H33.25V15.8333H19V22.1666H27.9482C27.3212 23.9375 26.182 25.4647 24.7127 26.577L24.715 26.5754L29.6155 30.7221C29.2687 31.0372 34.8333 26.9166 34.8333 18.9999C34.8333 17.9383 34.7241 16.902 34.5254 15.899Z"
+        fill="#1976D2"
+      />
+    </svg>
+    Anmelden mit Google
+  </app-button>
+
+  <div class="btn-container">
+    <app-button type="submit" [disabled]="loginForm.invalid || !isButtonVisible()">
+      Anmelden
+    </app-button>
+    <app-button color="white" [disabled]="!isButtonVisible()" (clicked)="onLoginAsGuest()">
+      Gäste-Login
+    </app-button>
+  </div>
+</form>
+
+<app-success-indicator [visible]="isConfirmationVisible">Sie sind jetzt angemeldet</app-success-indicator>

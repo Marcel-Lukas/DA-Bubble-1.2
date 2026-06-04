@@ -1,0 +1,149 @@
+<main (click)="closeWindow()">
+    <section (click)="$event.stopPropagation()">
+        <header>
+            <div>
+                <img src="assets/icons/hashtag.svg">
+                <h1>{{ channelData?.cName}}</h1>
+            </div>
+            <button (click)="closeWindow()" class="closeChannelLeave">
+                <div class="material-symbols closeIcon">close</div>
+            </button>
+        </header>
+        <div class="scrollContainer">
+            @if (editMode) {
+                <div [ngClass]="{ 'fade-in': hasInteractedName && isVisibleName, 'fade-out': hasInteractedName && !isVisibleName }" class="nameBox">
+                    <div class="boxEdit">
+                        <h3>Channel-Name</h3>
+                        <button class="editOverMobil editButton" (click)="toggleEdit()">Bearbeiten</button>
+                        <button class="editOverTablet editButton" (click)="toggleEdit()">
+                            <div class="material-symbols closeIcon">edit</div>
+                        </button>
+                    </div>
+                    <div class="channelHashtagName">
+                        <img src="assets/icons/hashtag.svg">
+                        <span>{{ channelData?.cName}}</span>
+                    </div>
+                </div>
+            }
+            @else{
+                <div [ngClass]="{ 'fade-in': hasInteractedName && isVisibleName, 'fade-out': hasInteractedName && !isVisibleName }"  class="nameSaveBox">
+                    <div class="saveBox">
+                        <h3>Channel-Name</h3>
+                        <button class="editOverMobil editButton" (click)="saveNewName()"
+                            [disabled]=" !editedChannelName.trim() || editedChannelName.trim().length < 3 || nameExists">
+                             Speichern
+                        </button>
+                        <button  [disabled]=" !editedChannelName.trim() || editedChannelName.trim().length < 3 || nameExists" 
+                            class="editOverTablet editButton" (click)="saveNewName()">
+                            <div class="material-symbols closeIcon">check_circle</div>
+                        </button>
+                    </div>
+                    <div class="editChannelName" >
+                        <img src="assets/icons/hashtag.svg">
+                        <input [(ngModel)]="editedChannelName"  (ngModelChange)="onNameInput($event)" [placeholder]="editedChannelName"/>
+                    </div>
+                </div>
+                @if ( hasInteractedName && editedChannelName.trim().length > 0 &&
+                    editedChannelName.trim().length < 3 && editedChannelName.trim() !== channelData?.cName) {
+                    <span class="errorText">Der Channel-Name muss mindestens 3 Buchstaben lang sein !</span>
+                  }
+                @if ( hasInteractedName && editedChannelName.trim().length >= 3 &&nameExists) {
+                    <span class="errorText">Bitte nutzen Sie einen anderen Channel-Name !</span>
+                }
+            }
+            @if (editDescription) {
+                <div [ngClass]="{ 'fade-in': hasInteracted && isVisible, 'fade-out': hasInteracted && !isVisible }" class="descriptionBox">
+                    <div class="descriptionText">
+                        <div class="boxEdit">
+                            <h3>Beschreibung</h3>
+                            <button class="editOverMobil editButton" (click)="toggleDescription()">Bearbeiten</button>
+                            <button class="editOverTablet editButton" (click)="toggleDescription()">
+                                <div class="material-symbols closeIcon">edit</div>
+                            </button>
+                        </div>
+                        <div class="descriptionBoxText">{{ channelData?.cDescription}}</div>
+                    </div>
+                    <div class="creatorXLine">
+                        <div class="xLine"></div>
+                        <div class="userCreator">
+                            <h3>Erstellt von</h3>
+                            <span>{{ createdByUserName }}</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            @else {
+                <div [ngClass]="{ 'fade-in': hasInteracted && isVisible, 'fade-out': hasInteracted && !isVisible }" class="descriptionSaveOutBox">
+                    <div class="descriptionSaveBox">
+                        <div class="descriptionText">
+                            <div class="saveBox">
+                                <h3>Beschreibung</h3>
+                                <button class="editOverMobil editButton" (click)="toggleDescription(); saveDescription()">Speichern</button>
+                                <button class="editOverTablet editButton" (click)="toggleDescription(); saveDescription()">
+                                    <div class="material-symbols closeIcon">check_circle</div>
+                                </button>
+                            </div>
+                            <div class="inputDescription">
+                                <textarea [(ngModel)]="editedDescription" placeholder="Dein Text hier" type="text"></textarea>
+                            </div>
+                        </div>
+                        <div class="xLineSave"></div>
+                        <div class="creatorBox">
+                            <div class="userCreator">
+                                <h3>Erstellt von</h3>
+                                <span>{{ createdByUserName }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="memberListMobile">
+                <app-device-visible mode="mobilBig">
+                    <h1 class="mobileHeadlineMember">Mitglieder</h1>
+                    <app-member-list
+                    [channelMembers]="channelMembers"
+                    [activeUserId]="activeUserId"
+                    (addMember)="addMember.emit()"
+                    (showProfil)="toggleMemberProfil($event)"
+                  ></app-member-list>
+                </app-device-visible>
+            </div>
+            <div class="channelLeaveButton">
+                <button (click)="closeWindow(); removeMember()">Channel verlassen</button>
+            </div>
+        </div>
+    </section>
+</main>
+@if (isChannelMemberProfilOpen) {
+    <app-profil
+    [activeUserId]="activeUserId"
+    [userImage]="activChannelMemberProfil?.uUserImage"
+    [userName]="activChannelMemberProfil?.uName"
+    [userEmail]="activChannelMemberProfil?.uEmail"
+    [userStatus]="activChannelMemberProfil?.uStatus"    
+    [userId]="activChannelMemberProfil?.uId"
+    #profilRef
+    size="big"
+    [showButton]="activeUserId !== activChannelMemberProfil?.uId"
+    (close)="toggleMemberProfil()"
+    (openChat)="openChat.emit($event)" 
+    ></app-profil>
+}
+@if (newChannelMembers) {
+    <div (click)="closeAddMember()" class="memberAdd">
+        <app-add-new-members
+        (click)="$event.stopPropagation()"
+        (close)="closeAddMember()"
+        [ngClass]="{ 
+            'slide-up': !animateOut, 
+            'slide-down': animateOut 
+        }"
+        [channelMembers]="channelMembers"
+        [activeUserId]="activeUserId"
+        [channelId]="channelData?.cId"
+        [channelName]="channelData?.cName"
+        [showInput]="true"
+        [showXLine]="true"  
+      ></app-add-new-members>
+    </div>
+  }

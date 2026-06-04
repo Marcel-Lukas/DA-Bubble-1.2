@@ -1,0 +1,99 @@
+<main>
+  <app-header
+    [messageIn]="messageIn"
+    (messageInToggle)="handleMessageInToggle($event)"
+    (openChat)="handleOpenChat($event)"
+    (openThread)="handleOpenThread($event)"
+    [activeUserId]="activeUserId"
+  ></app-header>
+  @if (!messageIn) {
+  <section>
+    <app-device-visible mode="tabletBig">
+      <app-search-bar></app-search-bar>
+    </app-device-visible>
+    <div class="content-container">      
+      <button class="toogleBar" (click)="toggleSection()">
+        <div>
+          @if (sectionVisible) {
+          <span>Workspace-Menü schließen</span>
+          } @else {
+          <span>Workspace-Menü öffnen</span>
+          }
+        </div>
+        @if (sectionVisible) {
+          <div class="imageChange">
+            <div class="material-symbols closeIcon">left_panel_close</div>
+          </div>
+        }
+        @else {
+          <div class="imageChange">
+            <div class="material-symbols closeIcon">left_panel_open</div>
+          </div>
+        }
+      </button>
+
+      @if (sectionVisible) {
+        <app-contact-bar
+        [sectionVisible]="sectionVisible"
+        [activeUserId]="activeUserId"
+        (toggle)="toggleSection()"
+        (openChat)="handleOpenChat($event)"
+        (messageInToggle)="handleMessageInToggle($event)"
+      ></app-contact-bar>
+      }
+
+      <div class="messageOut">
+        <app-message-area
+          class="chat-message-area"
+          [class.hide-chat]="isThreadOpen"
+          [chatType]="chatType"
+          [chatId]="chatId"
+          [activeUserId]="activeUserId"
+          (openThread)="openThread($event)"
+          (closeThread)="closeThread()"
+          (openChat)="handleOpenChat($event)"
+        >
+        </app-message-area>
+
+        @if (isThreadOpen) {
+        <app-message-area
+          class="thread-message-area"
+          [chatType]="'thread'"
+          [chatId]="threadId"
+          [activeUserId]="activeUserId"
+          (openThread)="openThread($event)"
+          (closeThread)="closeThread()"
+          (openChat)="handleOpenChat($event)"
+        >
+        </app-message-area>
+        }
+      </div>
+    </div>
+  </section>
+
+  } @if (messageIn) {
+  <div class="messageIn">
+    <app-message-area
+      class="chat-message-area"
+      [class.d-none]="isThreadOpen"
+      [chatType]="chatType"
+      [chatId]="chatId"
+      [activeUserId]="activeUserId"
+      (openThread)="openThread($event)"
+      (closeThread)="closeThread()"
+    >
+    </app-message-area>
+    @if (isThreadOpen) {
+    <app-message-area
+      class="thread-message-area"
+      [chatType]="'thread'"
+      [chatId]="threadId"
+      [activeUserId]="activeUserId"
+      (openThread)="openThread($event)"
+      (closeThread)="closeThread()"
+    >
+    </app-message-area>
+    }
+  </div>
+  }
+</main>

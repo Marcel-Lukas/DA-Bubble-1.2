@@ -1,0 +1,144 @@
+<section
+  [class.row-reverse]="message.mSenderId === activeUserId"
+  [class.edit-open]="isEditOpen"
+  [class.thread]="chatType === 'thread'"
+>
+  <img src="{{ senderData?.uUserImage }}" alt="" />
+
+  @if (isEditOpen && message.mSenderId === activeUserId) {
+  <div class="edit-message">
+    <textarea #editTextarea type="text" [(ngModel)]="editText"></textarea>
+    <div>
+      <button
+        class="icon-button blue-hover"
+        (click)="toggleEmojiPicker($event)"
+      >
+        <div class="material-symbols textfield-icon">sentiment_satisfied</div>
+      </button>
+      <div>
+        <button class="secondary-btn" (click)="toggleEdit()">Abbrechen</button>
+        <button
+          class="primary-btn"
+          (click)="saveEdit()"
+          [disabled]="!editText.trim()"
+        >
+          Speichern
+        </button>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <div
+    class="message"
+    [class.user-message]="message.mSenderId === activeUserId"
+  >
+    <div class="message-header">
+      <h3 (click)="openProfil()">{{ senderData?.uName }}</h3>
+      <h5>{{ getTimeInHours(message.mTime) }} Uhr</h5>
+    </div>
+
+    <div class="message-text">{{ message.mText }}</div>
+
+    <div class="message-attachments">
+      @if (groupedReactions && groupedReactions.length > 0) {
+      <div class="reaction-field">
+        @for (reaction of groupedReactions.slice(0,shownReactionNumber); track
+        reaction.reaction) {
+
+        <div class="single-reaction">
+          <div class="reaction-details">
+            <span>{{ reaction.reaction }}</span>
+            <div>{{ reaction.namesLine }}</div>
+            <p>{{ reaction.actionLine }}</p>
+          </div>
+
+          <span (click)="addReaction(reaction.reaction)"
+            >{{ reaction.reaction }} {{ reaction.count }}</span
+          >
+        </div>
+        } @if (groupedReactions.length > shownReactionNumber) {
+        <div (click)="setShownReactionNumber()">
+          +{{ groupedReactions.length - shownReactionNumber }} weitere
+        </div>
+        } @if (groupedReactions.length === shownReactionNumber &&
+        shownReactionNumber > 7) {
+        <div (click)="setShownReactionNumber()">Weniger anzeigen</div>
+        }
+        <span class="material-symbols" (click)="toggleEmojiPicker($event)"
+          >add_reaction</span
+        >
+      </div>
+      }@if (message.mThreadId && chatType !== 'thread' && replyCount > 0) {
+      <div class="thread-field" (click)="onThreadClick()">
+        <h4>{{ replyCount }} Antwort{{ replyCount !== 1 ? "en" : "" }}</h4>
+        <h5>
+          Letzte Antwort {{ getDayLabel(lastReplyTime!) }} um
+          {{ getTimeInHours(lastReplyTime!) }} Uhr
+        </h5>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div
+    class="message-actions"
+    [class.always]="isOptionsOpen"
+    [class.user-message-actions]="message.mSenderId === activeUserId"
+  >
+    @if ( chatType != 'thread' ) { @for (reaction of
+    activeUserData?.uLastReactions; track reaction) {
+    <span (click)="addReaction(reaction)">{{ reaction }}</span>
+    } }
+
+    <span
+      #emojiBtn
+      class="material-symbols action-btn"
+      (click)="toggleEmojiPicker($event)"
+    >
+      add_reaction
+    </span>
+
+    <div
+      class="material-symbols action-btn"
+      [class.d-none]="chatType === 'thread'"
+      (click)="onThreadClick()"
+    >
+      comment
+    </div>
+
+    <div
+      #optionsBtn
+      class="material-symbols action-btn"
+      [class.d-none]="message.mSenderId != activeUserId"
+      (click)="toggleOptions($event)"
+    >
+      more_vert
+    </div>
+
+    @if (isOptionsOpen) {
+    <div
+      #optionsMenu
+      class="options-menu"
+      [class.active-user-options]="message.mSenderId === activeUserId"
+    >
+      <div (click)="openEdit()">Nachricht bearbeiten</div>
+      <div (click)="togglePermanentDelete()">Nachricht löschen</div>
+    </div>
+    }
+  </div>
+  } @if(isEmojiPickerOpen) {
+  <emoji-mart
+    #emojiPicker
+    (emojiClick)="onEmojiPicked($event)"
+    [class.active-user-emoji]="message.mSenderId === activeUserId"
+    [class.thread-emoji]="chatType === 'thread'"
+  ></emoji-mart>
+  }
+</section>
+@if (isPermanentDeleteOpen) {
+<app-permanent-delete
+  [target]="'message'"
+  [id]="message.mId"
+  (close)="isPermanentDeleteOpen = false"
+></app-permanent-delete>
+}

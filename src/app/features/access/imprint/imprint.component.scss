@@ -1,0 +1,29 @@
+@use '../../../shared/scss/mixins' as mixin;
+@use '../../../shared/scss/variables' as vari;
+
+:host {
+  position: relative;
+  @include mixin.dFlex($gap: clamp(15px, 2.5vw, 55px), $direction: column);
+  max-height: 400px;
+}
+
+.arrow {
+  @include mixin.arrow($bg-color: vari.$sky-grey, $icon-color: vari.$purple);
+}
+
+h1 {
+  @include mixin.accHead(vari.$dark-blue);
+}
+
+.content {
+  overflow: auto;
+  @include mixin.dFlex($justify:normal, $gap: clamp(10px, 2.5vw, 15px), $direction: column);
+
+  > p {
+    font-size: clamp(16px, 3vw, 18px);
+  }
+
+  > h2 {
+    font-size: clamp(18px, 3vw, 24px);
+  }
+}

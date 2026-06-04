@@ -1,0 +1,22 @@
+
+<div class="memberlist">
+    <div class="members">
+      @for (member of channelMembers; track member) {
+        <div (click)="showProfil.emit(member)">
+          <div class="user-img-status">
+            <img src="{{ member?.uUserImage }}" alt="" />
+            <span [ngClass]="member?.uStatus ? 'online' : 'offline'"></span>
+          </div>
+          <span>{{ member?.uName }}
+            @if (member.uId === activeUserId) {
+              <span>(Du)</span>
+            }
+          </span>
+        </div>
+      }
+    </div>
+    <div class="add-member" (click)="addMember.emit()">
+      <div class="material-symbols add-person-icon">person_add</div>
+      <span>Mitglieder hinzufügen</span>
+    </div>
+  </div>

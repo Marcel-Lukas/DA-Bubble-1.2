@@ -1,0 +1,423 @@
+@import "../../../../styles.scss";
+main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  height: 100vh;
+  width: 100%;
+  z-index: 90;
+}
+
+section {
+  @include flexBox(column, "", "", 20);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background-color: white;
+  transform: translate(-50%, -50%);
+  height: fit-content;
+  width: 870px;
+  border-radius: 0 30px 30px 30px;
+  padding: 40px;
+}
+
+header {
+  @include flexBox("", space-between, center, "");
+  height: 40px;
+  width: 100%;
+  div {
+    @include flexBox("", left, center, 15);
+    height: 100%;
+    width: 220px;
+    img {
+      height: 30px;
+      width: 30px;
+    }
+  }
+}
+
+.scrollContainer{
+  @include flexBox(column, "", "", 20);
+}
+
+.memberListMobile{
+  display: none;
+}
+
+.channelHashtagName {
+  @include flexBox("", left, center, 10);
+  width: auto;
+  img {
+    height: 24px;
+    width: 24px;
+  }
+  span {
+    @include fontStyle(18px, black, 400);
+  }
+}
+
+.closeChannelLeave {
+  @include flexBox("", center, center, "");
+  height: 40px;
+  width: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
+  div {
+    @include flexBox("", center, center, "");
+    font-size: 24px;
+  }
+  &:hover {
+    background-color: #eceefe;
+  }
+}
+
+.closeChannelLeave:hover div {
+  color: #535af1;
+}
+
+.nameBox {
+  @include flexBox(column, space-between, "", 20);
+  height: 110px;
+  width: 100%;
+  border-radius: 20px;
+  border: 1px solid #adb0d9;
+  padding: 20px;
+}
+
+.nameSaveBox {
+  @include flexBox(column, space-between, "", 15);
+  height: 110px;
+  width: 100%;
+  border: none;
+}
+
+.boxEdit {
+  @include flexBox("", space-between, center, "");
+  height: 25px;
+}
+
+.saveBox {
+  @include flexBox("", space-between, center, "");
+  height: 25px;
+  width: 770px;
+  button {
+    @include fontStyle(18px, #535af1, 600);
+    background-color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 50px;
+    cursor: pointer;
+    &:hover {
+      background-color: #eceefe;
+    }
+  }
+}
+
+.channelHashtagName {
+  @include flexBox("", left, center, 10);
+  img {
+    height: 24px;
+    width: 24px;
+  }
+  span {
+    @include fontStyle(18px, black, 400);
+  }
+}
+
+.editChannelName {
+  @include flexBox("", center, center, 15);
+  width: 100%;
+  height: 60px;
+  padding: 0px 20px;
+  border-radius: 40px;
+  border: 1px solid #adb0d9;
+  img {
+    height: 24px;
+    width: 24px;
+  }
+  input {
+    width: 100%;
+    border: none;
+    font-size: 18px;
+    outline: none;
+    height: 25px;
+  }
+}
+
+.descriptionBox {
+  @include flexBox(column, space-between, "", 20);
+  height: 280px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #adb0d9;
+  border-radius: 20px;
+}
+
+.descriptionSaveBox {
+  @include flexBox(column, space-between, "", 25);
+  height: 250px;
+  width: 100%;
+}
+
+.descriptionSaveOutBox {
+  @include flexBox(column, space-between, "", 25);
+  height: 280px;
+  width: 100%;
+}
+
+.inputDescription {
+  @include flexBox("", "", center, "");
+  width: 100%;
+  height: 60px;
+  border: 1px solid #adb0d9;
+  padding: 0 20px;
+  border-radius: 30px;
+  textarea {
+    height: 25px;
+    width: 750px;
+    outline: none;
+    border: none;
+    resize: none;
+    font-family: "Nunito", sans-serif;
+  }
+}
+
+.errorText{
+  color: rgb(237, 30,121);
+}
+
+.editOverMobil{
+  @include flexBox("", "", "", "");
+}
+
+.editButton{
+  @include fontStyle(18px, #535af1, 600);
+  background-color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 50px;
+
+  cursor: pointer;
+  &:hover {
+    background-color: #eceefe;
+  }
+}
+
+.editOverTablet{
+  display: none;
+}
+
+.editOverTablet{
+  height: 40px;
+  width: 40px; 
+}
+
+.descriptionBoxText {
+  height: 60px;
+  overflow-y: auto;
+}
+
+.descriptionText {
+  @include flexBox(column, space-between, "", 20);
+  height: 110px;
+}
+
+.creatorXLine {
+  @include flexBox(column, "", "", 20);
+}
+
+.creatorBox {
+  height: 80px;
+}
+
+.xLine {
+  width: 100%;
+  border: 1px solid #adb0d9;
+}
+
+.xLineSave {
+  width: 740px;
+  border: 1px solid #adb0d9;
+  margin: 0 auto;
+}
+
+.userCreator {
+  @include flexBox(column, space-between, "", "");
+  height: 80px;
+  width: 100%;
+  span {
+    @include fontStyle(24px, #535af1, 400);
+  }
+}
+
+.channelLeaveButton {
+  @include flexBox("", end, center, "");
+  width: 100%;
+  height: 50px;
+  button {
+    @include fontStyle(18px, white, 700);
+    border-radius: 25px;
+    width: 200px;
+    height: 50px;
+    background-color: #444df2;
+    border: none;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+@keyframes fadeInSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutSlide {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.fade-in {
+  animation: fadeInSlide 200ms ease-out forwards;
+}
+
+.fade-out {
+  animation: fadeOutSlide 200ms ease-in forwards;
+}
+
+@media (max-width: 1000px) {
+  section {
+    width: 90%;
+  }
+  .saveBox {
+    width: 100%;
+  }
+  .xLineSave {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  main {
+    @include flexBox(column, "", "", "");
+    height: 100vh;
+  }
+  .scrollContainer {
+    @include flexBox(column, initial, initial, 20);
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .saveBox{
+    height: 40px
+  }
+
+  .editOverTablet{
+    @include flexBox("", center, center, "");
+    height: 40px;
+    width: 40px; 
+  }
+
+  .editOverMobil{
+   display: none;
+  }
+
+  .scrollContainer::-webkit-scrollbar-track {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  section {
+    @include flexBox(column, initial, initial, 20);
+    height: 100%;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    border-radius: 0px;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 40px 0;
+  }
+
+  header{
+    padding: 0 40px;
+  }
+ 
+  .scrollContainer{
+    padding: 0 40px;
+  }
+
+  .slide-up {
+    animation: slideUpFromBottom 0.8s ease-out forwards;
+  }
+
+  .slide-down {
+    animation: slideDownToBottom 0.8s ease-out forwards;
+  }
+
+  .memberAdd{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 90;
+  }
+
+  app-add-new-members {
+    @include flexBox(column, '', '',  25);
+    position: absolute;
+    top: auto;
+    right: auto;
+    bottom: 0;
+    width: 100%;
+    height: 340px;
+    border-radius: 30px 30px 0 0;
+    background-color: white;
+    z-index: 100;
+    padding: 20px
+  }
+
+  .memberListMobile {
+    @include flexBox("", left, center, "");
+    width: 100%;
+    border: 1px solid #adb0d9;
+    border-radius: 20px;
+    padding: 30px 20px;
+  }
+}
+
+@media (max-width: 450px) {
+  .scrollContainer {
+    padding: 0 8px;
+  }
+  header{
+    padding: 0 8px;
+  }
+  .memberListMobile{
+    @include flexBox("", center, center, "");
+   
+    padding: 20px 0;
+  }
+  .mobileHeadlineMember{
+    padding: 0 20px;
+  }
+}

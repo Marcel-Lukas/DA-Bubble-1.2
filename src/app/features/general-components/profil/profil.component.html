@@ -1,0 +1,103 @@
+<main (click)="onMainClick($event)">
+    <section #profilWrapper [ngClass]="size">
+        <header>
+            @if (!showEditProfil) {
+                <h1>Profil</h1>
+            }
+            @else {
+                <h1 >Dein Profil bearbeiten</h1>
+            }
+            <button (click)="closeProfil()" class="closeProfil">
+                <div class="material-symbols closeIcon">close</div>
+            </button>
+        </header>
+        @if (!showEditProfil) {
+            <img [src]="userImage">
+        }
+        @else {
+            <div class="avatarsMain">
+                <button class="buttonImg" (click)="bigUserImg()">
+                    <img [src]="userImage">
+                </button>
+                @if (showAvatarChoice) {
+                    <div class="avatarChoice">
+                        @for (item of items; track $index) {
+                            <button (click)="selectAvatar(item)" class="avatarButtons">
+                                <img [src]="'assets/img/avatar-' + item + '.png'">
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        @if (!showEditProfil) {
+            <div class="nameActive">
+                <div class="nameEdit">
+                    <span>{{ userName }}</span>
+                    @if (!showButton && userName !== 'Gast' && userName !== 'Guest' ) {
+                        <a (click)="onEditClick()">Bearbeiten</a>
+                        <button (click)="onEditClick()" class="editIconShow">
+                            <div class="material-symbols editIcon">Edit</div>
+                        </button>
+                    }
+                </div>
+                @if (isActive) {
+                    <div class="status">
+                        <img src="assets/img/green_point.png">
+                        <span class="statusActive">Aktive</span>
+                    </div>
+                }
+                @else {
+                    <div class="status">
+                        <img src="assets/img/grey_point.png">
+                        <span class="statusAbsent">Abwesend</span>
+                    </div>
+                }
+            </div>
+        }
+        @else {
+            @if (showEditProfil) {
+                <div class="editInput">
+                    <div class="editAccountText">
+                        <img src="assets/icons/account_circle.svg">
+                        <h2>Vollständiger Name</h2>
+                    </div>
+                    <input [(ngModel)]="editedUserName" [placeholder]="userName" type="text">
+                </div>
+            }
+        }
+        @if (!showEditProfil) {
+            <div class="mailAdress">
+                <div>
+                    <img src="assets/icons/mail.svg">
+                    <h2>E-Mail-Adresse</h2>
+                </div>
+                <span>{{ userEmail }}</span>
+            </div>
+        }
+        @if (showButton) {
+            <div class="messageArea">
+                <button (click)="onStartChat()" class="messageButton messageButtonBackgroundBlue">
+                    <img src="assets/icons/mode_comment.svg">
+                    <span>Nachricht</span>
+                </button>
+            </div>
+        }
+        @else {
+            @if (!showEditProfil) {
+                <div class="messageArea">
+                    <button (click)="deleteMember()" class="messageButton messageButtonBackgroundPink">
+                        <div class="material-symbols closeIcon">delete</div>
+                        <span>Löschen</span>
+                    </button>
+                </div>
+            }
+        }
+        @if (showEditProfil) {
+            <div class="editSaveButtons">
+                <button (click)="closeProfil()" class="editButton stopButton">Abbrechen</button>
+                <button (click)="changeUserName(); closeProfil(); saveAvatarChange()" class="editButton saveButton">Speichern</button>
+            </div>
+        }
+    </section>
+</main>

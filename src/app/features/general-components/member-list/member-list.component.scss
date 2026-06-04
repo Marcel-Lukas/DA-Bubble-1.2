@@ -1,0 +1,56 @@
+@import "../../../../styles.scss";
+
+.memberlist {
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 20px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @include flexBox(column, initial, flex-start, 16);
+}
+
+.members {
+  width: 100%;
+  height: 200px;
+  padding: 8px 4px;
+  overflow-y: auto;
+  @include flexBox(column, initial, initial, 16);
+  div {
+    cursor: pointer;
+    padding: 4px 24px;
+    @include flexBox(row, initial, center, 16);
+    div {
+      padding: 0;
+    }
+    &:hover {
+      background-color: #eceefe;
+      border-radius: 30px;
+    }
+  }
+}
+
+.add-member {
+  cursor: pointer;
+  width: 100%;
+  padding: 12px 24px;
+  @include flexBox(row, initial, center, 16);
+  &:hover {
+    background-color: #eceefe;
+    border-radius: 30px;
+    color: #444df2;
+    .add-person-icon {
+      color: #444df2;
+    }
+  }
+  .add-person-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #eceefe;
+    border: none;
+    border-radius: 50px;
+  }
+}

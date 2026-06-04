@@ -1,0 +1,169 @@
+@import "../../../styles.scss";
+main {
+  width: 100svw;
+  height: 100svh;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+app-header {
+  padding: 0px 20px;
+  margin-top: 20px;
+  width: 100%;
+  height: 70px;
+}
+
+section{
+  flex: 1;
+  padding: 0 20px 20px 20px;
+}
+
+.messageOut{
+  display: contents;
+}
+
+.toogleBar {
+  @include flexBox("", center, left, "");
+  width: 60px;
+  height: 350px;
+  position: absolute;
+  bottom: 10%;
+  left: 0;
+  background-color: white;
+  z-index: 20;
+  border: none;
+  border-radius: 0 30px 30px 0;
+  box-shadow: 4px 4px 7px 0px #00000033;
+  color: black;
+  cursor: pointer;
+  span {
+    @include fontStyle(20px, black, 500);
+    background-color: white;
+    display: inline-block;
+    white-space: nowrap;
+    position: absolute;
+    top: 180px;
+    left: 50%;
+    transform: translateX(-50%) rotate(270deg);
+  }
+  &:hover span {
+    color: blue;
+  }
+}
+
+.imageChange {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.closeIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 40;
+  font-size: 28px;
+  transition: opacity 0.3s ease;
+}
+
+.toogleBar:hover .closeIcon {
+  color: #535af1;
+}
+
+.content-container {
+  height: 100%;
+  display: flex;
+  gap: 20px;
+  
+  app-contact-bar {
+    width: 390px;
+  }
+  .chat-message-area {
+    flex: 1;
+  }
+  .thread-message-area {
+    width: 488px;
+  }
+}
+
+.d-none{
+  display: none;
+}
+
+@media (min-width: 1920px) {
+  main {
+    width: 1920px;
+    margin-inline: auto;
+  }
+
+  .toogleBar{
+    display: none;
+  }
+  
+}
+
+@media (max-width: 1600px) {
+  .content-container {
+    .hide-chat{
+      display: none;
+    }
+    .thread-message-area {
+      width: 100%;
+    }
+  }
+}
+
+@media(max-width: 1000px){
+  app-header {
+    background-color: #ECEEFE;
+    height: 80px;
+  }
+
+  section{
+    background-color: white;
+  }
+
+  .messageOut{
+    display: none;
+  }
+
+  .content-container {
+    margin-top: 16px;
+    padding-bottom: 70px;
+    app-contact-bar {
+      width: 100%;
+    }
+  }
+  
+  .toogleBar{
+    display: none;
+  }
+  
+  .messageIn{
+    height: 100%;
+  }
+  
+  app-message-area{
+    height: 100%;
+    display: contents;
+  }
+  
+  app-device-visible{
+    height: 60px;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media(max-width: 450px){
+  section{
+    padding: 0px 8px 20px 8px;
+  }
+  app-header {
+    padding: 0 8px;
+  }
+}

@@ -1,0 +1,72 @@
+<main>
+  <section>
+    @if (users.length > 0 || channelsWithNames.length > 0 || matchedMessages.length > 0 || directMessages.length > 0 || threadMessages.length > 0) {
+      @if (users.length > 0) {
+        <div class="everyContactButton">
+          <h1>Gefundene Nutzer</h1>
+          <ng-container>
+            @for (user of users; track $index) {
+              <button (click)="selectChat(user.uId!, 'private')" class="userPhoto">
+                <img [src]="user.uUserImage" alt="{{ user.uName }}" />
+                <h3>{{ user.uName }}</h3>
+              </button>
+            }
+          </ng-container>
+        </div>
+      }
+      @if (channelsWithNames.length > 0) {
+        <div class="everyChannelButton">
+          <h1>Gefundene Channels und Nutzer in Channels</h1>
+          <ng-container>
+            @for (channel of channelsWithNames; track $index) {
+              <button (click)="selectChat(channel.cId, 'channel')" class="channelName">
+                <h3># {{ channel.cName }}</h3>
+              </button>
+            }
+          </ng-container>
+        </div>
+      }
+     @if (matchedMessages.length > 0) {
+      <div class="everyChannelButton">
+        <h1>Gefundene Nachrichten in Channels</h1>
+        <ng-container>
+          @for (msg of matchedMessages; track $index) {
+            <button (click)="selectChat(msg.channelId, 'channel')" class="messageButton">
+              <h3 class="headline"><strong># {{ msg.channelName }}:</strong ></h3>
+                <span>{{ msg.mText }}</span>
+            </button>
+          }
+        </ng-container>
+      </div>
+     }
+     @if (directMessages.length > 0) {
+      <div class="everyChannelButton">
+        <h1>Gefundene private Nachrichten</h1>
+        <ng-container>
+          @for (msg of directMessages; track $index) {
+            <button (click)="selectChat(msg.otherUserId, 'private')" class="messagesButton">
+              <h3 class="headline"><strong>{{ msg.otherUserName }}</strong >:{{ msg.mText }}</h3>
+            </button>
+          }
+        </ng-container>
+      </div>
+     }
+     @if (threadMessages.length > 0) {
+      <div class="everyChannelButton">
+        <h1>Gefundene Nachrichten in Threads</h1>
+        <ng-container >
+          @for (msg of threadMessages; track $index) {
+            <button (click)="selectThread(msg)" class="messageButton">
+              <h3 class="headline"><strong>Thread:</strong></h3>
+              <span>{{ msg.mText }}</span>
+            </button> 
+          }
+        </ng-container>
+      </div>
+     }
+    }
+    @else {
+      <h3><strong>Keine Informationen gefunden !</strong></h3>
+    }
+  </section>
+</main>

@@ -1,0 +1,65 @@
+@mixin dFlex($justify: center, $align: center, $gap: 0px, $direction: null) {
+  display: flex;
+  justify-content: $justify;
+  align-items: $align;
+  gap: $gap;
+
+  @if $direction !=null {
+    flex-direction: $direction;
+  }
+}
+
+@mixin arrow($bg-color, $icon-color) {
+  position: absolute;
+  top: 0;
+  left: -20px;
+  cursor: pointer;
+  padding: 11px 12px 5px 12px;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: $bg-color;
+    border-radius: 50%;
+
+    > svg path {
+      fill: $icon-color;
+    }
+  }
+}
+
+@mixin accHead($head-color) {
+  color: $head-color;
+  padding: 0 20px;
+  text-align: center;
+  font-size: clamp(28px, 5vw, 46px);
+  font-weight: 700;
+}
+
+@mixin btnColor($bg-color, $bor-color, $text-color) {
+  background-color: $bg-color;
+  border-color: $bor-color;
+  color: $text-color;
+}
+
+@mixin errMess($text-color) {
+  width: 100%;
+  position: relative;
+
+  @media (max-width: 500px) {
+    @include dFlex($align: flex-start, $direction: column);
+  }
+
+  > small {
+    padding-left: 32px;
+    color: $text-color;
+    font-size: 16px;
+    position: absolute;
+    top: 64px;
+
+    @media (max-width: 700px) {
+      padding-left: 24px;
+      font-size: 14px;
+      top: 52px;
+    }
+  }
+}

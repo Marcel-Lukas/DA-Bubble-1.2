@@ -1,0 +1,54 @@
+@use "../../../shared/scss/mixins" as mixin;
+@use "../../../shared/scss/variables" as vari;
+
+form {
+  @include mixin.dFlex($gap: clamp(12px, 2.5vw, 30px), $direction: column);
+
+  > h1 {
+    @include mixin.accHead(vari.$dark-blue);
+  }
+
+  > p {
+    font-size: clamp(16px, 3vw, 20px);
+    text-align: center;
+  }
+}
+
+.input-container {
+  @include mixin.errMess($text-color: vari.$rose);
+}
+
+.or-container {
+  @include mixin.dFlex($align: normal);
+  width: 100%;
+  position: relative;
+
+  > span {
+    position: relative;
+    font-size: clamp(14px, 3vw, 18px);
+    z-index: 5;
+    padding: 0 15px;
+    background-color: vari.$white;
+  }
+
+  &::before {
+    content: "";
+    background-color: #adb0d9;
+    height: 1px;
+    width: 100%;
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    right: 0;
+    z-index: 1;
+  }
+}
+
+.btn-container {
+  @include mixin.dFlex($gap: clamp(20px, 2.5vw, 30px));
+}
+
+.google {
+  width: clamp(24px, 2.5vw, 38px);
+  height: clamp(24px, 2.5vw, 38px);
+}

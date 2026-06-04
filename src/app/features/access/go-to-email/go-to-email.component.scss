@@ -1,0 +1,17 @@
+@use "../../../shared/scss/mixins" as mixin;
+@use "../../../shared/scss/variables" as vari;
+
+:host {
+  position: relative;
+  @include mixin.dFlex($gap: clamp(15px, 5vw, 40px), $direction: column);
+}
+
+h1 {
+  @include mixin.accHead(vari.$dark-blue);
+}
+
+p {
+  text-align: center;
+  font-size: clamp(16px, 3vw, 20px);
+  color: vari.$gray;
+}

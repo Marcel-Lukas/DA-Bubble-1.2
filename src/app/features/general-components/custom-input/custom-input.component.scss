@@ -1,0 +1,39 @@
+@use '../../../shared/scss/mixins' as mixin;
+@use '../../../shared/scss/variables' as vari;
+
+:host {
+  width: 100%;
+}
+
+label {
+  @include mixin.dFlex($gap: 18px);
+  width: 100%;
+  background-color: vari.$sky-grey;
+  padding: 18px 32px;
+  border: 1px solid vari.$sky-grey;
+  border-radius: 100px;
+  transition: border-color 0.2s ease-in-out;
+  --icon-color: #686868;
+
+  &:hover {
+    border-color: vari.$gray;
+  }
+
+  > input {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    font-size: clamp(16px, 3vw, 20px);
+  }
+
+  &:has(> input:focus) {
+    border-color: vari.$purple;
+    --icon-color: #000000;
+  }
+
+  @media (max-width: 700px) {
+    margin-bottom: 8px;
+  padding: 12px 24px;
+  }
+}

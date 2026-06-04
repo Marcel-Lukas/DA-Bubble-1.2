@@ -1,0 +1,164 @@
+@import "../../../../../styles.scss";
+
+main {
+  width: 300px;
+  margin: 0 auto;
+}
+
+header {
+  @include flexBox("", space-between, center, "");
+  height: 46px;
+  width: 100%;
+}
+
+.showChannels {
+  @include flexBox("", center, center, "");
+  height: 30px;
+  width: 30px;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.showChannelsIcon {
+  font-size: 30px;
+}
+
+.channelHeadShow {
+  all: unset;
+  @include flexBox("", left, center, 15);
+  width: 180px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.workSpaceText {
+  @include flexBox("", left, center, 10);
+}
+
+.workSpaceIcon,
+.addIcon,
+.hashtagIcon {
+  font-size: 24px;
+}
+
+.channelHeadShow:hover .workSpaceIcon,
+.channelHeadShow:hover .showChannelsIcon,
+.channelHeadShow:hover h2,
+.addButton:hover .addIcon,
+.addChannel:hover span,
+.everyChannel:hover span,
+.everyChannel:hover .hashtagIcon {
+  color: #535af1;
+  cursor: pointer;
+}
+
+.addButton {
+  @include flexBox("", center, center, "");
+  height: 30px;
+  width: 30px;
+  border: none;
+  background-color: white;
+  border-radius: 50%;
+  &:hover {
+    background-color: #eceefe;
+  }
+}
+
+section {
+  @include flexBox(column, center, left, 25);
+  width: 310px;
+}
+
+.addChannel {
+  @include flexBox("", center, center, 9);
+  width: 220px;
+  height: 32px;
+  margin-left: 32px;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  span {
+    @include fontStyle(18px, black, 400);
+  }
+}
+
+.deleteChannel{
+  @include flexBox("", center, center, '');
+  height: 32px;
+  width: 32px;
+  border: none;
+  background-color: white;
+  border-radius: 50%;
+  &:hover{
+    background-color: rgb(237, 30, 121) !important;
+    color: white;
+  }
+}
+
+.closeIcon{
+  font-size: 24px;
+}
+
+.everyChannel:hover .deleteChannel{
+  background-color: #eceefe;
+}
+
+.everyChannel {
+  @include flexBox("", space-between, center, '');
+  height: 35px;
+  margin-left: 25px;
+  width: 275px;
+  padding: 0 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: white;
+  border: none;
+  span {
+    @include fontStyle(18px, black, 400);
+  }
+  &:hover {
+    background-color: #eceefe;
+  }
+}
+
+.tagImage {
+  @include flexBox("", center, center, "");
+}
+.tagName{
+  @include flexBox("", left, center, 15);
+}
+
+.newChannels {
+  @include flexBox(column, "", "", 25);
+  margin-top: 25px;
+}
+
+.addIconChannel {
+  height: 20px;
+  width: 20px;
+  border: 1px solid black;
+  border-radius: 50%;
+}
+
+.addChannel:hover .addIconChannel {
+  color: #535af1;
+  border-color: #535af1;
+}
+
+.d-none {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  main {
+    margin: 0 0;
+    width: 100%;
+  }
+}
+
+@media(max-width: 450px){
+  .addButton{
+    margin-right: 12px;
+  }
+}

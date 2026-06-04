@@ -1,0 +1,65 @@
+@use "../../../shared/scss/mixins" as mixin;
+@use "../../../shared/scss/variables" as vari;
+
+:host {
+  position: relative;
+}
+
+.arrow {
+  @include mixin.arrow(
+    $bg-color: vari.$sky-grey,
+    $icon-color: vari.$purple
+  );
+}
+
+.select-container {
+  @include mixin.dFlex($gap: clamp(5px, 1.5vw, 25px), $direction: column);
+}
+
+h1 {
+  @include mixin.accHead(vari.$dark-blue);
+}
+
+.selected-avatar {
+  height: clamp(100px, 23vw, 172px);
+  border-radius: 50%;
+}
+
+h2 {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+span {
+  width: 100%;
+  padding-left: 10px;
+}
+
+.avatar-container {
+  @include mixin.dFlex($gap: clamp(5px, 1.5vw, 12px));
+  flex-wrap: wrap;
+
+  > img {
+    width: auto;
+    height: clamp(50px, 10vw, 69px);
+    cursor: pointer;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid transparent;
+    transition: border-color 0.3s ease;
+
+    &:hover {
+      border: 5px solid vari.$gainsboro;
+    }
+  }
+
+  > img.selected {
+    border: 5px solid vari.$sky-grey;
+  }
+}
+
+.btn-container {
+  width: 100%;
+  padding-right: 10px;
+  @include mixin.dFlex($justify: flex-end);
+}

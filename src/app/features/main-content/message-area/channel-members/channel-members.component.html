@@ -1,0 +1,41 @@
+<main class="overlay" (click)="onOverlayClick($event)">
+  <div #memberAddWrapper (click)="$event.stopPropagation()" [class.hidden]="!newChannelMembers">
+    <app-add-new-members 
+      [channelMembers]="channelMembers"
+      [activeUserId]="activeUserId"
+      [channelId]="channelId"
+      [channelName]="channelName"
+      (close)="closeAddMembers()"
+      [showInput]="true" 
+    ></app-add-new-members>
+  </div>
+  <section #channelWrapper (click)="$event.stopPropagation()" [class.hidden]="newChannelMembers">
+    <div class="memberlist-header">
+      <h1>Mitglieder</h1>
+      <button class="closeChannelMember" (click)="closeChannelMembers(); $event.stopPropagation()">
+        <div class="material-symbols closeButton" >close</div>
+      </button>
+    </div>  
+    <app-member-list
+      [channelMembers]="channelMembers"
+      [activeUserId]="activeUserId"
+      (addMember)="addChannelMember()"
+      (showProfil)="toggleMemberProfil($event)"
+    ></app-member-list>
+  </section>
+</main>
+  
+@if (isChannelMemberProfilOpen) {
+  <app-profil
+    [activeUserId]="activeUserId"
+    [userImage]="activChannelMemberProfil?.uUserImage"
+    [userName]="activChannelMemberProfil?.uName"
+    [userEmail]="activChannelMemberProfil?.uEmail"
+    [userStatus]="activChannelMemberProfil?.uStatus"
+    #profilRef
+    size="big"
+    [showButton]="activeUserId !== activChannelMemberProfil?.uId"
+    (close)="toggleMemberProfil()"
+  ></app-profil>
+}
+

@@ -1,0 +1,75 @@
+<main>
+  @if (showAddMember) {
+  <section class="sectionMain" #addChannel>
+    <header>
+      <div class="headlineClose">
+        <span>Channel erstellen</span>
+        <button class="closeButton" (click)="closeWindow()">
+          <div class="material-symbols">close</div>
+        </button>
+      </div>
+      <div class="addChannelText">
+        <span
+          >Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
+          themenbezogen sein <br />
+          #marketing zum Beispiel.</span>
+      </div>
+    </header>
+    <div class="channelFields">
+      <span class="channelField">Channel-Name</span>
+      <div class="inputSpan">
+        <img src="assets/icons/hashtag_grey.svg" />
+        <input #channelNameInput  [(ngModel)]="channelName" (input)="checkNameUnique(channelName)" placeholder="z.B. Kooperationsprojekte" type="text"/>
+      </div>
+      @if (channelName && channelName.length < 3) {
+        <span class="errorText">
+          Der Channel-Name muss mindestens 3 Buchstaben lang sein !
+        </span>
+      }
+      @if (nameExists && channelName.length >= 3) {
+        <span class="errorText">
+          Bitte nutzen Sie einen anderen Channel-Name !
+        </span>
+      }
+    </div>
+    <div class="channelFields">
+      <div>
+        <span class="channelField">Beschreibung</span>
+        <span class="channelFieldOptional">(optional)</span>
+      </div>
+      <div class="channelTextArea">
+        <textarea
+          #channelDescriptionInput
+          placeholder="Dein Text hier"
+        ></textarea>
+      </div>
+    </div>
+    <div class="addChannel">
+      <button 
+        (click)="addNewChannel(channelNameInput.value, channelDescriptionInput.value)" [disabled]="
+        !channelName || channelName.length < 3 || nameExists"
+        [ngClass]="{ disabled: !channelName || channelName.length < 3 || nameExists }" class="addChannelButton">Erstellen
+      </button>
+    </div>
+  </section>
+  } @else {
+    @if (isVisible) {
+      <section #addChannelAll class="add-member-wrapper">
+        <div  
+          [ngClass]="{
+          'slide-out-left': animateOut,
+          'slide-down': animateOut 
+          }"  class="popup-wrapper">
+          <app-add-new-members
+              [activeUserId]="activeUserId"
+              (close)="triggerSlideOut()"
+              [channelId]="channelId"
+              [channelName]="channelName"
+              [channelDescription]="channelDescription"
+              [showInput]="false"
+          ></app-add-new-members>
+        </div>
+      </section>
+    }
+  }
+</main>

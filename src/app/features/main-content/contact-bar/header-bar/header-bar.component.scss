@@ -1,0 +1,76 @@
+@import '../../../../../styles.scss';
+header{
+    width: 310px;
+    padding-top: 30px
+}
+
+section{
+    @include flexBox('', space-between, center, '');
+    height: 60px;
+}
+
+.logoText{
+    @include flexBox('', left, center, 15);
+    width: 250px;
+    img{
+        height: 60px;
+        width: 60px;
+    }
+}
+
+.squareImage{
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: white;
+    border: none;
+    cursor: pointer;    
+    position: relative;
+}
+
+.icon{
+    width: 24px;
+    height: 24px;
+    color: black;
+    transition: color 0.3s ease;
+}
+
+.squareImage:hover .icon{
+    color: blue;
+}
+
+@media(max-width: 1000px){
+    header{
+        display: none;
+    }
+    
+    .squareImageNewPosition{
+        @include flexBox('', center, center, '');
+        position: absolute;
+        height: 60px;
+        width: 60px;
+        border-radius: 50%;
+        bottom: 64px;
+        right: 40px;
+        background-color: #444DF2;
+        border: none;
+        &:hover{
+            opacity: 0.8;
+        }
+    }
+    
+    .icon{
+        color: white;
+    }
+    
+    .squareImage:hover .icon{
+        color: none;
+    }
+}
+
+@media(max-width: 450px){
+    .squareImageNewPosition{
+        right: 8px;
+    }
+  }
+  

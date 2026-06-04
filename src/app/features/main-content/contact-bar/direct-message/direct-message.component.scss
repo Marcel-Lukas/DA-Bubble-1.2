@@ -1,0 +1,66 @@
+@import '../../../../../styles.scss';
+
+main{
+    width: 300px;
+    margin: 0 auto;
+}
+.directMessageButton{
+    @include flexBox('', left, center, 13);
+    width: 260px;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+}
+.directMessageButton:hover .directMessage,
+.directMessageButton:hover .accountCircle,
+.directMessageButton:hover .showMessagesIcon,
+.directMessageButton:hover h2
+{
+    color: #535AF1;
+}
+.accountCircle{
+    font-size: 24px
+}
+.directMessage{
+    @include flexBox('', space-between, center, 10);
+}
+.keyDownUser{
+    @include flexBox('', center, center, '');
+    width: 32px;
+    height: 32px;
+    background-color: white;
+    border: none;
+}
+.showMessagesIcon{
+    font-size: 30px
+}
+section{
+    @include flexBox(column, center, left, 13);
+    margin-top: 25px;
+    width: 270px;
+    padding-left: 32px;
+    
+}
+.directUser{
+    @include flexBox('', left, center, 15);
+    height: 60px;
+    width: 270px;
+    padding-left: 16px;
+    border-radius: 30px;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    &:hover{
+        background-color: #ECEEFE;
+    }    
+}
+.userImage{
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+@media(max-width: 1000px){
+    main{
+        margin: 0 0;
+    }
+}

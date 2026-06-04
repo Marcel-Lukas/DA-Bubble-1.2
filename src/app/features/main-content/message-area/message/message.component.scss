@@ -1,0 +1,302 @@
+@import "../../../../../styles.scss";
+
+button {
+  cursor: pointer;
+  font-family: "Nunito", sans-serif;
+  font-weight: 700;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 50px;
+}
+
+section {
+  position: relative;
+  width: 100%;
+  padding: 10px clamp(120px, calc(120px + 16 * (100vw - 1000px) / 920), 136px)
+    10px clamp(32px, calc(32px + 16 * (100vw - 1000px) / 920), 48px);
+  @include flexBox(row, initial, initial, 20);
+  img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+  }
+  &:hover {
+    background-color: #eceefe;
+    .message-text {
+      color: #000000;
+      background-color: #ffffff;
+    }
+  }
+}
+
+.row-reverse {
+  padding: 10px clamp(32px, calc(32px + 16 * (100vw - 1000px) / 920), 48px) 10px
+    clamp(120px, calc(120px + 16 * (100vw - 1000px) / 920), 136px);
+  flex-direction: row-reverse;
+  &:hover {
+    .message-text {
+      color: #ffffff;
+      background-color: #797ef3;
+    }
+  }
+}
+
+.thread {
+  padding: 10px 40px 10px 40px;
+}
+
+.edit-open {
+  background-color: #eceefe;
+}
+
+.edit-message {
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #adb0d9;
+  border-radius: 20px;
+  @include flexBox(column, initial, initial, 16);
+
+  > div {
+    width: 100%;
+    @include flexBox(row, space-between, center, 0);
+    > div {
+      @include flexBox(row, initial, initial, 32);
+    }
+  }
+}
+
+.icon-button {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  font-weight: 400;
+  background-color: transparent;
+  border: none;
+  border-radius: 50px;
+  @include flexBox(row, center, center, 0);
+}
+
+.blue-hover:hover {
+  background-color: #eceefe;
+}
+
+.textfield-icon {
+  color: #686868;
+  &:hover {
+    color: #535af1;
+  }
+}
+
+.message {
+  @include flexBox(column, initial, initial, 8);
+
+  .message-header {
+    @include flexBox(row, initial, center, 20);
+    h3 {
+      cursor: pointer;
+      &:hover {
+        color: #444df2;
+      }
+    }
+  }
+
+  .message-text {
+    width: fit-content;
+    padding: 15px;
+    border-radius: 0px 30px 30px 30px;
+    background-color: #eceefe;
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-size: 18px;
+  }
+
+  .message-attachments {
+    @include flexBox(column, initial, flex-start, 8);
+  }
+}
+
+.user-message {
+  @include flexBox(column, initial, flex-end, 8);
+  > div {
+    &:first-child {
+      @include flexBox(row-reverse, flex-start, center, 20);
+    }
+  }
+
+  .message-text {
+    color: #ffffff;
+    background-color: #797ef3;
+    border-radius: 30px 0px 30px 30px;
+  }
+
+  .message-attachments {
+    @include flexBox(column, initial, flex-end, 8);
+  }
+}
+
+.reaction-field {
+  @include flexBox(row, initial, center, 10);
+  flex-wrap: wrap;
+  > div {
+    cursor: pointer;
+    height: 34px;
+    padding: 5px 10px;
+    background-color: #ffffff;
+    border: 1px solid #adb0d9;
+    border-radius: 20px;
+    &:hover {
+      border: 1px solid #444df2;
+      .reaction-details {
+        display: flex;
+      }
+    }
+  }
+}
+
+.single-reaction {
+  position: relative;
+}
+
+.reaction-details {
+  position: absolute;
+  bottom: 33px;
+  left: 32px;
+  width: 160px;
+  padding: 16px 8px;
+  color: #ffffff;
+  background-color: #444df2;
+  border-radius: 30px 30px 30px 0px;
+  @include flexBox(column, center, center, 5);
+  display: none;
+  > span {
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+    @include flexBox(initial, center, center, 0);
+  }
+  > div {
+    text-align: center;
+  }
+  > p {
+    font-size: 16px;
+  }
+}
+
+.thread-field {
+  cursor: pointer;
+  @include flexBox(row, initial, center, 12);
+}
+
+.message-actions {
+  position: absolute;
+  right: 46px;
+  top: -18px;
+  padding: 4px 16px 4px 20px;
+  background-color: #ffffff;
+  border: 1px solid #adb0d9;
+  border-radius: 25px 25px 0 25px;
+  @include flexBox(row, initial, center, 5);
+
+  opacity: 0;
+  transform: translateX(-50px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+
+  section:hover &,
+  &.always {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  &.user-message-actions {
+    right: initial;
+    left: 46px;
+    transform: translateX(50px);
+
+    section:hover &,
+    &.always {
+      transform: translateX(0);
+    }
+  }
+  > span {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    @include flexBox(initial, center, center, 0);
+  }
+  .action-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+emoji-mart {
+  position: absolute;
+  bottom: 0px;
+  right: 266px;
+  z-index: 95;
+}
+
+.active-user-emoji {
+  right: inherit;
+  left: 308px;
+}
+
+.user-message-actions {
+  right: initial;
+  left: 46px;
+}
+
+.thread-emoji {
+  right: initial;
+  left: 68px;
+}
+
+.options-menu {
+  position: absolute;
+  top: 25px;
+  right: -240px;
+  padding: 10px 20px;
+  background: #ffffff;
+  border-radius: 0 30px 30px 30px;
+  box-shadow: 0px 6px 14px 0px rgba(0, 0, 0, 0.2);
+  z-index: 90;
+  @include flexBox(column, stretch, stretch, 0);
+
+  > div {
+    cursor: pointer;
+    padding: 10px 20px;
+    width: 220px;
+    font-weight: 600;
+    border-radius: 100px;
+    &:hover {
+      color: #535af1;
+      font-weight: 700;
+      background: #eceefe;
+    }
+  }
+}
+
+.d-none {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  section {
+    padding: 10px clamp(50px, calc(50px + 70 * (100vw - 450px) / 550), 120px)
+      10px clamp(16px, calc(16px + 16 * (100vw - 450px) / 550), 32px);
+      img {
+        width: clamp(50px, calc(50px + 20 * (100vw - 450px) / 550), 70px);
+        height: clamp(50px, calc(50px + 20 * (100vw - 450px) / 550), 70px);
+        border-radius: 50%;
+      }
+  }
+
+  .row-reverse {
+    padding: 10px clamp(16px, calc(16px + 16 * (100vw - 450px) / 550), 32px)
+      10px clamp(50px, calc(50px + 70 * (100vw - 450px) / 550), 120px);
+  }
+}

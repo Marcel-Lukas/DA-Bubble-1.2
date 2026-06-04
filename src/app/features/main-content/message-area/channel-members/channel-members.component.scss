@@ -1,0 +1,76 @@
+@import "../../../../../styles.scss";
+
+section {
+  position: absolute;
+  top: 192px;
+  right: 104px;
+  width: 416px;
+  height: 416px;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 30px 0px 30px 30px;
+  @include flexBox(column, initial, initial, 20);
+}
+
+.overlay{
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.hidden {
+  display: none !important;
+}
+
+app-add-new-members{
+  position: absolute;
+  top: 192px;
+  right: 20px;
+  width: 500px;
+  height: 290px;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 30px 0px 30px 30px;
+  @include flexBox(column, initial, initial, 20);
+}
+
+.closeChannelMember{
+  @include flexBox('', center, center, '');
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  &:hover{
+    background-color: #eceefe;
+  }
+}
+
+.closeChannelMember:hover .closeButton{
+  color: #535AF1;
+}
+
+.memberlist-header {
+  width: 100%;
+  @include flexBox(row, space-between, center, 0);
+}
+
+@media (max-width: 600px) {
+  section {
+    right: 50%;
+    transform: translateX(50%);
+  }
+}
+
+@media (max-width: 450px) {
+  section{
+    border-radius: 0px;
+    width: 100%;
+    padding: 40px 20px;
+  }
+}
+

@@ -1,0 +1,64 @@
+<main>
+  <header>
+    <button class="channelHeadShow" (click)="showAllChannels()">
+      <button class="showChannels">
+        @if (!showChannels) {
+        <div class="material-symbols showChannelsIcon">arrow_drop_down</div>
+        } @else {
+        <div class="material-symbols showChannelsIcon">arrow_right</div>
+        }
+      </button>
+      <div class="workSpaceText">
+        <div class="material-symbols workSpaceIcon">workspaces</div>
+        <h2>Channels</h2>
+      </div>
+    </button>
+    <button class="addButton" (click)="toggleAddChannel()">
+      <div class="material-symbols addIcon">add</div>
+    </button>
+  </header>
+  @if (!showChannels) {
+  <section>
+    <div class="newChannels">
+      @for (channel of channels$ | async; track channel.id) {
+      <button
+        (click)="selectChannel(channel.id); someAction()"
+        class="everyChannel"
+      >
+        <div class="tagName">
+          <div class="tagImage">
+            <div class="material-symbols hashtagIcon">tag</div>
+          </div>
+          <span>{{ channel.name }}</span>
+        </div>
+        @if (channel.name != 'Willkommen') {
+        <button
+          class="deleteChannel"
+          (click)="onDeleteClick(channel.id, $event)"
+        >
+          <div class="material-symbols closeIcon">delete</div>
+        </button>
+        }
+      </button>
+      }
+    </div>
+    <button class="addChannel" (click)="toggleAddChannel()">
+      <div class="material-symbols addIconChannel">add_circle</div>
+      <span>Channel hinzufügen</span>
+    </button>
+  </section>
+  } @if (showAddChannel) {
+  <app-add-channel
+    [activeUserId]="activeUserId"
+    (close)="toggleAddChannel()"
+  ></app-add-channel>
+  }
+</main>
+
+@if (isPermanentDeleteOpen && openChannelId) {
+<app-permanent-delete
+  [target]="'channel'"
+  [id]="openChannelId"
+  (close)="isPermanentDeleteOpen = false"
+></app-permanent-delete>
+}
