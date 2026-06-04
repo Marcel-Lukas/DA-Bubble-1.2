@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -28,6 +28,7 @@ import { Reaction } from '../interfaces/reaction.interface';
 })
 export class MessageService {
   private firestore = inject(Firestore);
+  private injector = inject(Injector);
 
   setNoteObject(obj: any, id: string): Message {
     return {
@@ -66,17 +67,20 @@ export class MessageService {
     activeUserId: string | null
   ): Observable<Message[]> {
     return new Observable<Message[]>((observer) => {
-      const [q1, q2] = this.createPrivateMessageQueries(chatId, activeUserId);
       let arr1: Message[] = [];
       let arr2: Message[] = [];
 
-      const unsub1 = onSnapshot(q1, (snap) => {
-        arr1 = this.mapDocsToMessages(snap);
-        observer.next(this.mergeAndSort(arr1, arr2));
-      });
-      const unsub2 = onSnapshot(q2, (snap) => {
-        arr2 = this.mapDocsToMessages(snap);
-        observer.next(this.mergeAndSort(arr1, arr2));
+      const { unsub1, unsub2 } = runInInjectionContext(this.injector, () => {
+        const [q1, q2] = this.createPrivateMessageQueries(chatId, activeUserId);
+        const u1 = onSnapshot(q1, (snap) => {
+          arr1 = this.mapDocsToMessages(snap);
+          observer.next(this.mergeAndSort(arr1, arr2));
+        });
+        const u2 = onSnapshot(q2, (snap) => {
+          arr2 = this.mapDocsToMessages(snap);
+          observer.next(this.mergeAndSort(arr1, arr2));
+        });
+        return { unsub1: u1, unsub2: u2 };
       });
 
       return () => {
@@ -133,20 +137,20 @@ export class MessageService {
 
   private getChannelMessages(chatId: string | null): Observable<Message[]> {
     return new Observable<Message[]>((observer) => {
-      const messagesCollection = collection(this.firestore, 'messages');
-
-      const q = query(
-        messagesCollection,
-        where('mChannelId', '==', chatId),
-        orderBy('mTime', 'asc')
-      );
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const messages: Message[] = [];
-        snapshot.forEach((doc) => {
-          messages.push(this.setNoteObject(doc.data(), doc.id));
+      const unsubscribe = runInInjectionContext(this.injector, () => {
+        const messagesCollection = collection(this.firestore, 'messages');
+        const q = query(
+          messagesCollection,
+          where('mChannelId', '==', chatId),
+          orderBy('mTime', 'asc')
+        );
+        return onSnapshot(q, (snapshot) => {
+          const messages: Message[] = [];
+          snapshot.forEach((doc) => {
+            messages.push(this.setNoteObject(doc.data(), doc.id));
+          });
+          observer.next(messages);
         });
-        observer.next(messages);
       });
 
       return () => unsubscribe && unsubscribe();
@@ -155,18 +159,20 @@ export class MessageService {
 
   getThreadMessages(chatId: string | null): Observable<Message[]> {
     return new Observable<Message[]>((observer) => {
-      const messagesCollection = collection(this.firestore, 'messages');
-      const q = query(
-        messagesCollection,
-        where('mThreadId', '==', chatId),
-        orderBy('mTime', 'asc')
-      );
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const messages: Message[] = [];
-        snapshot.forEach((doc) => {
-          messages.push(this.setNoteObject(doc.data(), doc.id));
+      const unsubscribe = runInInjectionContext(this.injector, () => {
+        const messagesCollection = collection(this.firestore, 'messages');
+        const q = query(
+          messagesCollection,
+          where('mThreadId', '==', chatId),
+          orderBy('mTime', 'asc')
+        );
+        return onSnapshot(q, (snapshot) => {
+          const messages: Message[] = [];
+          snapshot.forEach((doc) => {
+            messages.push(this.setNoteObject(doc.data(), doc.id));
+          });
+          observer.next(messages);
         });
-        observer.next(messages);
       });
       return () => unsubscribe && unsubscribe();
     });

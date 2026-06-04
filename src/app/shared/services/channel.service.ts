@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
 import {
   Firestore,
   collectionData,
@@ -25,6 +25,7 @@ import { map } from 'rxjs/operators';
 })
 export class ChannelService {
   private firestore = inject(Firestore);
+  private injector = inject(Injector);
 
   async getAllChannels(): Promise<Channel[]> {
     const channelsCollectionRef = collection(this.firestore, 'channels');
@@ -41,11 +42,13 @@ export class ChannelService {
 
   getChannelRealtime(channelId: string): Observable<Channel> {
     return new Observable<Channel>((observer) => {
-      const ref = doc(this.firestore, 'channels', channelId);
-      const unsub = onSnapshot(ref, (snap) => {
-        if (snap.exists()) {
-          observer.next({ ...(snap.data() as Channel), cId: snap.id });
-        }
+      const unsub = runInInjectionContext(this.injector, () => {
+        const ref = doc(this.firestore, 'channels', channelId);
+        return onSnapshot(ref, (snap) => {
+          if (snap.exists()) {
+            observer.next({ ...(snap.data() as Channel), cId: snap.id });
+          }
+        });
       });
       return () => unsub();
     });
@@ -121,20 +124,22 @@ export class ChannelService {
   }
 
   getSortedChannels(userId: string | null): Observable<{ id: string; name: string; createdAt: any }[]> {
-    const channelsRef  = collection(this.firestore, 'channels');
-    const channelQuery = query(channelsRef, where('cUserIds', 'array-contains', userId));
-  
-    return collectionData(channelQuery, { idField: 'id' }).pipe(
-      map((channels: any[]) =>
-        channels
-          .map(ch => ({
-            id:        ch.id,
-            name:      ch.cName, 
-            createdAt: ch.createdAt || 0,
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }))
-      )
-    );
+    return runInInjectionContext(this.injector, () => {
+      const channelsRef  = collection(this.firestore, 'channels');
+      const channelQuery = query(channelsRef, where('cUserIds', 'array-contains', userId));
+
+      return collectionData(channelQuery, { idField: 'id' }).pipe(
+        map((channels: any[]) =>
+          channels
+            .map(ch => ({
+              id:        ch.id,
+              name:      ch.cName,
+              createdAt: ch.createdAt || 0,
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }))
+        )
+      );
+    });
   }
 
 

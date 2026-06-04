@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector, runInInjectionContext } from '@angular/core';
 import { UserInterface } from '../interfaces/user.interface';
 import {
   arrayUnion,
@@ -30,6 +30,11 @@ import {
 export class AuthentificationService {
   private auth: Auth = inject(Auth);
   private firestore: Firestore = inject(Firestore);
+  private injector = inject(Injector);
+
+  private runInContext<T>(fn: () => Promise<T>): Promise<T> {
+    return runInInjectionContext(this.injector, fn);
+  }
 
   public currentUid: string | null = null;
   public registrationData: {

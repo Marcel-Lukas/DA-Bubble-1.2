@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
 import {
   Firestore,
   collectionData,
@@ -21,25 +21,27 @@ import { Channel } from '../interfaces/channel.interface';
 })
 export class UserService {
   private firestore = inject(Firestore);
+  private injector = inject(Injector);
 
 
   getUserRealtime(userId: string): Observable<User | null> {
     return new Observable<User | null>((subscriber) => {
-      const userDocRef = doc(this.firestore, 'users', userId);
-
-      const unsubscribe = onSnapshot(
-        userDocRef,
-        (docSnap) => {
-          if (docSnap.exists()) {
-            subscriber.next(docSnap.data() as User);
-          } else {
-            subscriber.next(null);
+      const unsubscribe = runInInjectionContext(this.injector, () => {
+        const userDocRef = doc(this.firestore, 'users', userId);
+        return onSnapshot(
+          userDocRef,
+          (docSnap) => {
+            if (docSnap.exists()) {
+              subscriber.next(docSnap.data() as User);
+            } else {
+              subscriber.next(null);
+            }
+          },
+          (error) => {
+            subscriber.error(error);
           }
-        },
-        (error) => {
-          subscriber.error(error);
-        }
-      );
+        );
+      });
 
       return () => unsubscribe();
     });
@@ -94,9 +96,11 @@ export class UserService {
   }
 
   getEveryUsers(): Observable<User[]> {
-    const usersCollection = collection(this.firestore, 'users');
-    const usersQuery = query(usersCollection);
-    return collectionData(usersQuery, { idField: 'uId' }) as Observable<User[]>;
+    return runInInjectionContext(this.injector, () => {
+      const usersCollection = collection(this.firestore, 'users');
+      const usersQuery = query(usersCollection);
+      return collectionData(usersQuery, { idField: 'uId' }) as Observable<User[]>;
+    });
   }
 
   async editLastReactions(
@@ -159,13 +163,15 @@ export class UserService {
 
 
   getUserById(userId: string): Observable<User | undefined> {
-    const usersCollection = collection(this.firestore, 'users');
-    const usersQuery = query(usersCollection);
-    return collectionData(usersQuery, { idField: 'uId' }).pipe(
-      map((users: any[]) =>
-        users.find((user) => user.uId === userId)
-      )
-    );
+    return runInInjectionContext(this.injector, () => {
+      const usersCollection = collection(this.firestore, 'users');
+      const usersQuery = query(usersCollection);
+      return collectionData(usersQuery, { idField: 'uId' }).pipe(
+        map((users: any[]) =>
+          users.find((user) => user.uId === userId)
+        )
+      );
+    });
   }
 
 
