@@ -63,6 +63,9 @@
     "typescript": "~5.9.3"
   },
   "overrides": {
-    "uuid": "^11.1.1"
+    "uuid": "^11.1.1",
+    "webpack-dev-server": "^5.2.4",
+    "glob": "^13.0.0",
+    "rimraf": "^6.0.1"
   }
 }
