@@ -196,25 +196,37 @@ export class MessageComponent implements OnInit {
   }
 
   /**
-   * Zerlegt `message.mText` in Text- und Erwähnungs-Segmente. Erwähnungen
-   * werden nur dann als solche markiert, wenn der referenzierte User/Channel
-   * existiert – andernfalls bleibt der Text unverändert stehen.
+   * Zerlegt `message.mText` in Text- und Erwähnungs-Segmente. An jeder
+   * `@`/`#`-Position wird gegen die bekannten User-/Channel-Namen abgeglichen.
+   * Dadurch funktionieren auch mehrteilige Namen mit Leerzeichen wie
+   * `@Vorname Nachname`. Nur aufgelöste Erwähnungen werden hervorgehoben;
+   * andernfalls bleibt der Text unverändert stehen.
    */
   private parseMessageText(): void {
     const text = this.message?.mText ?? '';
     const segments: MessageSegment[] = [];
-    const regex = /([@#])([\p{L}\p{N}_.-]+)/gu;
 
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
+    let plainStart = 0;
+    let i = 0;
 
-    while ((match = regex.exec(text)) !== null) {
-      this.pushPlainText(segments, text.slice(lastIndex, match.index));
-      this.pushMention(segments, match[1], match[2]);
-      lastIndex = match.index + match[0].length;
+    while (i < text.length) {
+      const symbol = text[i];
+      const mention =
+        symbol === '@' || symbol === '#'
+          ? this.matchMentionAt(text, i, symbol)
+          : null;
+
+      if (mention) {
+        this.pushPlainText(segments, text.slice(plainStart, i));
+        segments.push(mention.segment);
+        i += mention.length;
+        plainStart = i;
+      } else {
+        i++;
+      }
     }
 
-    this.pushPlainText(segments, text.slice(lastIndex));
+    this.pushPlainText(segments, text.slice(plainStart));
     this.messageSegments = segments;
   }
 
@@ -223,40 +235,55 @@ export class MessageComponent implements OnInit {
   }
 
   /**
-   * Hängt eine Erwähnung an, wenn der Name aufgelöst werden kann; sonst wird
-   * das Roh-Token als reiner Text behandelt.
+   * Versucht, an Position `pos` (dem `@`/`#`) den längsten passenden bekannten
+   * Namen zu erkennen. Liefert das Segment samt konsumierter Zeichenlänge oder
+   * `null`, wenn dort keine bekannte Erwähnung steht.
    */
-  private pushMention(
-    segments: MessageSegment[],
-    symbol: string,
-    name: string
-  ): void {
-    const resolved =
-      symbol === '@'
-        ? this.findUserByName(name)
-        : this.findChannelByName(name);
+  private matchMentionAt(
+    text: string,
+    pos: number,
+    symbol: string
+  ): { segment: MessageSegment; length: number } | null {
+    const rest = text.slice(pos + 1).toLowerCase();
+    const candidates = this.mentionCandidates(symbol);
 
-    if (resolved) {
-      segments.push({
-        type: symbol === '@' ? 'user' : 'channel',
-        label: symbol + name,
-        refId: resolved,
-      });
-    } else {
-      this.pushPlainText(segments, symbol + name);
+    for (const c of candidates) {
+      if (rest.startsWith(c.lowerName)) {
+        return {
+          segment: {
+            type: symbol === '@' ? 'user' : 'channel',
+            // Immer den kanonischen Originalnamen anzeigen, egal wie der
+            // Nutzer die Erwähnung geschrieben hat (z.B. `@peter müller`).
+            label: symbol + c.name,
+            refId: c.id,
+          },
+          length: 1 + c.lowerName.length,
+        };
+      }
     }
+    return null;
   }
 
-  private findUserByName(name: string): string | undefined {
-    const lower = name.toLowerCase();
-    return this.knownUsers.find((u) => u.uName?.toLowerCase() === lower)?.uId;
-  }
+  /**
+   * Liefert die für das Symbol passenden Namens-Kandidaten, sortiert nach
+   * Länge absteigend, damit z.B. `@Vorname Nachname` vor `@Vorname` greift.
+   */
+  private mentionCandidates(
+    symbol: string
+  ): { name: string; lowerName: string; id: string }[] {
+    const list =
+      symbol === '@'
+        ? this.knownUsers.map((u) => ({ name: u.uName, id: u.uId }))
+        : this.knownChannels.map((c) => ({ name: c.cName, id: c.cId }));
 
-  private findChannelByName(name: string): string | undefined {
-    const lower = name.toLowerCase();
-    return this.knownChannels.find(
-      (c) => c.cName?.toLowerCase() === lower
-    )?.cId ?? undefined;
+    return list
+      .filter((e) => e.name && e.id)
+      .map((e) => ({
+        name: e.name,
+        lowerName: e.name.toLowerCase(),
+        id: e.id as string,
+      }))
+      .sort((a, b) => b.lowerName.length - a.lowerName.length);
   }
 
   /** Klick auf eine Erwähnung im gerenderten Text. */
