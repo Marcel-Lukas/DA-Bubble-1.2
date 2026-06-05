@@ -4,7 +4,7 @@
 :host {
   position: relative;
   @include mixin.dFlex($gap: clamp(15px, 2.5vw, 55px), $direction: column);
-  max-height: 400px;
+  max-height: 78vh;
 }
 
 .arrow {
@@ -25,5 +25,6 @@ h1 {
 
   > h2 {
     font-size: clamp(18px, 3vw, 24px);
+    text-align: center;
   }
 }
