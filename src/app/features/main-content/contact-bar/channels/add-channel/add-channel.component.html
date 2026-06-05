@@ -9,10 +9,10 @@
         </button>
       </div>
       <div class="addChannelText">
-        <span
-          >Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
-          themenbezogen sein <br />
-          #marketing zum Beispiel.</span>
+        <span>
+          Channels dienen deinem Team zur Kommunikation. 
+          Am besten sollten sie themenbezogen sein. <br />
+          Zum Beispiel #marketing</span>
       </div>
     </header>
     <div class="channelFields">
@@ -23,12 +23,12 @@
       </div>
       @if (channelName && channelName.length < 3) {
         <span class="errorText">
-          Der Channel-Name muss mindestens 3 Buchstaben lang sein !
+          Der Channel-Name muss mindestens 3 Buchstaben haben.
         </span>
       }
       @if (nameExists && channelName.length >= 3) {
         <span class="errorText">
-          Bitte nutzen Sie einen anderen Channel-Name !
+          Channel-Name bereits vergeben.
         </span>
       }
     </div>

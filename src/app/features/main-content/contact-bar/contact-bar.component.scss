@@ -15,7 +15,8 @@ section {
   flex: 1 1 0;
   min-height: 0;
   overflow-y: auto; 
-  @include flexBox(column, initial, initial, 25);
+  @include flexBox(column, initial, initial, 10);
+  
 }
 
 section::-webkit-scrollbar-track {
@@ -35,7 +36,11 @@ section::-webkit-scrollbar-thumb {
   border-radius: 8px;
 }
 
-
+/* Mozilla */
+section {
+    scrollbar-color: #aab3f8 #ECEEFE;
+    scrollbar-width: auto;
+}
 
 
 

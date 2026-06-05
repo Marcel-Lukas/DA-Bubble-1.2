@@ -152,6 +152,7 @@
   border-radius: 30px;
   border: 1px solid #adb0d9;
   z-index: 1001; 
+
   input {
     @include fontStyle(18px, #686868, 400);
     width: 100%;
@@ -165,19 +166,17 @@
   @include flexBox(column, '', '', 15);
   background-color: white;
   top: 124px;
-  left: 10px;
-  max-height: 400px;
-  width: 90%;
+  left: 20%;
+  max-height: 200px;
   padding: 20px 40px;
   box-shadow: 4px 4px 7px 4px rgba(0, 0, 0, 0.2);
-  border-radius: 0 0 30px 30px;
+  border-radius: 28px;
   position: absolute;
-  z-index: 120;
   overflow: auto;
 }
 
 .showMembers::-webkit-scrollbar-track {
-  margin-top: 4px;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
