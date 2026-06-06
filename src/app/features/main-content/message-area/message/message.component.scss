@@ -327,3 +327,15 @@ emoji-mart {
       10px clamp(50px, calc(50px + 70 * (100vw - 450px) / 550), 120px);
   }
 }
+
+@media (max-width: 400px) {
+  .message-actions {
+    position: absolute;
+    right: unset !important;
+    left: 8px !important;
+    max-width: 299px;
+  }
+  .active-user-emoji {
+    left: 8px;
+  }
+}
