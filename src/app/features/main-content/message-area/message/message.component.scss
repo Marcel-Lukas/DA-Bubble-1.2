@@ -257,17 +257,19 @@ section {
   }
 }
 
-emoji-mart {
-  position: fixed;
-  bottom: 214px;
-  left: 170px;
+.active-user-emoji {
+  position: absolute;
+  left: 50px;
+  top: 32px;
   z-index: 99;
-  padding-left: 130px;
 }
 
-.active-user-emoji {
-  right: inherit;
-  left: 308px;
+emoji-mart {
+  display: flex;
+  border-radius: 26px 0px 10px 12px;
+  overflow: hidden;
+  max-width: 299px;
+  max-height: 357px;
 }
 
 .user-message-actions {
