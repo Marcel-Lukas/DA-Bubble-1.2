@@ -39,6 +39,15 @@ section {
       background-color: #797ef3;
     }
   }
+  .message-actions {
+    border-radius: 24px;
+    right: 340px;
+    top: 0px;
+    left: unset;
+    .owner-occupied-removed {
+      display: none;
+    }
+  }
 }
 
 .thread {
@@ -214,13 +223,17 @@ section {
 
 .message-actions {
   position: absolute;
+  left: 145px;
+  top: 50px;
   height: 40px;
   padding: 20px;
   background-color: #ffffff;
-  border: 1px solid #adb0d9;
-  border-radius: 24px;
+  border: 1px solid #8f93c9;
+  border-radius: 6px 24px 24px 24px;
   z-index: 99;
   @include flexBox(row, initial, center, 5);
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3) inset, 
+	-4px -4px 8px rgba(0, 0, 0, 0.3) inset;
 
   opacity: 0;
   transform: translateX(-50px);
@@ -326,10 +339,21 @@ emoji-mart {
     position: absolute;
     right: unset !important;
     left: 8px !important;
-    top: 90px;
+    top: 68px;
     max-width: 280px;
   }
   emoji-mart {
     max-width: 280px;
+  }
+  .row-reverse {
+    .message-actions {
+      top: 68px;
+      right: unset !important;
+      left: 8px !important;
+      @include flexBox(row, initial, center, 0);
+      .owner-occupied-removed {
+        display: none;
+      }
+    }
   }
 }

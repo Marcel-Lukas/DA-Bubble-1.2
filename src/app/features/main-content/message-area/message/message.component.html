@@ -72,10 +72,10 @@
       [class.user-message-actions]="message.mSenderId === activeUserId">
     @if ( chatType != 'thread' ) { @for (reaction of
     activeUserData?.uLastReactions; track reaction) {
-    <span (click)="addReaction(reaction)">{{ reaction }}</span>
+    <span class="owner-occupied-removed" (click)="addReaction(reaction)">{{ reaction }}</span>
     } }
 
-    <span #emojiBtn class="material-symbols action-btn" (click)="toggleEmojiPicker($event)">
+    <span #emojiBtn class="material-symbols action-btn owner-occupied-removed" (click)="toggleEmojiPicker($event)">
       add_reaction
     </span>
 
