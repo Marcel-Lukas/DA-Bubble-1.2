@@ -21,7 +21,7 @@
       <button (click)="selectPrivateChat(user.uId); someAction()" class="directUser">
         <div class="user-img-status">
           <img [src]="user.uUserImage" alt="" />
-          <span [ngClass]="user.uStatus === 'true' || user.uStatus === true ? 'online' : 'offline'"></span>
+          <span [ngClass]="isOnline(user) ? 'online' : 'offline'"></span>
         </div>
         <span>{{ user.uName }} (Du)</span>
       </button>
@@ -33,7 +33,7 @@
         >
           <div class="user-img-status">
             <img [src]="user.uUserImage" alt="" />
-            <span [ngClass]="user.uStatus === 'true' || user.uStatus === true ? 'online' : 'offline'"></span>
+            <span [ngClass]="isOnline(user) ? 'online' : 'offline'"></span>
           </div>
           <span>{{ user.uName }}</span>
           @if (unreadChats.has(user.uId)) {

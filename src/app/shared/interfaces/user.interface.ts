@@ -5,6 +5,8 @@ export interface UserInterface {
   uUserImage: string;
   uStatus: boolean;
   uLastReactions: string[];
+    /** Time of the last heartbeat for presence detection. */
+  uLastSeen?: unknown;
 }
 
 export interface User {
@@ -14,6 +16,8 @@ export interface User {
     uStatus: boolean; 
     uUserImage: string;
     uLastReactions: string[];
+    /** Time of the last heartbeat for presence detection. */
+    uLastSeen?: unknown;
 }
 
 

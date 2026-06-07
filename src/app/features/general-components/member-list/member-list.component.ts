@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { User } from '../../../shared/interfaces/user.interface';
+import { OnlinePipe } from '../../../shared/pipes/online.pipe';
 
 @Component({
   selector: 'app-member-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, OnlinePipe],
   templateUrl: './member-list.component.html',
   styleUrl: './member-list.component.scss'
 })

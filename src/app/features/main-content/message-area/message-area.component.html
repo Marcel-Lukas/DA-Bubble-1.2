@@ -26,7 +26,7 @@
       <div (click)="selectUserNew(u)">
         <div class="user-img-status">
           <img src="{{ u.uUserImage }}" alt="" />
-          <span [ngClass]="u.uStatus ? 'online' : 'offline'"></span>
+          <span [ngClass]="(u | online) ? 'online' : 'offline'"></span>
         </div>
         <span>{{ u.uName }}</span>
       </div>
@@ -45,7 +45,7 @@
           (error)="onAvatarError($event)"
           alt=""
         />
-        <span [ngClass]="chatPartner?.uStatus ? 'online' : 'offline'"></span>
+        <span [ngClass]="(chatPartner | online) ? 'online' : 'offline'"></span>
       </div>
       <h1>{{ chatPartner?.uName }}</h1>
     </div>
@@ -196,6 +196,7 @@
     [userName]="userProfil?.uName"
     [userEmail]="userProfil?.uEmail"
     [userStatus]="userProfil?.uStatus"
+    [userLastSeen]="userProfil?.uLastSeen"
     [userId]="userProfil?.uId"
     #profilRef
     size="big"

@@ -22,11 +22,12 @@ import { UserService } from '../../../../shared/services/user.service';
 import { ChannelService } from '../../../../shared/services/channel.service';
 import { User } from '../../../../shared/interfaces/user.interface';
 import { Channel } from '../../../../shared/interfaces/channel.interface';
+import { OnlinePipe } from '../../../../shared/pipes/online.pipe';
 
 @Component({
   selector: 'app-message-composer',
   standalone: true,
-  imports: [CommonModule, FormsModule, PickerComponent],
+  imports: [CommonModule, FormsModule, PickerComponent, OnlinePipe],
   templateUrl: './message-composer.component.html',
   styleUrls: ['./message-composer.component.scss'],
 })

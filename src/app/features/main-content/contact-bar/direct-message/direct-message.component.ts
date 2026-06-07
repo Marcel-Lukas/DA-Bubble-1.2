@@ -94,12 +94,17 @@ export class DirectMessageComponent implements OnInit, OnDestroy {
   private isVisibleUser(user: User): boolean {
     if (user.uId === this.activeUserId) return true;
     if (user.uEmail !== '') return true;
-    return this.isOnline(user.uStatus);
+    return this.isOnline(user);
   }
 
-  /** Normalisiert den Status, der als Boolean oder String vorliegen kann. */
-  private isOnline(status: unknown): boolean {
-    return status === true || status === 'true';
+  /**
+   * Bestimmt den Online-Status anhand des letzten Lebenszeichens (uLastSeen).
+   * Ein Nutzer gilt als online, wenn sein letztes Heartbeat jünger als die
+   * Presence-Schwelle ist – so wird auch ein ohne Logout geschlossener Tab
+   * nach kurzer Zeit als offline erkannt.
+   */
+  isOnline(user: User): boolean {
+    return NotificationService.isUserOnline(user);
   }
 
   showAllMessages() {

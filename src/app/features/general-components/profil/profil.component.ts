@@ -12,6 +12,7 @@ import { Firestore, doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../../shared/services/user.service';
+import { NotificationService } from '../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-profil',
@@ -36,6 +37,8 @@ export class ProfilComponent {
   @Input() userEmail: any;
   @Input() userImage: any;
   @Input() userStatus: any;
+  /** Letztes Lebenszeichen (uLastSeen) für die Presence-Erkennung. */
+  @Input() userLastSeen: any;
   @Input() userId: any;
   @Input() activeUserId!: any;
   @Input() size: 'small' | 'big' = 'small';
@@ -46,8 +49,11 @@ export class ProfilComponent {
   constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {
-    this.isActive = this.userStatus === true || this.userStatus === 'true';
-    this.originalUserImage = this.userImage;    
+    this.isActive = NotificationService.isUserOnline({
+      uStatus: this.userStatus,
+      uLastSeen: this.userLastSeen,
+    });
+    this.originalUserImage = this.userImage;
   }
 
   closeProfil() {

@@ -5,7 +5,7 @@
         <div (click)="showProfil.emit(member)">
           <div class="user-img-status">
             <img src="{{ member?.uUserImage }}" alt="" />
-            <span [ngClass]="member?.uStatus ? 'online' : 'offline'"></span>
+            <span [ngClass]="(member | online) ? 'online' : 'offline'"></span>
           </div>
           <span>{{ member?.uName }}
             @if (member.uId === activeUserId) {

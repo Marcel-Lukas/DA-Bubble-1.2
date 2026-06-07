@@ -32,6 +32,8 @@ export class UserNameComponent {
   isLogOutVisible: boolean = false;
   showProfil: boolean = false;
   userStatus: boolean | string = false;
+  /** Letztes Lebenszeichen (uLastSeen) für die Presence-Erkennung. */
+  userLastSeen: unknown = null;
   userName: string = '';
   userEmail: string = '';
   userImage: string = '';
@@ -63,6 +65,7 @@ export class UserNameComponent {
         this.userEmail = user.uEmail;
         this.userImage = user.uUserImage;
         this.userStatus = user.uStatus;
+        this.userLastSeen = user.uLastSeen;
         this.userId = user.uId;
       }
     });

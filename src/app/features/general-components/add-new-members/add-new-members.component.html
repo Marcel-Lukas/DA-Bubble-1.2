@@ -71,7 +71,7 @@
             <button (mousedown)="toggleMember(member)" [class.selected]="selectedMemberIds.includes(member.uId!)" class="memberItem">
               <div class="user-img-status">
                 <img src="{{ member.uUserImage }}" alt="" />
-                <span [ngClass]="member.uStatus ? 'online' : 'offline'"></span>
+                <span [ngClass]="(member | online) ? 'online' : 'offline'"></span>
               </div>
               <h3>{{ member.uName }}</h3>
             </button>

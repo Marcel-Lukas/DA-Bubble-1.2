@@ -45,13 +45,20 @@ export class NotificationService {
 
   /**
    * Point in time from which messages count as "new". Loaded on start from
-   * users/<uid>.uLastSeen, so that messages missed during offline/logout
+   * users/<uid>.uLastRead, so that messages missed during offline/logout
    * periods are also recognized as unread.
    */
   private startTime = Timestamp.now();
 
   /** Interval (ms) at which uLastSeen is updated (heartbeat). */
   private readonly heartbeatMs = 10000;
+  /**
+   * Time window (ms) within which a user counts as "online" based on their
+   * last heartbeat (uLastSeen). If the last heartbeat is older than this,
+   * the user is treated as offline – even if uStatus is still true (e.g.
+   * when the browser tab was closed without an explicit logout).
+   */
+  static readonly ONLINE_THRESHOLD_MS = 25000;
   /** Handle of the heartbeat interval. */
   private heartbeatTimer?: ReturnType<typeof setInterval>;
   /** Reference to the beforeunload handler (for removal in stop()). */
@@ -92,18 +99,20 @@ export class NotificationService {
     this.activeUserId = activeUserId;
     this.readyToPersist = false;
     this.isGuest = await this.checkIsGuest(activeUserId);
-    this.startTime = await this.loadLastSeen(activeUserId);
+    this.startTime = await this.loadLastRead(activeUserId);
     this.listenForChannels();
     this.listenForMessages();
     this.startHeartbeat();
     // Give the listeners a brief moment to load missed messages before
-    // uLastSeen may be overwritten for the first time.
+    // uLastRead may be overwritten for the first time.
     setTimeout(() => (this.readyToPersist = true), 2000);
   }
 
   /** Stops the monitoring and resets the state. */
   stop(): void {
-    this.persistLastSeen();
+    // On explicit stop (e.g. logout) only persist the read marker; the
+    // presence heartbeat is intentionally left to age out.
+    this.persistLastRead();
     this.stopHeartbeat();
     this.unsubMessages?.();
     this.unsubMessages = undefined;
@@ -132,15 +141,17 @@ export class NotificationService {
   }
 
   /**
-   * Loads the last stored "seen" timestamp from the users doc.
+   * Loads the last stored "read" timestamp from the users doc. This marks the
+   * point in time up to which the user has seen all messages, so messages
+   * created after it (and missed while offline) are recognized as unread.
    * Fallback is the current time (no doc / no field -> nothing missed).
    */
-  private async loadLastSeen(uid: string): Promise<Timestamp> {
+  private async loadLastRead(uid: string): Promise<Timestamp> {
     try {
       const ref = doc(this.firestore, 'users', uid);
       const snap = await getDoc(ref);
-      const lastSeen = snap.data()?.['uLastSeen'];
-      if (lastSeen instanceof Timestamp) return lastSeen;
+      const lastRead = snap.data()?.['uLastRead'];
+      if (lastRead instanceof Timestamp) return lastRead;
     } catch {
       /* Ignore read errors -> fallback now() */
     }
@@ -148,16 +159,21 @@ export class NotificationService {
   }
 
   /**
-   * Writes the current time as uLastSeen into the users doc – but ONLY
-   * when there are no unread messages. Otherwise messages not yet read
-   * would be swallowed on the next start.
+   * Writes the current time as uLastSeen into the users doc. This is the
+   * presence heartbeat and runs on every tick so that other clients can tell
+   * whether the user is still online (last heartbeat younger than
+   * ONLINE_THRESHOLD_MS). It writes regardless of unread messages – the
+   * "missed messages" protection is handled separately via the startTime
+   * marker, not by withholding the heartbeat.
+   *
+   * Guest accounts are excluded so that orphaned guest docs are not kept
+   * alive by a heartbeat.
    */
   private persistLastSeen(): void {
     if (!this.activeUserId) return;
     // Guest accounts are excluded from persisting uLastSeen.
     if (this.isGuest) return;
     if (!this.readyToPersist) return;
-    if (this.unreadSubject.value.size > 0) return;
     const uid = this.activeUserId;
     runInInjectionContext(this.injector, () => {
       const ref = doc(this.firestore, 'users', uid);
@@ -165,6 +181,67 @@ export class NotificationService {
         /* Ignore write errors (e.g. missing permissions) */
       });
     });
+    // Active usage also advances the "read" marker (when nothing is unread).
+    this.persistLastRead();
+  }
+
+  /**
+   * Writes the current time as uLastRead into the users doc – but ONLY when
+   * there are no unread messages. Otherwise messages not yet read would be
+   * swallowed on the next start (the read marker must not move past unread
+   * messages). This is independent of the presence heartbeat (uLastSeen).
+   */
+  private persistLastRead(): void {
+    if (!this.activeUserId) return;
+    if (this.isGuest) return;
+    if (!this.readyToPersist) return;
+    if (this.unreadSubject.value.size > 0) return;
+    const uid = this.activeUserId;
+    runInInjectionContext(this.injector, () => {
+      const ref = doc(this.firestore, 'users', uid);
+      setDoc(ref, { uLastRead: Timestamp.now() }, { merge: true }).catch(() => {
+        /* Ignore write errors (e.g. missing permissions) */
+      });
+    });
+  }
+
+  /**
+   * Determines whether a user is currently online based on their last
+   * heartbeat (uLastSeen). A user counts as online when their last heartbeat
+   * is younger than ONLINE_THRESHOLD_MS. This is more reliable than uStatus,
+   * because it also catches users who closed the tab without logging out.
+   *
+   * Falls back to the legacy uStatus flag only when no uLastSeen is present
+   * (e.g. for users that never sent a heartbeat yet).
+   */
+  static isUserOnline(user: {
+    uStatus?: unknown;
+    uLastSeen?: unknown;
+  } | null | undefined): boolean {
+    if (!user) return false;
+    const lastSeenMs = NotificationService.toMillis(user.uLastSeen);
+    if (lastSeenMs === null) {
+      return user.uStatus === true || user.uStatus === 'true';
+    }
+    return Date.now() - lastSeenMs < NotificationService.ONLINE_THRESHOLD_MS;
+  }
+
+  /**
+   * Normalizes a Firestore Timestamp (or compatible value) into milliseconds.
+   * Returns null when the value cannot be interpreted as a point in time.
+   */
+  private static toMillis(value: unknown): number | null {
+    if (value instanceof Timestamp) return value.toMillis();
+    if (value instanceof Date) return value.getTime();
+    if (typeof value === 'number') return value;
+    if (
+      value &&
+      typeof value === 'object' &&
+      typeof (value as { seconds?: unknown }).seconds === 'number'
+    ) {
+      return (value as { seconds: number }).seconds * 1000;
+    }
+    return null;
   }
 
   /** Starts the periodic heartbeat + beforeunload safeguard. */
@@ -176,7 +253,9 @@ export class NotificationService {
       () => this.persistLastSeen(),
       this.heartbeatMs
     );
-    this.beforeUnloadHandler = () => this.persistLastSeen();
+    // On tab close we deliberately do NOT refresh the heartbeat: letting
+    // uLastSeen age out is what marks the user offline after the threshold.
+    this.beforeUnloadHandler = () => this.persistLastRead();
     window.addEventListener('beforeunload', this.beforeUnloadHandler);
   }
 
@@ -204,7 +283,7 @@ export class NotificationService {
     if (this.activeChatId) {
       this.markAsRead(this.activeChatId);
     }
-    // Switching chat = active usage -> update the "seen" timestamp.
+    // Switching chat = active usage -> update heartbeat + read marker.
     this.persistLastSeen();
   }
 

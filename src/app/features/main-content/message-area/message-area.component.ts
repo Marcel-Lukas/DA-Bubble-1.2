@@ -25,6 +25,7 @@ import { ProfilComponent } from '../../general-components/profil/profil.componen
 import { ChannelMembersComponent } from './channel-members/channel-members.component';
 import { AddNewMembersComponent } from '../../general-components/add-new-members/add-new-members.component';
 import { MessageComposerComponent } from './message-composer/message-composer.component';
+import { OnlinePipe } from '../../../shared/pipes/online.pipe';
 
 @Component({
   selector: 'app-message-area',
@@ -38,6 +39,7 @@ import { MessageComposerComponent } from './message-composer/message-composer.co
     ChannelMembersComponent,
     AddNewMembersComponent,
     MessageComposerComponent,
+    OnlinePipe,
   ],
   templateUrl: './message-area.component.html',
   styleUrls: ['./message-area.component.scss'],
