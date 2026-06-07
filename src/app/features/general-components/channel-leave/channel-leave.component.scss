@@ -18,7 +18,7 @@ section {
   transform: translate(-50%, -50%);
   height: fit-content;
   width: 870px;
-  border-radius: 0 30px 30px 30px;
+  border-radius: 30px;
   padding: 40px;
 }
 
@@ -26,10 +26,12 @@ header {
   @include flexBox("", space-between, center, "");
   height: 40px;
   width: 100%;
+  h1 {
+    text-wrap: nowrap;
+  }
   div {
     @include flexBox("", left, center, 15);
     height: 100%;
-    width: 220px;
     img {
       height: 30px;
       width: 30px;
@@ -186,7 +188,7 @@ header {
 }
 
 .errorText{
-  color: rgb(237, 30,121);
+  color: rgb(237, 30, 75);
 }
 
 .editOverMobil{

@@ -85,13 +85,14 @@ section {
 
 .deleteChannel{
   @include flexBox("", center, center, '');
-  height: 28px;
-  width: 28px;
+  max-height: 28px;
+  max-width: 28px;
+  padding: 2px;
   border: none;
   background-color: white;
   border-radius: 50%;
   &:hover{
-    background-color: rgba(255, 53, 53, 0.85) !important;
+    background-color: #e70000bf !important;
     color: white;
   }
 }
@@ -116,6 +117,12 @@ section {
   border: none;
   span {
     @include fontStyle(18px, black, 400);
+    text-align: left;
+    max-height: 28px;
+    width: 170px;
+    overflow: hidden;
+    border-radius: 0 50% 50% 0;
+    margin-right: 10px;
   }
   &:hover {
     background-color: #eceefe;
