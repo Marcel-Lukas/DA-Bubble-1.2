@@ -34,7 +34,7 @@
             <div class="nameActive">
                 <div class="nameEdit">
                     <span>{{ userName }}</span>
-                    @if (!showButton && userName !== 'Gast' && userName !== 'Guest' ) {
+                    @if (!showButton && userEmail !== '' ) {
                         <a (click)="onEditClick()">Bearbeiten</a>
                         <button (click)="onEditClick()" class="editIconShow">
                             <div class="material-symbols editIcon">Edit</div>

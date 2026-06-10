@@ -25,6 +25,7 @@ import {
   signInWithPopup,
   UserCredential,
 } from '@angular/fire/auth';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root',
@@ -134,10 +135,10 @@ export class AuthentificationService {
     return this.runInContext(async () => {
       const result = await signInAnonymously(this.auth);
       this.currentUid = result.user.uid;
-      await this.cleanupOrphanedGuests(this.currentUid!);
+      const guestName = await this.cleanupOrphanedGuests(this.currentUid!);
       const guestData: UserInterface = {
         uId: this.currentUid!,
-        uName: 'Gast',
+        uName: guestName,
         uEmail: '',
         uUserImage: 'assets/img/profile.png',
         uStatus: true,
@@ -152,24 +153,59 @@ export class AuthentificationService {
   }
 
   /**
-   * Entfernt verwaiste Gast-Dokumente, die von früheren Gast-Sessions
-   * übrig geblieben sind (z.B. wenn der Tab ohne Logout geschlossen wurde).
-   * Der aktuelle Gast (currentUid) wird dabei ausgenommen.
+   * Bereinigt verwaiste Gast-Dokumente und ermittelt einen freien,
+   * fortlaufend nummerierten Gast-Namen (Gast, Gast2, Gast3 …).
+   *
+   * Nur OFFLINE/verwaiste Gäste (kein aktueller Heartbeat) werden gelöscht,
+   * damit gleichzeitig aktive Gäste NICHT rausgeworfen werden. Aktive Gäste
+   * behalten ihren Platz; der neue Gast bekommt die nächste freie Nummer.
+   *
+   * @param currentUid UID des sich gerade anmeldenden Gasts (wird nie gelöscht).
+   * @returns Der zu vergebende Gast-Name (z.B. "Gast" oder "Gast2").
    */
-  private async cleanupOrphanedGuests(currentUid: string): Promise<void> {
+  private async cleanupOrphanedGuests(currentUid: string): Promise<string> {
     try {
-      await this.runInContext(async () => {
+      return await this.runInContext(async () => {
         const usersCollection = collection(this.firestore, 'users');
         const guestQuery = query(usersCollection, where('uEmail', '==', ''));
         const snapshot = await getDocs(guestQuery);
-        const deletions = snapshot.docs
-          .filter((docSnap) => docSnap.id !== currentUid)
-          .map((docSnap) => deleteDoc(doc(usersCollection, docSnap.id)));
+
+        const activeGuestNames: string[] = [];
+        const deletions: Promise<void>[] = [];
+
+        snapshot.docs.forEach((docSnap) => {
+          if (docSnap.id === currentUid) return;
+          const data = docSnap.data() as UserInterface;
+          if (NotificationService.isUserOnline(data)) {
+            activeGuestNames.push(data.uName ?? '');
+          } else {
+            deletions.push(deleteDoc(doc(usersCollection, docSnap.id)));
+          }
+        });
+
         await Promise.all(deletions);
+        return this.generateGuestName(activeGuestNames);
       });
     } catch (cleanupErr) {
       console.warn('Bereinigung alter Gast-Dokumente fehlgeschlagen', cleanupErr);
+      return 'Gast';
     }
+  }
+
+  /**
+   * Ermittelt den nächsten freien Gast-Namen anhand der bereits vergebenen
+   * (aktiven) Gast-Namen. Der erste Gast heißt "Gast", danach "Gast2",
+   * "Gast3" usw. – es wird stets die kleinste freie Nummer gewählt.
+   *
+   * @param takenNames Namen der aktuell aktiven Gäste.
+   * @returns Der nächste freie Gast-Name.
+   */
+  private generateGuestName(takenNames: string[]): string {
+    const taken = new Set(takenNames);
+    if (!taken.has('Gast')) return 'Gast';
+    let index = 2;
+    while (taken.has(`Gast${index}`)) index++;
+    return `Gast${index}`;
   }
 
   /**

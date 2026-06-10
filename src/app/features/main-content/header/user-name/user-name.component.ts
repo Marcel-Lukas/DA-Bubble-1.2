@@ -132,7 +132,8 @@ export class UserNameComponent {
   }
 
   async logOut() {
-    if (this.userName === 'Gast') {      
+    // Gäste werden über die leere E-Mail erkannt (uName kann Gast, Gast2, … sein).
+    if (this.userEmail === '') {
       await this.channelService.deleteChannelsByCreator(this.activeUserId!);
       await this.messageService.deleteMessagesBySender(this.activeUserId!);
     } 
