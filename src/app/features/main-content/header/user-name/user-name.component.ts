@@ -137,6 +137,13 @@ export class UserNameComponent {
     this.showProfil = true;
   }
 
+  /** Closes the profile popup and the surrounding logout flyout. */
+  onProfilClose() {
+    this.showProfil = false;
+    this.isLogOutVisible = false;
+    this.animateOut = false;
+  }
+
   /**
    * Logs the user out. Guests (identified by an empty email – their name can be
    * Gast, Gast2, …) additionally have their created channels and sent messages

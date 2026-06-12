@@ -45,7 +45,7 @@
     [userLastSeen]="userLastSeen"
     [userId]="userId"
     #profilRef
-    (close)="showProfil = false"
+    (close)="onProfilClose()"
     (openChat)="openChat.emit($event)" 
     size="small"
     [showButton]="false"
