@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../../shared/services/user.service';
 import { NotificationService } from '../../../shared/services/notification.service';
+import { AuthentificationService } from '../../../shared/services/authentification.service';
 import { ImageFallbackDirective } from '../../../shared/directives/image-fallback.directive';
 
 @Component({
@@ -57,7 +58,11 @@ export class ProfilComponent {
   @Output() openChat = new EventEmitter<{chatType: 'private'; chatId: string}>();
   @ViewChild('profilWrapper') profilWrapper?: ElementRef;
 
-  constructor(private router: Router, private userService: UserService) {}
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private authService: AuthentificationService
+  ) {}
 
   ngOnInit(): void {
     // Derive online state from presence; remember the image to allow reverting.
@@ -168,6 +173,7 @@ export class ProfilComponent {
     if (!this.activeUserId) return;
     const userRef = doc(this.firestore, 'users', this.activeUserId);
     await deleteDoc(userRef);
+    await this.authService.logout();
     this.router.navigate(['/access']);
   }
 
