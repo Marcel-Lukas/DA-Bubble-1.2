@@ -16,6 +16,7 @@ section {
   padding-bottom: 10px;
   padding-left: 48px;
   padding-right: clamp(20px, calc(100% / 12), 106px);
+  overflow: hidden;
 
   @include flexBox(row, initial, initial, 12);
   img {
@@ -402,7 +403,7 @@ emoji-mart {
 
 @media (max-width: 470px) {
   emoji-mart {
-    left: -100px;
+    left: -90px;
   }
   .edit-message {
     width: 100vw;
@@ -414,7 +415,6 @@ emoji-mart {
 
 @media (max-width: 365px) {
   emoji-mart {
-    left: -94px;
     max-width: 300px;
   }
 }
