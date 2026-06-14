@@ -84,9 +84,20 @@ section {
 
   > div {
     width: 100%;
-    @include flexBox(row, space-between, center, 0);
+    @include flexBox(row, flex-end, center, 0);
     > div {
-      @include flexBox(row, initial, initial, 32);
+      margin-top: 6px;
+      @include flexBox(row, initial, initial, 24);
+    }
+  }
+  .secondary-btn, .primary-btn {
+    padding: 6px 10px;
+    border: solid 2px transparent;
+  }
+  .secondary-btn {
+    background-color: $main1;
+    &:hover {
+      background-color: $main2;
     }
   }
 }
@@ -247,7 +258,7 @@ section {
   border: 1px solid $main1;
   border-radius: 12px;
   z-index: 99;
-  @include flexBox(row, initial, center, 5);
+  @include flexBox(row, center, center, 5);
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3) inset, 
 	-4px -4px 8px rgba(0, 0, 0, 0.3) inset;
   max-width: 280px;
@@ -260,6 +271,10 @@ section {
     opacity: 1;
     transform: translateX(0);
     pointer-events: auto;
+  }
+
+  .owner-occupied-removed:nth-child(4) {
+    font-size: 24px;
   }
 
   &.user-message-actions {
@@ -379,8 +394,8 @@ emoji-mart {
       width: 100px;
     }
   }
-  .edit-message {
-    border: solid 2px red !important;
+  .d-none-mobile {
+    display: none;
   }
 }
 
@@ -388,6 +403,11 @@ emoji-mart {
 @media (max-width: 470px) {
   emoji-mart {
     left: -100px;
+  }
+  .edit-message {
+    width: 100vw;
+    margin-left: -20px;
+    margin-right: -20px;
   }
 }
 

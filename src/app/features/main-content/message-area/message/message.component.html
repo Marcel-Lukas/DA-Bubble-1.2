@@ -6,9 +6,9 @@
   <div class="edit-message">
     <textarea #editTextarea type="text" [(ngModel)]="editText"></textarea>
     <div>
-      <button #emojiBtn class="icon-button blue-hover" (click)="toggleEmojiPicker($event)">
+      <!-- <button #emojiBtn class="icon-button blue-hover" (click)="toggleEmojiPicker($event)">
         <div class="material-symbols textfield-icon">sentiment_satisfied</div>
-      </button>
+      </button> -->
       <div>
         <button class="secondary-btn" (click)="toggleEdit()">Abbrechen</button>
         <button class="primary-btn" (click)="saveEdit()" [disabled]="!editText.trim()">
@@ -83,16 +83,16 @@
     } }
 
     <span #emojiBtn class="material-symbols action-btn owner-occupied-removed" (click)="toggleEmojiPicker($event)">
-      add_reaction
+      mood
     </span>
 
-    <div class="material-symbols action-btn" [class.d-none]="chatType === 'thread'" (click)="onThreadClick()">
+    <div class="material-symbols action-btn d-none-mobile" [class.d-none]="chatType === 'thread'" (click)="onThreadClick()">
       comment
     </div>
 
     <div #optionsBtn class="material-symbols action-btn" [class.d-none]="message.mSenderId != activeUserId"
       (click)="toggleOptions($event)">
-      more_vert
+      build_circle
     </div>
 
     @if (isOptionsOpen) {
