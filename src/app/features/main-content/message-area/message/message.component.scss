@@ -12,12 +12,20 @@ button {
 section {
   position: relative;
   width: 100%;
-  padding: 10px clamp(120px, calc(120px + 16 * (100vw - 1000px) / 920), 136px)
-    10px clamp(32px, calc(32px + 16 * (100vw - 1000px) / 920), 48px);
-  @include flexBox(row, initial, initial, 20);
+  padding-top: 86px;
+  padding-bottom: 10px;
+
+  padding-left: 48px;
+  padding-right: clamp(20px, calc(100% / 12), 106px);
+
+  @include flexBox(row, initial, initial, 12);
   img {
+    position: absolute;
+    top: 8px;
+    left: 48px;
     width: 70px;
     height: 70px;
+    box-shadow: 0px 0px 8px 6px oklch(from #{$black} calc(l + 0.65) calc(c - 0.8) h);
     border-radius: 50%;
   }
   &:hover {
@@ -30,9 +38,13 @@ section {
 }
 
 .row-reverse {
-  padding: 10px clamp(32px, calc(32px + 16 * (100vw - 1000px) / 920), 48px) 10px
-    clamp(120px, calc(120px + 16 * (100vw - 1000px) / 920), 136px);
   flex-direction: row-reverse;
+  padding-right: 48px;
+  padding-left: clamp(20px, calc(100% / 12), 106px);
+  img {
+    left: unset;
+    right: 48px;
+  }
   &:hover {
     .message-text {
       color: $white;
@@ -323,20 +335,26 @@ emoji-mart {
   display: none;
 }
 
-@media (max-width: 1000px) {
-  section {
-    padding: 10px clamp(50px, calc(50px + 70 * (100vw - 450px) / 550), 120px)
-      10px clamp(16px, calc(16px + 16 * (100vw - 450px) / 550), 32px);
-      img {
-        width: clamp(50px, calc(50px + 20 * (100vw - 450px) / 550), 70px);
-        height: clamp(50px, calc(50px + 20 * (100vw - 450px) / 550), 70px);
-        border-radius: 50%;
-      }
-  }
 
+
+@media (max-width: 700px) {
+  section {
+    padding-left: 26px;
+    padding-right: clamp(20px, calc(100% / 12), 106px);
+    img {
+      top: 20px;
+      left: 26px;
+      width: 60px;
+      height: 60px;
+    }
+  }
   .row-reverse {
-    padding: 10px clamp(16px, calc(16px + 16 * (100vw - 450px) / 550), 32px)
-      10px clamp(50px, calc(50px + 70 * (100vw - 450px) / 550), 120px);
+    padding-right: 26px;
+    padding-left: clamp(20px, calc(100% / 12), 106px);
+    img {
+      left: unset;
+      right: 26px;
+    }
   }
 }
 
@@ -347,11 +365,13 @@ emoji-mart {
   }
 }
 
+
 @media (max-width: 560px) {
   emoji-mart {
     left: 40px;
   }
 }
+
 
 @media (max-width: 500px) {
   emoji-mart {
@@ -359,13 +379,13 @@ emoji-mart {
   }
 }
 
+
 @media (max-width: 400px) {
   emoji-mart {
     left: 0;
     max-width: 302px;
   }
 }
-
 
 
 @media (max-width: 510px) {
