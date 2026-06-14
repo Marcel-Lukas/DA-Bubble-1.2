@@ -4,15 +4,13 @@ button {
   cursor: pointer;
   font-family: "Nunito", sans-serif;
   font-weight: 700;
-  border: none;
-  padding: 12px 25px;
   border-radius: 50px;
 }
 
 section {
   position: relative;
   width: 100%;
-  padding-top: 86px;
+  padding-top: 90px;
   padding-bottom: 10px;
   padding-left: 48px;
   padding-right: clamp(20px, calc(100% / 12), 106px);
@@ -27,13 +25,25 @@ section {
     height: 70px;
     box-shadow: 0px 0px 8px 6px oklch(from #{$black} calc(l + 0.65) calc(c - 0.8) h);
     border-radius: 50%;
+    margin-top: 4px;
   }
   &:hover {
     background-color: $main1;
     .message-text {
-      color: $black;
       background-color: $white;
     }
+  }
+}
+
+section.row-reverse.thread, 
+section.thread:not(.row-reverse)  {
+  padding-top: 90px;
+}
+
+section.thread:not(.row-reverse) {
+  emoji-mart {
+    top: 90px;
+    left: -100px;
   }
 }
 
