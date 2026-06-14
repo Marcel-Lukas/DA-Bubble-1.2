@@ -33,6 +33,12 @@ export class ImageFallbackDirective implements OnDestroy {
   /** The real image URL currently being requested (guards against races). */
   private pendingSrc: string | null = null;
 
+  /** The last src value processed by the setter (guards against re-runs). */
+  private currentSrc: string | null | undefined = undefined;
+
+  /** Real image URLs that have already loaded successfully at least once. */
+  private static readonly loadedSrcs = new Set<string>();
+
   constructor(private el: ElementRef<HTMLImageElement>) {}
 
   /**
@@ -41,12 +47,25 @@ export class ImageFallbackDirective implements OnDestroy {
    */
   @Input()
   set src(value: string | null | undefined) {
+    // Angular's change detection re-invokes this setter on every cycle, even
+    // when the bound value is unchanged. Without this guard we'd reset the
+    // image to the fallback on every cycle, causing a visible flicker.
+    if (value === this.currentSrc) return;
+    this.currentSrc = value;
+
     const fallback = this.appImageFallback || 'assets/img/profile.png';
     const real = value?.trim();
 
     // No real image (or it already is the fallback): just show the fallback.
     if (!real || real === fallback) {
       this.showFallback();
+      return;
+    }
+
+    // If this image already loaded successfully before, show it directly
+    // (browser cache) without flashing the fallback first.
+    if (ImageFallbackDirective.loadedSrcs.has(real)) {
+      this.el.nativeElement.src = real;
       return;
     }
 
@@ -75,6 +94,8 @@ export class ImageFallbackDirective implements OnDestroy {
     this.preloader = loader;
 
     loader.onload = () => {
+      // Remember this URL so future bindings can skip the fallback flash.
+      ImageFallbackDirective.loadedSrcs.add(real);
       // Ignore stale loads if the binding changed meanwhile.
       if (this.pendingSrc !== real) return;
       this.el.nativeElement.src = real;
