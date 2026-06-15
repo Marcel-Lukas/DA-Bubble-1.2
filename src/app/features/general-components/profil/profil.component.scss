@@ -13,6 +13,8 @@ main {
 section {
   @include flexBox("", "", center, 40);
   position: absolute;
+  top: 76px;
+  right: 55px;
   flex-direction: column;
   background-color: $white;
   width: 500px;
@@ -20,14 +22,12 @@ section {
     @include flexBox("", "", center, 40);
     height: 640px;
     padding: 30px 40px;
-    top: 104px;
-    right: 24px;
     border-radius: 30px 0px 30px 30px;
   }
   &.big {
     @include flexBox("", "", center, 45);
     top: 50%;
-    right: auto;
+    right: unset;
     left: 50%;
     padding: 45px 40px;
     transform: translate(-50%, -50%);
@@ -321,6 +321,17 @@ header {
   }
 }
 
+
+
+
+
+@media(min-width: 1924px) {
+  section {
+    right: calc(100vw / 2 - 900px);
+  }
+}
+
+
 @media (max-width: 600px) {
   .editIconShow {
     @include flexBox("", center, center, "");
@@ -353,6 +364,7 @@ header {
   }
 }
 
+
 @media (max-width: 450px) {
   section {
     &.small,
@@ -365,6 +377,8 @@ header {
     width: 160px;
   }
 }
+
+
 @media (max-width: 350px) {
   .editSaveButtons {
     @include flexBox(column-reverse, center, center, 15);

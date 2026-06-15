@@ -144,6 +144,17 @@ export class UserNameComponent {
     this.animateOut = false;
   }
 
+
+  toggelFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error('Vollbild konnte nicht aktiviert werden:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
   /**
    * Logs the user out. Guests (identified by an empty email – their name can be
    * Gast, Gast2, …) additionally have their created channels and sent messages
