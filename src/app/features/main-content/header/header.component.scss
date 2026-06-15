@@ -81,7 +81,7 @@ app-device-visible {
       height: clamp(48px, calc(40px + 30 * (100vw - 350px) / 350), 70px);
     }
     > span {
-      font-size: clamp(20px, calc(16px + 8 * (100vw - 350px) / 350), 24px);
+      font-size: clamp(24px, calc(16px + 8 * (100vw - 350px) / 350), 28px);
     }
   }
 }
@@ -98,11 +98,12 @@ app-device-visible {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 500px) {
   .logo {
     > span {
-      width: 150px;
-      max-height: 84px;
+      padding: 0 8px;
+      width: calc(100vw / 2.05);
+      max-height: 68px;
       overflow: hidden;
       text-wrap: wrap;
       text-align: center;
