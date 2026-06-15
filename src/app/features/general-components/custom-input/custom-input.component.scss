@@ -27,6 +27,24 @@ label {
     font-size: clamp(16px, 3vw, 20px);
   }
 
+  .toggle-password {
+    @include mixin.dFlex();
+    flex-shrink: 0;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+
+    > svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    &:hover {
+      --icon-color: #{vari.$accent};
+    }
+  }
+
   &:has(> input:focus) {
     border-color: vari.$accent;
     --icon-color: #{vari.$black};
