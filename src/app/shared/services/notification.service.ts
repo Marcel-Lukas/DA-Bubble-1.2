@@ -77,7 +77,7 @@ export class NotificationService {
   /** Prepare the audio element (lazily, so it only happens in the browser). */
   private getAudio(): HTMLAudioElement {
     if (!this.audio) {
-      this.audio = new Audio('assets/sounds/new-message-sound.wav');
+      this.audio = new Audio('assets/sounds/new-message-sound.mp3');
       this.audio.preload = 'auto';
     }
     return this.audio;

@@ -268,7 +268,7 @@ The `NotificationService` implements a full offline-aware unread tracking system
 
 - On **start**, it reads `uLastSeen` from the user's Firestore document (fallback: `now()`) and opens Firestore listeners for messages created _after_ that timestamp.
 - A **heartbeat** (`setInterval` every 15 s + `beforeunload` handler) persists `uLastSeen` continuously – but only when there are no pending unread messages, preventing them from being silently discarded.
-- On every incoming message the service checks sender, thread-reply flag and active chat before marking the conversation as **unread** and playing `new-message-sound.wav`.
+- For every incoming message, the service checks the sender, the reply flag and the active chat before marking the message as **unread** and playing a **sound.**
 - The `unread$` `BehaviorSubject<Set<string>>` (channel IDs / sender UIDs) is consumed by the channel list and DM list to show a **blinking dot** indicator.
 - Marking a conversation **read** happens automatically when the user opens that chat.
 
