@@ -98,3 +98,15 @@ app-device-visible {
   }
 }
 
+@media (max-width: 600px) {
+  .logo {
+    > span {
+      width: 150px;
+      max-height: 84px;
+      overflow: hidden;
+      text-wrap: wrap;
+      text-align: center;
+    }
+  }
+}
+
