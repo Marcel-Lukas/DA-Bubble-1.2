@@ -11,15 +11,17 @@
       <div class="addChannelText">
         <span>
           Channels dienen deinem Team zur Kommunikation. 
-          Am besten sollten sie themenbezogen sein. <br />
-          Zum Beispiel #marketing</span>
+          Am besten sollten sie themenbezogen sein.
+        </span>
       </div>
     </header>
     <div class="channelFields">
       <span class="channelField">Channel-Name</span>
       <div class="inputSpan">
         <img src="assets/icons/hashtag_grey.svg" />
-        <input #channelNameInput  [(ngModel)]="channelName" (input)="checkNameUnique(channelName)" placeholder="z.B. Kooperationsprojekte" type="text"/>
+        <input #channelNameInput  [(ngModel)]="channelName" 
+              (input)="checkNameUnique(channelName)" 
+              placeholder="z.b. Kollaborationsprojekt" type="text"/>
       </div>
       @if (channelName && channelName.length < 3) {
         <span class="errorText">

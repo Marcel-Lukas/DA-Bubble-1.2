@@ -36,9 +36,9 @@
 }
 
 .devspaceElement {
-    @include fontStyle(18px, $accent, 400);
-    text-decoration: none;
-    cursor: pointer;
+  @include fontStyle(18px, $accent, 400);
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .addNewMember {
@@ -56,8 +56,8 @@
   border: none;
   background-color: $grey;
   position: absolute;
-  bottom: 8px;
-  z-index: 100;
+  bottom: 30px;
+  z-index: 1000;
   cursor: not-allowed;
   &:hover {
     opacity: 0.8;
@@ -66,23 +66,18 @@
     background-color: $accent;
     cursor: pointer;
   }
-
-
   .popup {
     position: fixed;
-    /* zentriert, kannst Du anpassen */
     top:  50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 1001;
+    z-index: 10;
     width: 95%;
     max-width: 410px;
     background: $white;
     border-radius: 16px;
-    /* optional Schatten */
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
-
   &:disabled {
     opacity: 0.6;
   }
@@ -164,14 +159,15 @@
 
 .showMembers {
   @include flexBox(column, '', '', 15);
-  background-color: $white;
-  top: 124px;
-  left: 20%;
-  max-height: 200px;
-  padding: 20px 40px;
-  box-shadow: 4px 4px 7px 4px rgba(0, 0, 0, 0.2);
-  border-radius: 28px;
   position: absolute;
+  top: 60px;
+  left: 0;
+  background-color: $white;
+  max-height: 330px;
+  padding: 10px 20px;
+  box-shadow: 4px 4px 8px 4px rgba(0, 0, 0, 0.5),
+  -4px -4px 10px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
   overflow: auto;
 }
 
@@ -239,7 +235,7 @@
 
 
 
-@media(max-width: 600px){
+@media(max-width: 600px) {
   .greyxLineContainer{
     @include flexBox('', center, center, '');
     height: 6px;
@@ -251,31 +247,43 @@
     border-radius: 23px;
     background-color: $grey;
   }
-
-  .showMembers {
-    max-height: 200px;
+  .addNewMemberButton {
+    bottom: unset;
+    top: 290px;
   }
 }
 
-@media(max-width: 450px){
+@media(max-width: 500px) {
+  .addNewMemberButton {
+    top: 270px;
+  }
+  .showMembers {
+    top: 134px;
+    max-height: 260px;
+  }
+}
+
+
+@media(max-width: 450px) {
   .addEveryOrOneMember{
     height: fit-content;
   }
-
-  .showMembers {
-    padding: 20px 16px;
-    width: 100%;
-    margin-left: -20px;
-  }
- 
 }
+
 
 @media (max-width: 400px) {
   .showMembers {
-    padding: 16px 0px;
+    padding: 0;
   }
   .memberItem {
     border-radius: 0;
-    padding: 4px px;
+    padding: 4px 10px;
+  }
+}
+
+
+@media (max-width: 364px) {
+  .addNewMemberButton {
+    top: 290px;
   }
 }

@@ -20,7 +20,7 @@ main {
   background-color: $white;
   border-radius: 30px;
   padding: 40px;
-  animation: slideInFromLeft 0.8s ease-out forwards;
+  animation: slideInFromLeft 777ms ease-out forwards;
 }
 
 @keyframes slideInFromLeft {
@@ -35,7 +35,7 @@ main {
 }
 
 .slide-in-left {
-  animation: slideInFromLeft 0.5s ease-in-out forwards;
+  animation: slideInFromLeft 555ms ease-in-out forwards;
 }
 
 app-add-new-members {
@@ -51,8 +51,8 @@ app-add-new-members {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: transform 0.8s ease, opacity 0.5s ease;
-  z-index: 9999;
+  transition: transform 777ms ease, opacity 444ms ease;
+  z-index: 999;
 }
 
 .slide-out-left {
@@ -61,7 +61,7 @@ app-add-new-members {
 }
 
 header {
-  @include flexBox(column, "", "", 20);
+  @include flexBox(column, "", "", 16);
 }
 
 .headlineClose {
@@ -75,8 +75,8 @@ header {
 
 .closeButton {
   @include flexBox("", center, center, "");
-  height: 40px;
-  width: 40px;
+  height: 36px;
+  width: 36px;
   background-color: $white;
   border-radius: 50%;
   border: none;
@@ -92,6 +92,10 @@ header {
 
 .closeButton:hover div {
   color: $accent;
+  transition: all 55ms ease-in-out;
+  &:hover {
+    transform: scale(1.3)
+  }
 }
 
 .addChannelText {
@@ -149,7 +153,7 @@ input::placeholder {
 }
 
 .channelTextArea {
-  padding: 18px 20px;
+  padding: 18px 24px;
   width: 800px;
   height: 60px;
   border-radius: 40px;
@@ -184,8 +188,10 @@ textarea::placeholder {
   border-radius: 25px;
   border: none;
   cursor: pointer;
+  transition: all 222ms ease-in-out;
   &:hover {
-    opacity: 0.8;
+    transform: scale(1.08);
+    opacity: 0.85;
   }
 }
 
@@ -231,16 +237,20 @@ textarea::placeholder {
 
   .popup-wrapper {
     position: absolute;
+    display: flex;
     top: auto;
     left: auto;
+    bottom: 0;
     width: 100%;
-    bottom: 0px;
-    animation: slideUpFromBottom 0.8s ease-out forwards;
-    z-index: 9999;
+    padding-bottom: 280px;
+    border-radius: 30px 30px 0 0;
+    background-color: $white;
+    animation: slideUpFromBottom 777ms ease-out forwards;
+    z-index: 999;
   }
 
   .slide-down {
-    animation: slideDownToBottom 0.8s ease-out forwards;
+    animation: slideDownToBottom 777ms ease-out forwards;
   }
 }
 
