@@ -17,7 +17,7 @@
         @else {
             <div class="avatarsMain">
                 <button class="buttonImg" (click)="bigUserImg()">
-                    <img [src]="userImage" appImageFallback>
+                    <img class="profilPic" [src]="userImage" appImageFallback>
                 </button>
                 <button type="button" class="randomAvatarButton" (click)="setRandomAvatar()">
                     <div class="material-symbols">refresh</div>
@@ -41,7 +41,7 @@
                     @if (!showButton) {
                         <a (click)="onEditClick()">Bearbeiten</a>
                         <button (click)="onEditClick()" class="editIconShow">
-                            <div class="material-symbols editIcon">Edit</div>
+                            <div class="material-symbols editIcon">edit_square</div>
                         </button>
                     }
                 </div>
@@ -100,7 +100,7 @@
                 <div class="messageArea">
                     <button (click)="deleteMember()" class="button deleteButtonBackground">
                         <div class="material-symbols deleteIcon">delete</div>
-                        <span>Löschen</span>
+                        <span>Account Löschen</span>
                     </button>
                 </div>
             }
