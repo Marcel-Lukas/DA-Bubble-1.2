@@ -26,6 +26,8 @@ export class PermanentDeleteComponent {
   @Input() requestingUserId: string | null = null;
 
   @Output() close = new EventEmitter<void>();
+  /** Emitted when the user confirms deletion of a `'user'` target. */
+  @Output() confirm = new EventEmitter<void>();
 
   onNo(): void {
     this.close.emit();
@@ -52,6 +54,10 @@ export class PermanentDeleteComponent {
             this.close.emit();
           });
         break;
+      case 'user':
+        this.confirm.emit();
+        break;
+
       default:
         console.warn('Unknown delete target:', this.target);
         this.close.emit();

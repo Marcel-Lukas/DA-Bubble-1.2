@@ -15,11 +15,12 @@ import { UserService } from '../../../shared/services/user.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { AuthentificationService } from '../../../shared/services/authentification.service';
 import { ImageFallbackDirective } from '../../../shared/directives/image-fallback.directive';
+import { PermanentDeleteComponent } from '../permanent-delete/permanent-delete.component';
 
 @Component({
   selector: 'app-profil',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImageFallbackDirective],
+  imports: [CommonModule, FormsModule, ImageFallbackDirective, PermanentDeleteComponent],
   templateUrl: './profil.component.html',
   styleUrl: './profil.component.scss',
 })
@@ -38,6 +39,8 @@ export class ProfilComponent {
   firestore = inject(Firestore);
   isActive: boolean = true;
   showEditProfil: boolean = false;
+  /** Controls visibility of the "delete account" confirmation dialog. */
+  showDeleteConfirm: boolean = false;
   showAvatarChoice = false;
   editedUserName: string = '';
   items = [1, 2, 3, 4, 5, 6];
@@ -169,7 +172,21 @@ export class ProfilComponent {
   }
 
 
-  async deleteMember() {
+  /** Opens the confirmation dialog instead of deleting immediately. */
+  deleteMember() {
+    this.showDeleteConfirm = true;
+  }
+
+
+  /** Closes the delete confirmation dialog without deleting. */
+  cancelDeleteMember() {
+    this.showDeleteConfirm = false;
+  }
+
+
+  /** Performs the actual account deletion after the user confirmed it. */
+  async confirmDeleteMember() {
+    this.showDeleteConfirm = false;
     if (!this.activeUserId) return;
     const userRef = doc(this.firestore, 'users', this.activeUserId);
     await deleteDoc(userRef);

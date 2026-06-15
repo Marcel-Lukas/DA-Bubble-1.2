@@ -112,4 +112,12 @@
             </div>
         }
     </section>
+    @if (showDeleteConfirm) {
+        <app-permanent-delete
+            [target]="'user'"
+            [id]="activeUserId"
+            (confirm)="confirmDeleteMember()"
+            (close)="cancelDeleteMember()">
+        </app-permanent-delete>
+    }
 </main>
