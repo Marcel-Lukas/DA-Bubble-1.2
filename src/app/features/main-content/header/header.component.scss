@@ -37,6 +37,7 @@ app-device-visible {
 
 
 
+
 @media (max-width: 999px) {
   header{
     padding-inline: 12px
@@ -81,7 +82,7 @@ app-device-visible {
       height: clamp(48px, calc(40px + 30 * (100vw - 350px) / 350), 70px);
     }
     > span {
-      font-size: clamp(24px, calc(16px + 8 * (100vw - 350px) / 350), 28px);
+      font-size: clamp(24px, calc(20px + 8 * (100vw - 350px) / 350), 32px);
     }
   }
 }
@@ -98,15 +99,15 @@ app-device-visible {
   }
 }
 
+
 @media (max-width: 500px) {
   .logo {
     > span {
       padding: 0 8px;
-      width: calc(100vw / 2.05);
+      width: 100%;
       max-height: 68px;
       overflow: hidden;
       text-wrap: wrap;
-      text-align: center;
     }
   }
 }
