@@ -72,7 +72,21 @@ export class NotificationService {
 
   private unsubMessages?: () => void;
   private unsubChannels?: () => void;
+  private unsubUsers?: () => void;
   private audio?: HTMLAudioElement;
+  private onlineAudio?: HTMLAudioElement;
+  /**
+   * Tracks the last known online state per user (UID -> online). Used to
+   * detect offline -> online transitions so the knock-knock sound is only
+   * played once when a user actually comes online (not on every snapshot).
+   */
+  private onlineStates = new Map<string, boolean>();
+  /**
+   * Only true after the first users snapshot has been processed. Prevents
+   * playing the knock-knock sound for users that are already online when the
+   * listener starts (e.g. right after login).
+   */
+  private usersInitialized = false;
 
   /** Prepare the audio element (lazily, so it only happens in the browser). */
   private getAudio(): HTMLAudioElement {
@@ -81,6 +95,15 @@ export class NotificationService {
       this.audio.preload = 'auto';
     }
     return this.audio;
+  }
+
+  /** Prepare the "user came online" audio element (lazily). */
+  private getOnlineAudio(): HTMLAudioElement {
+    if (!this.onlineAudio) {
+      this.onlineAudio = new Audio('assets/sounds/knock-knock.mp3');
+      this.onlineAudio.preload = 'auto';
+    }
+    return this.onlineAudio;
   }
 
   /**
@@ -96,6 +119,7 @@ export class NotificationService {
     this.startTime = await this.loadLastRead(activeUserId);
     this.listenForChannels();
     this.listenForMessages();
+    this.listenForUserPresence();
     this.startHeartbeat();
     // Give the listeners a brief moment to load missed messages before
     // uLastRead may be overwritten for the first time.
@@ -112,7 +136,11 @@ export class NotificationService {
     this.unsubMessages = undefined;
     this.unsubChannels?.();
     this.unsubChannels = undefined;
+    this.unsubUsers?.();
+    this.unsubUsers = undefined;
     this.memberChannelIds.clear();
+    this.onlineStates.clear();
+    this.usersInitialized = false;
     this.unreadSubject.next(new Set());
     this.activeUserId = null;
     this.readyToPersist = false;
@@ -322,6 +350,40 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Listens to all user documents and plays the knock-knock sound whenever
+   * another user transitions from offline to online. The very first snapshot
+   * only seeds the known states (no sound), so users that are already online
+   * at start do not trigger the sound.
+   */
+  private listenForUserPresence(): void {
+    this.unsubUsers?.();
+    this.usersInitialized = false;
+    this.onlineStates.clear();
+    this.unsubUsers = runInInjectionContext(this.injector, () => {
+      const col = collection(this.firestore, 'users');
+      return onSnapshot(col, (snap) => {
+        snap.docs.forEach((d) => this.handleUserPresence(d.id, d.data()));
+        this.usersInitialized = true;
+      });
+    });
+  }
+
+  /**
+   * Evaluates a single user's online state and plays the knock-knock sound on
+   * an offline -> online transition (for other users only, after init).
+   */
+  private handleUserPresence(uid: string, data: any): void {
+    const isOnline = NotificationService.isUserOnline(data);
+    const wasOnline = this.onlineStates.get(uid) ?? false;
+    this.onlineStates.set(uid, isOnline);
+    if (uid === this.activeUserId) return;
+    if (!this.usersInitialized) return;
+    if (isOnline && !wasOnline) {
+      this.playOnlineSound();
+    }
+  }
+
   /** Processes a single newly arrived message. */
   private handleNewMessage(data: any): void {
     const senderId: string | null = data?.mSenderId ?? null;
@@ -370,6 +432,19 @@ export class NotificationService {
   private playSound(): void {
     try {
       const audio = this.getAudio();
+      audio.currentTime = 0;
+      audio.play().catch(() => {
+        /* Autoplay possibly blocked by the browser – ignore */
+      });
+    } catch {
+      /* Audio not available – ignore */
+    }
+  }
+
+  /** Plays the "user came online" sound (errors are ignored). */
+  private playOnlineSound(): void {
+    try {
+      const audio = this.getOnlineAudio();
       audio.currentTime = 0;
       audio.play().catch(() => {
         /* Autoplay possibly blocked by the browser – ignore */
