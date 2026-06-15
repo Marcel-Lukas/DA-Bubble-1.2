@@ -33,4 +33,8 @@ export class HeaderComponent {
     this.messageInToggle.emit(false);
   }
 
+  reloadPage() {
+    window.location.reload();
+  }
+
 }
