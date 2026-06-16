@@ -1,6 +1,6 @@
 @defer (when isEmojiPickerOpen) {
   @if (isEmojiPickerOpen) {
-    <emoji-mart #emojiPicker (emojiClick)="addEmoji($event)"></emoji-mart>
+    <emoji-mart #emojiPicker [darkMode]="false" (emojiClick)="addEmoji($event)"></emoji-mart>
   }
 }
 

@@ -19,7 +19,7 @@
 
     @defer (when isEmojiPickerOpen) {
       @if (isEmojiPickerOpen) {
-      <emoji-mart #emojiPicker (emojiClick)="onEmojiPicked($event)"
+      <emoji-mart #emojiPicker [darkMode]="false" (emojiClick)="onEmojiPicked($event)"
         [class.active-user-emoji]="message.mSenderId === activeUserId"
         [class.thread-emoji]="chatType === 'thread'"></emoji-mart>
       }
@@ -107,7 +107,7 @@
 
   @defer (when isEmojiPickerOpen) {
     @if (isEmojiPickerOpen) {
-    <emoji-mart #emojiPicker (emojiClick)="onEmojiPicked($event)"
+    <emoji-mart #emojiPicker [darkMode]="false" (emojiClick)="onEmojiPicked($event)"
       [class.active-user-emoji]="message.mSenderId === activeUserId"
       [class.thread-emoji]="chatType === 'thread'"></emoji-mart>
     }
