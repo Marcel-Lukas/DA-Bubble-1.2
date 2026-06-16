@@ -21,6 +21,7 @@ section {
   width: 870px;
   border-radius: 30px;
   padding: 40px;
+  padding-bottom: 70px !important;
 }
 
 header {
@@ -358,6 +359,9 @@ header {
   }
 }
 
+
+
+
 @media (max-width: 1000px) {
   section {
     width: 90%;
@@ -370,6 +374,7 @@ header {
   }
 }
 
+
 @media (max-width: 600px) {
   main {
     @include flexBox(column, "", "", "");
@@ -381,26 +386,21 @@ header {
     flex: 1;
     min-height: 0;
   }
-
   .saveBox{
     height: 40px
   }
-
   .editOverTablet{
     @include flexBox("", center, center, "");
     height: 40px;
     width: 40px; 
   }
-
   .editOverMobil{
    display: none;
   }
-
   .scrollContainer::-webkit-scrollbar-track {
     margin-top: 40px;
     margin-bottom: 40px;
   }
-
   section {
     @include flexBox(column, initial, initial, 20);
     height: 100%;
@@ -412,24 +412,20 @@ header {
     box-sizing: border-box;
     padding: 40px 0;
   }
-
   header{
     padding: 0 40px;
   }
- 
+
   .scrollContainer{
     padding: 0 40px;
   }
-
   .slide-up {
     animation: slideUpFromBottom 0.8s ease-out forwards;
   }
-
   .slide-down {
     animation: slideDownToBottom 0.8s ease-out forwards;
   }
-
-  .memberAdd{
+  .memberAdd {
     position: absolute;
     top: 0;
     left: 0;
@@ -438,7 +434,6 @@ header {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 90;
   }
-
   app-add-new-members {
     @include flexBox(column, '', '',  25);
     position: absolute;
@@ -446,13 +441,12 @@ header {
     right: auto;
     bottom: 0;
     width: 100%;
-    height: 340px;
+    height: 600px;
     border-radius: 30px 30px 0 0;
     background-color: $white;
     z-index: 100;
     padding: 20px
   }
-
   .memberListMobile {
     @include flexBox("", left, center, "");
     width: 100%;
@@ -461,6 +455,7 @@ header {
     padding: 30px 20px;
   }
 }
+
 
 @media (max-width: 450px) {
   .scrollContainer {
