@@ -147,14 +147,16 @@ export class MainContentComponent implements CanComponentDeactivate {
    * consistent.
    */
   private readonly leaveConfirmationMessage =
-    'Möchtest du die Ansicht wirklich verlassen?';
+    'Seite wirklich verlassen?';
 
   /**
    * Called by the `canDeactivateGuard` for navigation INSIDE the Angular app
    * (e.g. the browser back button changing the route). Asks the user for
-   * confirmation and blocks the navigation if they cancel.
+   * confirmation and blocks the navigation if they cancel. A deliberate logout
+   * is allowed to leave without a prompt.
    */
   canDeactivate(): boolean {
+    if (this.authService.isLoggingOut) return true;
     return window.confirm(this.leaveConfirmationMessage);
   }
 
@@ -163,10 +165,12 @@ export class MainContentComponent implements CanComponentDeactivate {
    * reload), where Angular's router guards do not run. Setting
    * `returnValue`/calling `preventDefault()` triggers the browser's native
    * "Leave site?" prompt. The browser ignores any custom text for security
-   * reasons, so we only signal that there is unsaved context.
+   * reasons, so we only signal that there is unsaved context. Skipped during a
+   * deliberate logout.
    */
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (this.authService.isLoggingOut) return;
     event.preventDefault();
     event.returnValue = this.leaveConfirmationMessage;
   }

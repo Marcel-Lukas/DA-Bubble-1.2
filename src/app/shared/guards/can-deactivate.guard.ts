@@ -1,4 +1,6 @@
+import { inject } from '@angular/core';
 import { CanDeactivateFn } from '@angular/router';
+import { AuthentificationService } from '../services/authentification.service';
 
 /**
  * Contract for components that want to guard against accidental in-app
@@ -20,13 +22,20 @@ export interface CanComponentDeactivate {
 /**
  * Functional `CanDeactivate` guard for navigation INSIDE the Angular app.
  *
- * It simply delegates the decision to the component instance, which keeps the
- * guard generic and reusable across any view that implements
+ * It delegates the decision to the component instance, which keeps the guard
+ * generic and reusable across any view that implements
  * {@link CanComponentDeactivate}. Components that do not implement the
  * interface are always allowed to deactivate.
+ *
+ * A deliberate logout (which navigates to `/access`) must never trigger the
+ * confirmation, so we skip the check while `AuthentificationService.isLoggingOut`
+ * is set.
  */
 export const canDeactivateGuard: CanDeactivateFn<CanComponentDeactivate> = (
   component
 ): boolean | Promise<boolean> => {
+  const authService = inject(AuthentificationService);
+  if (authService.isLoggingOut) return true;
+
   return component.canDeactivate ? component.canDeactivate() : true;
 };

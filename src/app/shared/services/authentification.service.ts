@@ -56,6 +56,13 @@ export class AuthentificationService {
     username: string;
   } | null = null;
 
+  /**
+   * Set while a deliberate logout is in progress. The "leave page" guards
+   * (in-app `canDeactivate` and the `beforeunload` listener) check this flag so
+   * that an intentional logout does NOT trigger the "leave the view?" warning.
+   */
+  public isLoggingOut = false;
+
   /** ID of the default channel that every new/logged-in user joins. */
   private readonly defaultChannelId = '4ViNXTttFDYKlytrxQw4';
 
@@ -438,10 +445,18 @@ export class AuthentificationService {
   async logout(): Promise<void> {
     const uid = this.currentUid;
     const user = this.auth.currentUser;
-    
-    await this.handleAnonymousGuest(user, uid);
-    await this.updateUserStatus(uid);
-    await this.signOutUser();
+
+    // Mark this as an intentional logout so the leave-page guards stay silent.
+    this.isLoggingOut = true;
+    try {
+      await this.handleAnonymousGuest(user, uid);
+      await this.updateUserStatus(uid);
+      await this.signOutUser();
+    } catch (err) {
+      // Re-enable the guards if the logout did not complete.
+      this.isLoggingOut = false;
+      throw err;
+    }
   }
 
   private async handleAnonymousGuest(user: any | null, uid: string | null): Promise<void> {
