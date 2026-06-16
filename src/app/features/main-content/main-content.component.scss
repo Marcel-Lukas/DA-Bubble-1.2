@@ -38,7 +38,10 @@ section{
   box-shadow: 4px 4px 7px 2px oklch(from #{$black} l c h / 0.3),
   1px -4px 4px 1px oklch(from #{$black} l c h / 0.2);
   color: $black;
-  cursor: pointer;
+  cursor: e-resize;
+  &.is-open {
+    cursor: w-resize;
+  }
   span {
     @include fontStyle(20px, $black, 500);
     background-color: $white;

@@ -12,7 +12,7 @@
       <app-search-bar></app-search-bar>
     </app-device-visible>
     <div class="content-container">      
-      <button class="toogleBar" (click)="toggleSection()">
+      <button class="toogleBar" [class.is-open]="sectionVisible" (click)="toggleSection()">
         <div>
           @if (sectionVisible) {
           <span>Workspace-Menü schließen</span>
