@@ -59,8 +59,25 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (!this.loginForm.valid) return;
   
     this.visibleBtn.hide();
+    this.enterFullscreenOnMobile();
     const { email, password } = this.loginForm.value;
     this.attemptLogin(email, password);
+  }
+
+  /**
+   * On mobile devices (viewport width below 1000px) requests fullscreen mode
+   * right after a login action. Must run synchronously within the user gesture
+   * (button click) – otherwise the browser blocks requestFullscreen(). Failures
+   * (e.g. unsupported browser) are ignored so login is never disrupted.
+   */
+  private enterFullscreenOnMobile(): void {
+    if (window.innerWidth >= 1000) return;
+    if (document.fullscreenElement) return;
+
+    const request = document.documentElement.requestFullscreen;
+    if (typeof request !== 'function') return;
+
+    request.call(document.documentElement).catch(() => {});
   }
 
   private attemptLogin(email: string, password: string): void {
@@ -106,6 +123,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onLoginWithGoogle(): void {
     this.visibleBtn.hide();
+    this.enterFullscreenOnMobile();
     this.authService.loginWithGoogle()
     .then(result => {
       if (result) {
@@ -121,6 +139,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onLoginAsGuest(): void {
     this.visibleBtn.hide();
+    this.enterFullscreenOnMobile();
     this.authService.loginAsGuest()
     .then(result => {
       if (result) {
