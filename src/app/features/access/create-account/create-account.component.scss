@@ -7,22 +7,24 @@
 
 .arrow {
   @include mixin.arrow($bg-color: vari.$main1, $icon-color: vari.$accent);
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 form {
   @include mixin.dFlex($gap: 30px, $direction: column);
-
   > h1 {
     @include mixin.accHead(vari.$accent);
   }
-
   > p {
     font-size: clamp(16px, 2.5vw, 20px);
     text-align: center;
   }
-  @media (max-width: 700px) {
-    @include mixin.dFlex($gap: 16px, $direction: column);
-    }
+}
+
+.text-balance {
+  text-wrap: balance;
 }
 
 .input-container {
@@ -32,4 +34,12 @@ form {
 .btn-container {
   width: 100%;
   @include mixin.dFlex($justify: flex-end);
+}
+
+
+
+@media (max-width: 700px) {
+  form {
+    @include mixin.dFlex($gap: 16px, $direction: column);
+  }
 }
