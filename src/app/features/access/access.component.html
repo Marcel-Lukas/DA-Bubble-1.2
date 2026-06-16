@@ -56,7 +56,7 @@
       </defs>
     </svg>
   
-    <span>DABubble</span>
+    <span>DA-Bubble</span>
   </div>
 }
 @else {
@@ -74,16 +74,22 @@
 }
 
 <div class="card">
+
   <ng-container *ngComponentOutlet="componentSwitcher.currentComponent()"></ng-container>
+
+  <div class="footer-container">
+    @if (componentSwitcher.currentComponent() !== PrivacyComponent && componentSwitcher.currentComponent() !== ImprintComponent) {
+    <footer>
+      <app-button color="transparent" [disabled]="!isButtonVisible()" (click)="changeComponent('imprit')">
+        Impressum
+      </app-button>
+      <app-button color="transparent" [disabled]="!isButtonVisible()" (click)="changeComponent('privacy')">
+        Dateschutz
+      </app-button>
+    </footer>
+  }
+  </div>
+
 </div>
 
-@if (componentSwitcher.currentComponent() !== PrivacyComponent && componentSwitcher.currentComponent() !== ImprintComponent) {
-  <footer>
-    <app-button color="transparent" [disabled]="!isButtonVisible()" (click)="changeComponent('imprit')">
-      Impressum
-    </app-button>
-    <app-button color="transparent" [disabled]="!isButtonVisible()" (click)="changeComponent('privacy')">
-      Dateschutz
-    </app-button>
-  </footer>
-}
+

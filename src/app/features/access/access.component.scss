@@ -26,37 +26,27 @@
     margin-left: 10px;
     text-wrap: nowrap;
   }
-
-  @media (max-width: 700px) {
-    top: 24px;
-    left: 50%;
-    transform: translate(-50%, 0) scale(1);
-    > img {
-      width: clamp(40px, calc(40px + 30 * (100vw - 350px) / 350), 70px);
-      height: clamp(40px, calc(40px + 30 * (100vw - 350px) / 350), 70px);
-    }
-    > span {
-      font-size: clamp(16px, calc(16px + 8 * (100vw - 350px) / 350), 24px);
-    }
-  }
 }
 
 .sign-in-container {
-  @include mixin.dFlex($align: flex-end, $gap: 20px, $direction: column);
+  @include mixin.dFlex($align: flex-end, $gap: 6px, $direction: column);
   position: absolute;
   top: 75px;
   right: 75px;
-
   > p {
     font-size: clamp(16px, 4vw, 18px);
   }
-
-  @media (max-width: 700px) {
-    @include mixin.dFlex($gap: clamp(2px, 0.5vw, 10px), $direction: row);
-    margin: 0;
-    top: auto;
-    right: auto;
-    bottom: clamp(60px, calc(60px + 60 * (100vw - 350px) / 350), 120px);
+  app-button {
+    animation: pulse 1444ms ease-in-out infinite;
+    &:hover {
+      animation: none;
+      transform: scale(1.1)
+    }
+  }
+  @keyframes pulse {
+      0% {transform: scale(1);}
+      50% {transform: scale(1.14);}
+      100% {transform: scale(1);}
   }
 }
 
@@ -71,12 +61,17 @@
   box-shadow: 0px 2px 10px 0px oklch(from #{vari.$black} l c h / 0.08);
 }
 
-footer {
-  @include mixin.dFlex($gap: 45px);
+.footer-container {
   position: absolute;
-  bottom: 0;
-  margin-bottom: clamp(12px, calc(12px + 56 * (100vw - 350px) / 350), 48px);
+  left: 0;
+  bottom: -58px;
+  width: 100%;
+  footer {
+    @include mixin.dFlex($gap: 60px);
+  }
 }
+
+
 
 
 
@@ -86,3 +81,30 @@ footer {
     margin-inline: auto;
   }
 }
+
+
+@media (max-width: 700px) {
+  .logo {
+    top: 24px;
+    left: 50%;
+    transform: translate(-50%, 0) scale(1);
+
+    > img {
+      width: clamp(40px, calc(40px + 30 * (100vw - 350px) / 350), 70px);
+      height: clamp(40px, calc(40px + 30 * (100vw - 350px) / 350), 70px);
+    }
+
+    > span {
+      font-size: clamp(22px, calc(16px + 8 * (100vw - 350px) / 350), 26px);
+    }
+  }
+
+  .sign-in-container {
+    @include mixin.dFlex($gap: 6px, $direction: row);
+    margin: 0;
+    top: 130px;
+    right: auto;
+  }
+}
+
+
