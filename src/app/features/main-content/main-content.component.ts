@@ -1,5 +1,5 @@
 
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { ContactBarComponent } from './contact-bar/contact-bar.component';
@@ -8,6 +8,7 @@ import { SearchBarComponent } from './header/search-bar/search-bar.component';
 import { DeviceVisibleComponent } from '../../shared/services/responsive';
 import { AuthentificationService } from '../../shared/services/authentification.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { CanComponentDeactivate } from '../../shared/guards/can-deactivate.guard';
 
 @Component({
   selector: 'app-main-content',
@@ -27,8 +28,13 @@ import { NotificationService } from '../../shared/services/notification.service'
  * (private DM, channel, thread or the "new message" state), coordinates the
  * thread panel and reacts to deletions emitted by the message area. Also
  * starts/stops the new-message notification service for the active user.
+ *
+ * Implements {@link CanComponentDeactivate} so the in-app `canDeactivateGuard`
+ * can ask for confirmation before the user leaves this view (e.g. via the
+ * browser back button), and uses a `beforeunload` listener to cover the case
+ * where the whole tab/site is closed.
  */
-export class MainContentComponent {
+export class MainContentComponent implements CanComponentDeactivate {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthentificationService);
   private notificationService = inject(NotificationService);
@@ -133,5 +139,35 @@ export class MainContentComponent {
 
   private updateScreenSize() {
     this.smallSize = window.innerWidth < 1000;
+  }
+
+  /**
+   * Confirmation message shown to the user before leaving the view. Kept in a
+   * single place so the in-app guard and the `beforeunload` handler stay
+   * consistent.
+   */
+  private readonly leaveConfirmationMessage =
+    'Möchtest du die Ansicht wirklich verlassen?';
+
+  /**
+   * Called by the `canDeactivateGuard` for navigation INSIDE the Angular app
+   * (e.g. the browser back button changing the route). Asks the user for
+   * confirmation and blocks the navigation if they cancel.
+   */
+  canDeactivate(): boolean {
+    return window.confirm(this.leaveConfirmationMessage);
+  }
+
+  /**
+   * Safety net for leaving the site entirely (closing the tab or a full page
+   * reload), where Angular's router guards do not run. Setting
+   * `returnValue`/calling `preventDefault()` triggers the browser's native
+   * "Leave site?" prompt. The browser ignores any custom text for security
+   * reasons, so we only signal that there is unsaved context.
+   */
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    event.preventDefault();
+    event.returnValue = this.leaveConfirmationMessage;
   }
 }

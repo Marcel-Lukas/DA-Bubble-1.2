@@ -226,6 +226,26 @@ export class ProfilComponent {
   // }
 
 
+  /**
+   * Generates a random alphanumeric seed of the given length.
+   * @param length Number of characters the seed should contain.
+   * @returns A random string consisting of [a-z, A-Z, 0-9].
+   * Sets a random avatar by generating an 8-character seed and 
+   * passing it to the API. Each seed produces a different avatar, 
+   * so a new random seed yields a new image on every call.
+   * https://www.dicebear.com/playground/
+   */
+  // private generateRandomSeed(length: number): string {
+  //   const chars =
+  //     'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  //   let seed = '';
+  //   for (let i = 0; i < length; i++) {
+  //     seed += chars.charAt(Math.floor(Math.random() * chars.length));
+  //   }
+  //   return seed;
+  // }
+
+
   bigUserImg(): void {
     this.showAvatarChoice = !this.showAvatarChoice;
   }

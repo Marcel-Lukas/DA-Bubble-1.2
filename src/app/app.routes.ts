@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, publicOnlyGuard } from './shared/guards/auth.guard';
+import { canDeactivateGuard } from './shared/guards/can-deactivate.guard';
 
 /**
  * Top-level routes.
@@ -26,6 +27,7 @@ export const routes: Routes = [
   {
     path: 'home',
     canActivate: [authGuard],
+    canDeactivate: [canDeactivateGuard],
     loadComponent: () =>
       import('./features/main-content/main-content.component').then(
         (m) => m.MainContentComponent
@@ -34,6 +36,7 @@ export const routes: Routes = [
   {
     path: 'home/:activeUserId',
     canActivate: [authGuard],
+    canDeactivate: [canDeactivateGuard],
     loadComponent: () =>
       import('./features/main-content/main-content.component').then(
         (m) => m.MainContentComponent
