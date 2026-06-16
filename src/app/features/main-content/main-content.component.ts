@@ -63,12 +63,49 @@ export class MainContentComponent implements CanComponentDeactivate {
     this.notificationService.setActiveChat(this.chatType, this.chatId);
 
     this.updateScreenSize();
-    window.addEventListener('resize', () => this.updateScreenSize());
+    window.addEventListener('resize', this.onResize);
+    this.bindVisualViewport();
   }
 
   ngOnDestroy(): void {
     this.notificationService.stop();
+    window.removeEventListener('resize', this.onResize);
+    this.unbindVisualViewport();
   }
+
+  /** Bound resize handler so it can be removed again in ngOnDestroy. */
+  private onResize = () => this.updateScreenSize();
+
+  /**
+   * Keeps the layout height in sync with the *visual* viewport (the area not
+   * covered by the on-screen keyboard). In fullscreen mode `100svh` always
+   * equals the full physical screen height, so when the mobile keyboard opens
+   * the page does not shrink and the message input gets hidden behind it.
+   * Tracking `visualViewport.height` and exposing it as `--app-height` fixes
+   * this: the layout uses that value instead of `100svh` (see SCSS).
+   */
+  private bindVisualViewport(): void {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    this.applyViewportHeight();
+    vv.addEventListener('resize', this.applyViewportHeight);
+    vv.addEventListener('scroll', this.applyViewportHeight);
+  }
+
+  private unbindVisualViewport(): void {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    vv.removeEventListener('resize', this.applyViewportHeight);
+    vv.removeEventListener('scroll', this.applyViewportHeight);
+    document.documentElement.style.removeProperty('--app-height');
+  }
+
+  /** Writes the current visual-viewport height into the `--app-height` var. */
+  private applyViewportHeight = () => {
+    const height = window.visualViewport?.height;
+    if (!height) return;
+    document.documentElement.style.setProperty('--app-height', `${height}px`);
+  };
 
   toggleSection() {
     this.sectionVisible = !this.sectionVisible;

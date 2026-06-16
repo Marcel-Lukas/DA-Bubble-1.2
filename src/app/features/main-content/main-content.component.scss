@@ -1,7 +1,12 @@
 @use "../../shared/scss/global" as *;
 main {
   width: 100svw;
+  // Fall back to 100svh, but prefer the visual-viewport height set via JS
+  // (--app-height). This keeps the message input visible above the mobile
+  // keyboard, especially in fullscreen mode where 100svh stays at full screen
+  // height when the keyboard opens.
   height: 100svh;
+  height: var(--app-height, 100svh);
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
