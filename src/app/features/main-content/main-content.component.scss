@@ -30,7 +30,7 @@ section{
   height: 340px;
   position: absolute;
   bottom: 10%;
-  left: 0;
+  left: -20px;
   background-color: $white;
   z-index: 20;
   border: none;
@@ -78,6 +78,7 @@ section{
 }
 
 .content-container {
+  position: relative;
   height: 100%;
   display: flex;
   gap: 20px;
@@ -105,11 +106,14 @@ section{
     width: 1920px;
     margin-inline: auto;
   }
+}
 
-  .toogleBar{
-    display: none;
+
+@media (min-width: 1930px) {
+  .toogleBar {
+    left: 0;
+    width: 34px;
   }
-  
 }
 
 
