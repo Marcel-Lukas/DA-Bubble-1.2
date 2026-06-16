@@ -1,7 +1,6 @@
 @use "../../../shared/scss/global" as *;
 
 
-
 .addMemberChannel {
   @include flexBox("", left, center, 15);
   color: $main2;
@@ -43,8 +42,6 @@
 
 .addNewMember {
   @include flexBox("", right, center, "");
-  width: 100%;
-  height: 50px;
 }
 
 .addNewMemberButton {
@@ -55,8 +52,6 @@
   border-radius: 25px;
   border: none;
   background-color: $grey;
-  position: absolute;
-  bottom: 30px;
   z-index: 1000;
   cursor: not-allowed;
   &:hover {
@@ -79,7 +74,7 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.65;
   }
 }
 
@@ -136,6 +131,15 @@
 }
 
 
+.more-count {
+  @include flexBox('', center, center, '');
+  @include fontStyle(18px, $black, 400);
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+  background-color: $main1;
+  cursor: default;
+}
 
 
 .addInputField {
@@ -160,10 +164,10 @@
 .showMembers {
   @include flexBox(column, '', '', 15);
   position: absolute;
-  top: 60px;
-  left: 0;
+  top: 64px;
+  left: 18px;
   background-color: $white;
-  max-height: 330px;
+  max-height: 260px;
   padding: 10px 20px;
   box-shadow: 4px 4px 8px 4px rgba(0, 0, 0, 0.5),
   -4px -4px 10px 2px rgba(0, 0, 0, 0.2);
@@ -232,9 +236,6 @@
 
 
 
-
-
-
 @media(max-width: 600px) {
   .greyxLineContainer{
     @include flexBox('', center, center, '');
@@ -246,20 +247,6 @@
     width: 60px;
     border-radius: 23px;
     background-color: $grey;
-  }
-  .addNewMemberButton {
-    bottom: unset;
-    top: 290px;
-  }
-}
-
-@media(max-width: 500px) {
-  .addNewMemberButton {
-    top: 270px;
-  }
-  .showMembers {
-    top: 134px;
-    max-height: 260px;
   }
 }
 
@@ -273,17 +260,20 @@
 
 @media (max-width: 400px) {
   .showMembers {
-    padding: 0;
+    padding: 4px;
   }
   .memberItem {
-    border-radius: 0;
     padding: 4px 10px;
   }
 }
 
 
-@media (max-width: 364px) {
-  .addNewMemberButton {
-    top: 290px;
+@media (max-width: 370px) {
+  .more-count {
+    position: absolute;
+    left: 20px;
+    top: -40px;
   }
 }
+
+

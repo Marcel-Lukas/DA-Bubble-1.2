@@ -1,43 +1,46 @@
 @use "../../../shared/scss/global" as *;
 
 .memberlist {
-  width: 100%;
-  flex: 1;
+  @include flexBox(column, flex-start, center, 16);
   overflow-y: auto;
-  padding-top: 20px;
+  padding-top: 8px;
+  overflow: visible;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  @include flexBox(column, initial, flex-start, 16);
 }
 
+
 .members {
-  width: 100%;
+  @include flexBox(column, initial, initial, 8);
   height: 200px;
   padding: 8px 4px;
+  padding-right: 16px;
   overflow-y: auto;
-  @include flexBox(column, initial, initial, 16);
-  div {
+  .card {
+    @include flexBox(row, initial, center, 12);
+    width: 244px;
+    padding: 4px 10px;
     cursor: pointer;
-    padding: 4px 24px;
-    @include flexBox(row, initial, center, 16);
-    div {
-      padding: 0;
-    }
     &:hover {
       background-color: $main1;
-      border-radius: 30px;
+      border-radius: 28px;
+    }
+    .user-img-status {
+      padding: 0;
+      margin: 0;
     }
   }
 }
 
+
 .add-member {
+  @include flexBox(row, center, center, 10);
+  padding: 4px 10px;
   cursor: pointer;
-  width: 100%;
-  padding: 12px 24px;
-  @include flexBox(row, initial, center, 16);
+  width: 244px;
   &:hover {
     background-color: $main1;
     border-radius: 30px;

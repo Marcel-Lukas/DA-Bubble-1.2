@@ -32,6 +32,26 @@
     </div>
   </div>
 }
+<div class="addNewMember">
+  @if (!showInput) {
+    <button
+      [class.active]="selectedOption !== 'option2' || selectedMembers.length > 0"
+      [disabled]="selectedOption === 'option2' && selectedMembers.length === 0"
+      class="addNewMemberButton"
+      (click)="createNewChannel(channelName, channelDescription)">
+      Erstellen
+    </button>
+  } 
+  @else {
+    <button
+      [class.active]="selectedMembers.length > 0"
+      [disabled]="selectedMembers.length === 0"
+      (click)="addNewChannelMembers()"
+      class="addNewMemberButton">
+      Hinzufügen
+    </button>
+  }
+</div>
 @if ((!showInput && selectedOption === 'option2') || (showInput)) {
   <ng-container >
     @if (showOverlay) {
@@ -82,23 +102,4 @@
     </div>
   </ng-container>
 }
-<div class="addNewMember">
-  @if (!showInput) {
-    <button
-      [class.active]="selectedOption !== 'option2' || selectedMembers.length > 0"
-      [disabled]="selectedOption === 'option2' && selectedMembers.length === 0"
-      class="addNewMemberButton"
-      (click)="createNewChannel(channelName, channelDescription)">
-      Erstellen
-    </button>
-  } 
-  @else {
-    <button
-      [class.active]="selectedMembers.length > 0"
-      [disabled]="selectedMembers.length === 0"
-      (click)="addNewChannelMembers()"
-      class="addNewMemberButton">
-      Hinzufügen
-    </button>
-  }
-</div>
+

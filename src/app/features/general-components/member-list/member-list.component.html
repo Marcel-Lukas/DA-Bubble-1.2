@@ -2,7 +2,7 @@
 <div class="memberlist">
     <div class="members">
       @for (member of channelMembers; track member) {
-        <div (click)="showProfil.emit(member)">
+        <div class="card" (click)="showProfil.emit(member)">
           <div class="user-img-status">
             <img src="{{ member?.uUserImage }}" appImageFallback alt="" />
             <span [ngClass]="(member | online) ? 'online' : 'offline'"></span>

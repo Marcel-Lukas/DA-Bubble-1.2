@@ -24,19 +24,20 @@ main {
 }
 
 @keyframes slideInFromLeft {
-    0% {
-      transform: translate(-100%, -50%);
-      opacity: 0;
-    }
-    100% {
-      transform: translate(-50%, -50%);
-      opacity: 1;
-    }
+  0% {
+    transform: translate(-100%, -50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
 }
 
 .slide-in-left {
   animation: slideInFromLeft 555ms ease-in-out forwards;
 }
+
 
 app-add-new-members {
   @include flexBox(column, top, left, 20);
@@ -195,6 +196,11 @@ textarea::placeholder {
   }
 }
 
+
+
+
+
+
 @media (max-width: 1000px) {
   .sectionMain {
     width: 90%;
@@ -214,10 +220,8 @@ textarea::placeholder {
     @include flexBox('', center, center, '');
     width: 100%;
   }
-  app-add-new-members {
-    width: 90%;
-  }
 }
+
 
 @media (max-width: 600px) {
   .sectionMain {
@@ -227,14 +231,6 @@ textarea::placeholder {
     border-radius: 0px;
     animation: none;
   }
-  
-  app-add-new-members {
-    width: 100%;
-    border-radius: 30px 30px 0px 0px;
-    height: fit-content;
-    padding: 32px 24px;
-  }
-
   .popup-wrapper {
     position: absolute;
     display: flex;
@@ -243,24 +239,23 @@ textarea::placeholder {
     bottom: 0;
     width: 100%;
     padding-bottom: 280px;
-    border-radius: 30px 30px 0 0;
+    border-radius: 20px 20px 0 0;
     background-color: $white;
     animation: slideUpFromBottom 777ms ease-out forwards;
     z-index: 999;
   }
-
   .slide-down {
     animation: slideDownToBottom 777ms ease-out forwards;
   }
 }
+
 
 @media (max-width: 400px) {
   .sectionMain {
     padding: 40px 16px;
   }
   app-add-new-members {
-    @include flexBox(column, top, left, 20);
-    padding: 32px 16px;
+    padding: 28px 20px;
   }
 }
 
