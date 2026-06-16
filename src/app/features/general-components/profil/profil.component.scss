@@ -59,17 +59,21 @@ img {
 }
 
 .avatarButtons {
-  @include flexBox("", center, center, 10);
+  @include flexBox("", center, center, "");
   height: 48px;
   width: 48px;
   border-radius: 50%;
   cursor: pointer;
+  transition: all 222ms ease-in-out;
   img {
     height: 48px;
     width: 48px;
+    border: solid 1px transparent;
   }
   &:hover {
-    opacity: 0.8;
+    transform: scale(1.11);
+    filter: brightness(110%) contrast(110%);
+    border: solid 1px $accent;
   }
 }
 
@@ -81,14 +85,12 @@ img {
 .avatarChoice {
   @include flexBox("", center, center, 10);
   position: absolute;
-  top: 210px;
+  top: 206px;
   background-color: $white;
   padding: 8px 24px;
   border-radius: 50px;
-  box-shadow:
-    -3px -3px 6px rgba(255, 255, 255, 0.6),
-    6px 6px 16px rgba(0, 0, 0, 0.2),
-    0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 7px 4px 8px rgba(0, 0, 0, 0.2) inset, 
+	-5px -4px 6px rgba(0, 0, 0, 0.25) inset;
 }
 
 .randomAvatarButton {
