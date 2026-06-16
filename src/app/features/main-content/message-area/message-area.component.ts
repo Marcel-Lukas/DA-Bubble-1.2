@@ -109,7 +109,7 @@ export class MessageAreaComponent implements OnChanges, OnDestroy {
       this.isLoading = false;
       setTimeout(() => {
         this.scrollToBottom();
-        this.composerRef?.focus();
+        this.focusComposer();
       }, 2000);
     }, 500);
   }
@@ -120,8 +120,28 @@ export class MessageAreaComponent implements OnChanges, OnDestroy {
       this.prepareForReload();
       this.loadMessages();
       this.loadChatData();
-      setTimeout(() => this.composerRef?.focus(), 500);
+      setTimeout(() => this.focusComposer(), 500);
     }
+  }
+
+  /**
+   * Focuses the composer input automatically, but only on desktop viewports.
+   * On touch/mobile devices an automatic focus would pop up the on-screen
+   * keyboard whenever a chat or channel is opened, which is unwanted. There the
+   * keyboard should only appear once the user actively taps the input field.
+   */
+  private focusComposer(): void {
+    if (this.isAutoFocusAllowed()) {
+      this.composerRef?.focus();
+    }
+  }
+
+  /** Auto-focus is only allowed on wide (desktop) viewports without touch. */
+  private isAutoFocusAllowed(): boolean {
+    const isWideViewport = window.innerWidth > 1000;
+    const isTouchDevice =
+      'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    return isWideViewport && !isTouchDevice;
   }
 
   ngOnDestroy(): void {
@@ -170,7 +190,7 @@ export class MessageAreaComponent implements OnChanges, OnDestroy {
     }
 
     if (more)    setTimeout(() => this.scrollToBottom(), 100);
-    if (initial) setTimeout(() => this.composerRef?.focus(), 0);
+    if (initial) setTimeout(() => this.focusComposer(), 0);
   }
 
   private setThreadContextName(parent: Message) {
