@@ -375,6 +375,19 @@ export class AuthentificationService {
   }
 
   /**
+   * Generates a random but persistent avatar URL for each guest 
+   * via the API. The UID serves as the starting value (?u=<uid>), 
+   * ensuring that each guest receives their own image, which remains 
+   * unchanged even after the page is reloaded or redrawn.
+   * https://www.dicebear.com/playground/
+   * @param uid UID of the guest (seed for the image).
+   * @returns Full image URL.
+   */
+  // private buildGuestAvatarUrl(uid: string): string {
+  //   return `https://api.dicebear.com/10.x/avataaars-neutral/svg?mouthVariant=default,eating,grimace,serious,smile,tongue,twinkle&eyesVariant=default,eyeRoll,happy,hearts,side,squint,surprised,wink,winkWacky&eyebrowsVariant=default,defaultNatural,flatNatural,frownNatural,raisedExcited,raisedExcitedNatural,unibrowNatural,upDown,upDownNatural&seed=${encodeURIComponent(uid)}`;
+  // }
+
+  /**
    * Adds the user to the default channel. Fails gracefully: if the channel
    * does not exist (e.g. accidentally deleted), it is recreated instead of
    * aborting the entire login.

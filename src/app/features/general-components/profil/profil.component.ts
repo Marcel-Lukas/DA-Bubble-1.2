@@ -213,6 +213,18 @@ export class ProfilComponent {
     this.showAvatarChoice = false;
   }
 
+  /**
+   * Sets a random avatar by generating an 8-character seed and 
+   * passing it to the API. Each seed produces a different avatar, 
+   * so a new random seed yields a new image on every call.
+   * https://www.dicebear.com/playground/
+   */
+  // setRandomAvatar(): void {
+  //   const img = this.generateRandomSeed(8);
+  //   this.userImage = `https://api.dicebear.com/10.x/avataaars-neutral/svg?seed=${img}`;
+  //   this.showAvatarChoice = false;
+  // }
+
 
   bigUserImg(): void {
     this.showAvatarChoice = !this.showAvatarChoice;
