@@ -153,6 +153,7 @@ export class UserNameComponent {
     } else {
       document.exitFullscreen();
     }
+    this.toggleLogOut();
   }
 
   /**
@@ -161,6 +162,11 @@ export class UserNameComponent {
    * removed so they leave no leftover data behind.
    */
   async logOut() {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch((err) => {
+        console.error('Vollbild konnte nicht beendet werden:', err);
+      });
+    }
     if (this.userEmail === '') {
       await this.channelService.deleteChannelsByCreator(this.activeUserId!);
       await this.messageService.deleteMessagesBySender(this.activeUserId!);
