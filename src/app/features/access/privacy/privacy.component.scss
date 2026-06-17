@@ -48,6 +48,16 @@ h1 {
     font-size: clamp(16px, 3vw, 18px);
   }
 
+  a {
+    text-decoration: none;
+    cursor: pointer;
+    color: vari.$accent;
+    &:hover {
+      color: vari.$main2;
+      text-decoration: underline;
+    }
+  }
+
   > h2 {
     font-size: clamp(18px, 3vw, 24px);
   }
@@ -73,7 +83,7 @@ h1 {
 
 @media (max-width: 700px) {
   :host {
-    max-height: 72vh;
+    max-height: 70vh;
   }
 }
 
