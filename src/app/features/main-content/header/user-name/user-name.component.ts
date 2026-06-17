@@ -172,6 +172,6 @@ export class UserNameComponent {
       await this.messageService.deleteMessagesBySender(this.activeUserId!);
     } 
     await this.authService.logout();
-    await this.router.navigate(['/access']);
+    await this.router.navigate(['/']);
   }
 }

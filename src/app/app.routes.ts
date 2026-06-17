@@ -10,13 +10,12 @@ import { canDeactivateGuard } from './shared/guards/can-deactivate.guard';
  *   needs to ship the entire chat UI, which dramatically reduces the
  *   initial bundle.
  * - `authGuard` blocks unauthenticated access to `/home` and friends.
- * - `publicOnlyGuard` redirects already signed-in users away from `/access`.
+ * - `publicOnlyGuard` redirects already signed-in users away from the
+ *   access (login) screen, which now lives at the root path `''`.
  */
 export const routes: Routes = [
-  { path: '', redirectTo: 'access', pathMatch: 'full' },
-
   {
-    path: 'access',
+    path: '',
     canActivate: [publicOnlyGuard],
     loadComponent: () =>
       import('./features/access/access.component').then(
@@ -43,5 +42,5 @@ export const routes: Routes = [
       ),
   },
 
-  { path: '**', redirectTo: 'access' },
+  { path: '**', redirectTo: '' },
 ];

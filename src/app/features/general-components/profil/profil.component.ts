@@ -191,7 +191,7 @@ export class ProfilComponent {
     const userRef = doc(this.firestore, 'users', this.activeUserId);
     await deleteDoc(userRef);
     await this.authService.logout();
-    this.router.navigate(['/access']);
+    this.router.navigate(['/']);
   }
 
 

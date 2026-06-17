@@ -32,7 +32,7 @@ export const authGuard: CanActivateFn = async (): Promise<boolean | UrlTree> => 
     return true;
   }
 
-  return router.parseUrl('/access');
+  return router.parseUrl('/');
 };
 
 /**

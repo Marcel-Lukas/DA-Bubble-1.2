@@ -95,7 +95,7 @@ export class ConfirmPasswordComponent implements OnInit {
     setTimeout(() => this.toggleConfirmation(false), 2000);
   
     setTimeout(() => {
-      this.router.navigate(['/access']);
+      this.router.navigate(['/']);
       this.changeComponent('login');
     }, 3000);
   }
@@ -110,7 +110,7 @@ export class ConfirmPasswordComponent implements OnInit {
   }
 
   goBackToEmailConfirm(): void {
-    this.router.navigate(['/access']);
+    this.router.navigate(['/']);
     this.changeComponent('conMail');
   }
 

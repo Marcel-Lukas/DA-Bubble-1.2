@@ -27,9 +27,9 @@ export interface CanComponentDeactivate {
  * {@link CanComponentDeactivate}. Components that do not implement the
  * interface are always allowed to deactivate.
  *
- * A deliberate logout (which navigates to `/access`) must never trigger the
- * confirmation, so we skip the check while `AuthentificationService.isLoggingOut`
- * is set.
+ * A deliberate logout (which navigates to the root `/` access screen) must
+ * never trigger the confirmation, so we skip the check while
+ * `AuthentificationService.isLoggingOut` is set.
  */
 export const canDeactivateGuard: CanDeactivateFn<CanComponentDeactivate> = (
   component
