@@ -409,8 +409,8 @@ export class AuthentificationService {
           await updateDoc(channelRef, { cUserIds: arrayUnion(uid) });
         } else {
           await setDoc(channelRef, {
-            cName: 'Allgemein',
-            cDescription: 'Default channel for all members.',
+            cName: 'Gästekanal',
+            cDescription: 'Gästekanal zum Ausprobieren. (Temporär)',
             cCreatedByUser: uid,
             cUserIds: [uid],
             cTime: serverTimestamp(),
