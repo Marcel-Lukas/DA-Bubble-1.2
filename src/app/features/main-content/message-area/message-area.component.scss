@@ -373,6 +373,13 @@ app-add-new-members {
 }
 
 
+@media (max-height: 790px) {
+  .memberAddMessage {
+    overflow: hidden;
+  }
+}
+
+
 @media (max-width: 600px) {
   .openAddMemberPopUpButton.addButtonBefore {
     @media (max-width: 600px) {
