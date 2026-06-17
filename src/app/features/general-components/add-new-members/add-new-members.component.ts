@@ -41,6 +41,8 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
   selectedMembers: User[] = [];
   displayCount = 1;
   selectedOption: string = '';
+  /** Whether the currently active user is a guest (empty email). */
+  isActiveUserGuest = false;
 
   @Input() channelMembers: User[] = [];
   @Input() activeUserId!: string | null;
@@ -57,7 +59,7 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
 
 
   ngOnInit() {
-    this.rebuildAvailableList();
+    this.resolveActiveUserRole();
   }
 
 
@@ -65,10 +67,42 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
     if (changes['channelMembers']) {
       this.rebuildAvailableList();
     }
+    if (changes['activeUserId']) {
+      this.resolveActiveUserRole();
+    }
   }
 
 
-  /** Recomputes selectable users, excluding existing members and the self. */
+  /**
+   * Determines whether the active user is a guest (empty email). Guests may
+   * only ever add other guests, so the available list is rebuilt afterwards.
+   */
+  private async resolveActiveUserRole() {
+    if (!this.activeUserId) {
+      this.isActiveUserGuest = false;
+    } else {
+      try {
+        const activeUser = await this.userService.getUser(this.activeUserId);
+        this.isActiveUserGuest = activeUser.uEmail === '';
+      } catch {
+        this.isActiveUserGuest = false;
+      }
+    }
+    await this.rebuildAvailableList();
+  }
+
+
+  /** A guest is a real user (has a name) without an email address. */
+  private isGuestUser(user: User): boolean {
+    return user.uEmail === '';
+  }
+
+
+  /**
+   * Recomputes selectable users, excluding existing members and the self.
+   * Guests are restricted to picking other guests only – they can never add
+   * a registered user anywhere.
+   */
   private async rebuildAvailableList() {
     const allUsers = await this.userService.allUsers();
     const excluded = new Set<string>();
@@ -78,7 +112,10 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
     if (this.activeUserId) {
       excluded.add(this.activeUserId);
     }
-    this.availableMembers = allUsers.filter(u => u.uId && !excluded.has(u.uId));
+    this.availableMembers = allUsers.filter(
+      u => u.uId && !excluded.has(u.uId) &&
+        (!this.isActiveUserGuest || this.isGuestUser(u))
+    );
     this.filteredMembers  = [...this.availableMembers];
   }
 
@@ -194,13 +231,29 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
 
   async addNewChannelMembers() {
     if (!this.channelId || this.selectedMemberIds.length === 0) return;
-    await this.channelService.addUsersToChannel(
-      this.channelId,
-      ...this.selectedMemberIds
-    );
+    const memberIds = await this.restrictGuestSelection(this.selectedMemberIds);
+    if (memberIds.length === 0) {
+      this.close.emit();
+      return;
+    }
+    await this.channelService.addUsersToChannel(this.channelId, ...memberIds);
     this.selectedMemberIds = [];
     this.selectedMembers   = [];
     this.close.emit();
+  }
+
+
+  /**
+   * Defense-in-depth: even if the selection were tampered with, a guest can
+   * only ever add other guests. Returns the original list for non-guests.
+   */
+  private async restrictGuestSelection(ids: string[]): Promise<string[]> {
+    if (!this.isActiveUserGuest) return ids;
+    const allUsers = await this.userService.allUsers();
+    const guestIds = new Set(
+      allUsers.filter(u => this.isGuestUser(u)).map(u => u.uId)
+    );
+    return ids.filter(id => guestIds.has(id));
   }
 
   async createNewChannel(name: string, description: string) {
@@ -208,14 +261,14 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
     let ids: string[];
     if (this.selectedOption === 'option1') {
       const allUsers = await this.userService.allUsers();
-      // "Add all members" excludes guests (empty email) – only real,
-      // registered users are added to the channel.
+      // "Add all members": a registered user adds all other registered users
+      // (guests excluded). A guest may only ever add other guests.
       ids = allUsers
-        .filter((u) => u.uEmail !== '')
+        .filter((u) => this.isActiveUserGuest ? this.isGuestUser(u) : u.uEmail !== '')
         .map((u) => u.uId)
         .filter((id): id is string => typeof id === 'string');
     } else {
-      ids = [...this.selectedMemberIds];
+      ids = await this.restrictGuestSelection([...this.selectedMemberIds]);
     }
 
     if (!ids.includes(this.activeUserId)) {

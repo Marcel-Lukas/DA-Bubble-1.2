@@ -97,7 +97,7 @@
             </button>
             } @empty {
             <div class="memberItem allAdded">
-              <h3>{{ availableMembers.length === 0 ? 'Alle bereits hinzugefügt' : 'Member nicht gefunden' }}</h3>
+              <h3>{{ isActiveUserGuest && availableMembers.length === 0 ? 'Gäste können nicht hinzufügen' : (availableMembers.length === 0 ? 'Alle bereits hinzugefügt' : 'Member nicht gefunden') }}</h3>
             </div>
             }
           </div>
