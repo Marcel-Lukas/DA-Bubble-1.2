@@ -3,7 +3,6 @@
 
 form {
   @include mixin.dFlex($gap: clamp(12px, 2.5vw, 30px), $direction: column);
-
   > h1 {
     @include mixin.accHead(vari.$accent);
   }
@@ -55,4 +54,12 @@ form {
 .google {
   width: clamp(24px, 2.5vw, 38px);
   height: clamp(24px, 2.5vw, 38px);
+}
+
+
+
+@media (max-height: 790px) {
+  form {
+    @include mixin.dFlex($gap: clamp(12px, 2.5vw, 22px), $direction: column);
+  }
 }
