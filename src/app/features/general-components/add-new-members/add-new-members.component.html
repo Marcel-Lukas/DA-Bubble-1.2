@@ -95,6 +95,10 @@
               </div>
               <h3>{{ member.uName }}</h3>
             </button>
+            } @empty {
+            <div class="memberItem allAdded">
+              <h3>{{ availableMembers.length === 0 ? 'Alle bereits hinzugefügt' : 'Member nicht gefunden' }}</h3>
+            </div>
             }
           </div>
         }

@@ -198,6 +198,13 @@
   background-color: $main1;
 }
 
+.memberItem.allAdded {
+  cursor: default;
+  &:hover {
+    background-color: $white;
+  }
+}
+
 .inputNamePush {
   @include flexBox("", '', center, 10);
   
