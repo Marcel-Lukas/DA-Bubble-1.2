@@ -31,9 +31,9 @@ section {
 app-add-new-members {
   position: absolute;
   @include flexBox(column, initial, initial, 20);
-  top: 180px;
-  right: 8px;
-  width: 97%;
+  top: 200px;
+  right: 20px;
+  width: 500px;
   padding: 20px 30px;
   padding-bottom: 290px;
   background-color: $white;
@@ -70,6 +70,15 @@ app-add-new-members {
 }
 
 
+
+
+@media (max-width: 600px) {
+  app-add-new-members {
+    top: 180px;
+    right: 8px;
+    width: 97%;
+  }
+}
 
 
 @media (max-width: 550px) {
