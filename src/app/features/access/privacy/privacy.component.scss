@@ -4,14 +4,10 @@
 :host {
   position: relative;
   @include mixin.dFlex($gap: clamp(15px, 2.5vw, 55px), $direction: column);
-  max-height: 78vh;
+  max-height: 62vh;
 }
 
 .content {
-  margin-right: -40px;
-  margin-left: -30px;
-  margin-top: -40px;
-  // border: solid 2px red;
   padding: 28px;
   padding-right: 38px;
 }
@@ -27,10 +23,17 @@
 
 ul {
   list-style: none;
+  margin-bottom: 16px;
 }
 
 .arrow {
+  background-color: vari.$main1;
+  border-radius: 50%;
   @include mixin.arrow($bg-color: vari.$main1, $icon-color: vari.$accent);
+  transition: all 222ms ease-in-out;
+  &:hover {
+    transform: scale(1.22);
+  }
 }
 
 h1 {
@@ -51,5 +54,32 @@ h1 {
 
   > ul li {
     font-size: clamp(16px, 3vw, 18px);
+  }
+  .text-balance {
+    text-align: center;
+    text-wrap: balance;
+  }
+}
+
+
+
+
+@media (max-width: 930px) {
+  .arrow {
+    background-color: transparent !important;
+  }
+}
+
+
+@media (max-width: 700px) {
+  :host {
+    max-height: 72vh;
+  }
+}
+
+
+@media (max-width: 430px) {
+  h1 {
+    font-size: 24px;
   }
 }

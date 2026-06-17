@@ -8,23 +8,48 @@
 }
 
 .arrow {
+  background-color: vari.$main1;
+  border-radius: 50%;
   @include mixin.arrow($bg-color: vari.$main1, $icon-color: vari.$accent);
+  transition: all 222ms ease-in-out;
+  &:hover {
+    transform: scale(1.22);
+  }
 }
 
 h1 {
   @include mixin.accHead(vari.$accent);
+  text-decoration: underline;
 }
 
 .content {
   overflow: auto;
   @include mixin.dFlex($justify:normal, $gap: clamp(10px, 2.5vw, 15px), $direction: column);
 
-  > p {
+  > p, span, a {
     font-size: clamp(16px, 3vw, 18px);
+  }
+
+  a {
+    text-decoration: none;
+    cursor: pointer;
+    color: vari.$accent;
+    &:hover {
+      color: vari.$main2;
+      text-decoration: underline;
+    }
   }
 
   > h2 {
     font-size: clamp(18px, 3vw, 24px);
     text-align: center;
+  }
+}
+
+
+
+@media (max-width: 930px) {
+  .arrow {
+    background-color: transparent !important;
   }
 }
