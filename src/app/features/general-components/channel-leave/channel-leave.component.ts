@@ -62,6 +62,12 @@ export class ChannelLeaveComponent implements OnInit{
   constructor(private userService: UserService, private channelService: ChannelService) {}
 
 
+  /** Whether the active user created this channel (only the owner may edit it). */
+  get isOwner(): boolean {
+    return !!this.activeUserId && this.channelData?.cCreatedByUser === this.activeUserId;
+  }
+
+
   ngOnInit(): void {
     this.userService.getEveryUsers()
       .pipe(
@@ -164,11 +170,11 @@ export class ChannelLeaveComponent implements OnInit{
 
   saveNewName() {
     const newName = this.editedChannelName.trim();
-    if (!newName || newName.length < 3 || this.nameExists || !this.channelData?.cId) {
+    if (!newName || newName.length < 3 || this.nameExists || !this.channelData?.cId || !this.isOwner) {
       return;
     }
     this.channelService
-      .updateChannelName(this.channelData.cId, newName)
+      .updateChannelName(this.channelData.cId, newName, this.activeUserId)
       .then(() => {
         this.channelData!.cName = newName;
         this.nameUpdated.emit(newName);
@@ -180,8 +186,8 @@ export class ChannelLeaveComponent implements OnInit{
   
   saveDescription() {
     const newDesc = this.editedDescription.trim();
-    if (!newDesc || !this.channelData?.cId) return;
-    this.channelService.updateChannelDescription(this.channelData.cId, newDesc)
+    if (!newDesc || !this.channelData?.cId || !this.isOwner) return;
+    this.channelService.updateChannelDescription(this.channelData.cId, newDesc, this.activeUserId)
       .then(() => {
         this.channelData!.cDescription = newDesc;
       })

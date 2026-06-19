@@ -112,9 +112,17 @@ export class ChannelService {
     await updateDoc(channelRef, { cUserIds: updatedUserIds });
   }
 
-  async updateChannelName(channelId: string, newName: string): Promise<void> {
+  /**
+   * Updates the channel name. Only the creator/owner may edit it; for any other
+   * user the update is rejected (defense-in-depth alongside the UI).
+   */
+  async updateChannelName(channelId: string, newName: string, requestingUserId: string | null): Promise<void> {
     if (!channelId || !newName.trim()) return;
 
+    const isOwner = await this.isChannelOwner(channelId, requestingUserId);
+    if (!isOwner) {
+      throw new Error('Only the channel creator may edit this channel.');
+    }
     const channelRef = doc(this.firestore, 'channels', channelId);
     await updateDoc(channelRef, { cName: newName.trim() });
   }
@@ -126,7 +134,15 @@ export class ChannelService {
     return !snap.empty;
   }
 
-  async updateChannelDescription(channelId: string, newDescription: string): Promise<void> {
+  /**
+   * Updates the channel description. Only the creator/owner may edit it; for any
+   * other user the update is rejected (defense-in-depth alongside the UI).
+   */
+  async updateChannelDescription(channelId: string, newDescription: string, requestingUserId: string | null): Promise<void> {
+    const isOwner = await this.isChannelOwner(channelId, requestingUserId);
+    if (!isOwner) {
+      throw new Error('Only the channel creator may edit this channel.');
+    }
     const channelRef = doc(this.firestore, 'channels', channelId);
     await updateDoc(channelRef, { cDescription: newDescription });
   }

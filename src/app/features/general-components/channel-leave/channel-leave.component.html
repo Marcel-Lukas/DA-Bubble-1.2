@@ -14,10 +14,12 @@
                 <div [ngClass]="{ 'fade-in': hasInteractedName && isVisibleName, 'fade-out': hasInteractedName && !isVisibleName }" class="nameBox">
                     <div class="boxEdit">
                         <h3>Channel-Name</h3>
-                        <button class="editOverMobil editButton" (click)="toggleEdit()">Bearbeiten</button>
-                        <button class="editOverTablet editButton" (click)="toggleEdit()">
-                            <div class="material-symbols icon-edit closeIcon"></div>
-                        </button>
+                        @if (isOwner) {
+                            <button class="editOverMobil editButton" (click)="toggleEdit()">Bearbeiten</button>
+                            <button class="editOverTablet editButton" (click)="toggleEdit()">
+                                <div class="material-symbols icon-edit closeIcon"></div>
+                            </button>
+                        }
                     </div>
                     <div class="channelHashtagName">
                         <img src="assets/icons/hashtag.svg">
@@ -56,10 +58,12 @@
                     <div class="descriptionText">
                         <div class="boxEdit">
                             <h3>Beschreibung</h3>
-                            <button class="editOverMobil editButton" (click)="toggleDescription()">Bearbeiten</button>
-                            <button class="editOverTablet editButton" (click)="toggleDescription()">
-                                <div class="material-symbols icon-edit closeIcon"></div>
-                            </button>
+                            @if (isOwner) {
+                                <button class="editOverMobil editButton" (click)="toggleDescription()">Bearbeiten</button>
+                                <button class="editOverTablet editButton" (click)="toggleDescription()">
+                                    <div class="material-symbols icon-edit closeIcon"></div>
+                                </button>
+                            }
                         </div>
                         <div class="descriptionBoxText">{{ channelData?.cDescription}}</div>
                     </div>
