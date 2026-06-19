@@ -7,11 +7,11 @@
   <div>
     <h1>Leute hinzufügen</h1>
     <button class="closeIconButton" (click)="emitClose(); $event.stopPropagation()">
-      <div class="material-symbols closeIcon">close</div>
+      <div class="material-symbols icon-close closeIcon"></div>
     </button>
   </div>
   @if (showInput) {
-    <span class="addMemberChannel"><div class="material-symbols">tag</div>{{ channelName }}</span>
+    <span class="addMemberChannel"><div class="material-symbols icon-tag"></div>{{ channelName }}</span>
   }
 </header>
 @if (!showInput) {
@@ -68,7 +68,7 @@
               <span>{{ member.uName }}</span>
             </div>
             <button class="inputNamePushClose" (click)="toggleMember(member)">
-              <div class="material-symbols">close</div>
+              <div class="material-symbols icon-close"></div>
             </button>
           </div>
           } 

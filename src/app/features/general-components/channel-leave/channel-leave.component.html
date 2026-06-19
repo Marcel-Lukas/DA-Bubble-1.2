@@ -6,7 +6,7 @@
                 <h1>{{ channelData?.cName}}</h1>
             </div>
             <button (click)="closeWindow()" class="closeChannelLeave">
-                <div class="material-symbols closeIcon">close</div>
+                <div class="material-symbols icon-close closeIcon"></div>
             </button>
         </header>
         <div class="scrollContainer">
@@ -16,7 +16,7 @@
                         <h3>Channel-Name</h3>
                         <button class="editOverMobil editButton" (click)="toggleEdit()">Bearbeiten</button>
                         <button class="editOverTablet editButton" (click)="toggleEdit()">
-                            <div class="material-symbols closeIcon">edit</div>
+                            <div class="material-symbols icon-edit closeIcon"></div>
                         </button>
                     </div>
                     <div class="channelHashtagName">
@@ -35,7 +35,7 @@
                         </button>
                         <button  [disabled]=" !editedChannelName.trim() || editedChannelName.trim().length < 3 || nameExists" 
                             class="editOverTablet editButton" (click)="saveNewName()">
-                            <div class="material-symbols closeIcon">check_circle</div>
+                            <div class="material-symbols icon-check_circle closeIcon"></div>
                         </button>
                     </div>
                     <div class="editChannelName" >
@@ -58,7 +58,7 @@
                             <h3>Beschreibung</h3>
                             <button class="editOverMobil editButton" (click)="toggleDescription()">Bearbeiten</button>
                             <button class="editOverTablet editButton" (click)="toggleDescription()">
-                                <div class="material-symbols closeIcon">edit</div>
+                                <div class="material-symbols icon-edit closeIcon"></div>
                             </button>
                         </div>
                         <div class="descriptionBoxText">{{ channelData?.cDescription}}</div>
@@ -80,7 +80,7 @@
                                 <h3>Beschreibung</h3>
                                 <button class="editOverMobil editButton" (click)="toggleDescription(); saveDescription()">Speichern</button>
                                 <button class="editOverTablet editButton" (click)="toggleDescription(); saveDescription()">
-                                    <div class="material-symbols closeIcon">check_circle</div>
+                                    <div class="material-symbols icon-check_circle closeIcon"></div>
                                 </button>
                             </div>
                             <div class="inputDescription">

@@ -3,13 +3,13 @@
     <button class="channelHeadShow" (click)="showAllChannels()">
       <button class="showChannels">
         @if (!showChannels) {
-        <div class="material-symbols showChannelsIcon">arrow_drop_down</div>
+        <div class="material-symbols icon-arrow_drop_down showChannelsIcon"></div>
         } @else {
-        <div class="material-symbols showChannelsIcon">arrow_right</div>
+        <div class="material-symbols icon-arrow_right showChannelsIcon"></div>
         }
       </button>
       <div class="workSpaceText">
-        <div class="material-symbols workSpaceIcon">sort</div>
+        <div class="material-symbols icon-sort workSpaceIcon"></div>
         <h2>Channels</h2>
       </div>
     </button>
@@ -25,7 +25,7 @@
       >
         <div class="tagName">
           <div class="tagImage">
-            <div class="material-symbols hashtagIcon">tag</div>
+            <div class="material-symbols icon-tag hashtagIcon"></div>
           </div>
           <span>{{ channel.name }}</span>
           @if (unreadChannels.has(channel.id)) {
@@ -37,14 +37,14 @@
           class="deleteChannel"
           (click)="onDeleteClick(channel.id, $event)"
         >
-          <div class="material-symbols closeIcon">delete</div>
+          <div class="material-symbols icon-delete closeIcon"></div>
         </button>
         }
       </button>
       }
     </div>
     <button class="addChannel" (click)="toggleAddChannel()">
-      <div class="material-symbols addIconChannel">add_circle</div>
+      <div class="material-symbols icon-add_circle addIconChannel"></div>
       <span>Channel hinzufügen</span>
     </button>
   </section>

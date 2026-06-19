@@ -21,7 +21,8 @@ header {
 }
 
 .showChannelsIcon {
-  font-size: 30px;
+  width: 30px;
+  height: 30px;
   color: $black;
 }
 
@@ -39,7 +40,8 @@ header {
 
 .workSpaceIcon,
 .hashtagIcon {
-  font-size: 24px;
+  width: 24px;
+  height: 24px;
   color: $black;
 }
 
@@ -99,7 +101,8 @@ section {
 }
 
 .closeIcon{
-  font-size: 24px;
+  width: 24px;
+  height: 24px;
   color: $black;
   &:hover {
     color: $white;

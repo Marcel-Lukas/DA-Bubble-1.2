@@ -105,7 +105,8 @@ img {
   cursor: pointer;
   font-size: 16px;
   .material-symbols {
-    font-size: 24px;
+    width: 24px;
+    height: 24px;
     color: $accent;
   }
   &:hover {
@@ -154,9 +155,8 @@ header {
 }
 
 .editIcon {
-  font-size: 30px;
-  padding: 20px;
-  background-color: $main1;
+  width: 30px;
+  height: 30px;
 }
 
 .editIconShow {

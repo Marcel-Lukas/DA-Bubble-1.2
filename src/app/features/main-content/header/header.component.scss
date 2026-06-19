@@ -58,14 +58,27 @@ app-device-visible {
     }
   }
   .arrowLeft {
-    font-size: 48px;
+    // This icon needs a circular background AND the glyph, so the SVG mask is
+    // rendered on ::before while the element itself carries background/padding.
+    -webkit-mask-image: none;
+    mask-image: none;
+    background-color: $white;
+    width: auto;
+    height: auto;
     margin-right: 6px;
     border-radius: 50%;
     padding: 18px;
     color: $main2;
-    background-color: $white;
     cursor: pointer;
     transition: all 222ms ease-in-out;
+    &::before {
+      content: "";
+      width: 48px;
+      height: 48px;
+      background-color: currentColor;
+      -webkit-mask: url("/assets/icons/keyboard_arrow_left.svg") no-repeat center / contain;
+      mask: url("/assets/icons/keyboard_arrow_left.svg") no-repeat center / contain;
+    }
   }
   button:hover .arrowLeft {
     color: $accent;

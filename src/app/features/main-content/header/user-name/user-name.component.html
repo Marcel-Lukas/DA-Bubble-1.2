@@ -12,7 +12,7 @@
     </div>
   </div>
   <button class="openLogOut" (click)="toggleLogOut()"  #arrowToggleBtn>
-    <div class="arrowDownHeight material-symbols arrowDown">keyboard_arrow_down</div>
+    <div class="arrowDownHeight material-symbols icon-keyboard_arrow_down arrowDown"></div>
   </button>
 </main>
 @if (isLogOutVisible) {
@@ -23,15 +23,15 @@
       </app-device-visible>
       <div class="logOut" #logOutBox>
         <button (click)="openProfil()">
-          <div class=" material-symbols">account_circle</div>
+          <div class=" material-symbols icon-account_circle"></div>
           <span>Profil</span>
         </button>
         <button (click)="toggelFullscreen()">
-          <div class=" material-symbols">crop_free</div>
+          <div class=" material-symbols icon-crop_free"></div>
           <span>Vollbild</span>
         </button>
         <button (click)="logOut()">
-          <div class=" material-symbols">logout</div>
+          <div class=" material-symbols icon-logout"></div>
           <span>Log out</span>
         </button>
       </div>

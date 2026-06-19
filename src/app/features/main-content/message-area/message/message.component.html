@@ -7,7 +7,7 @@
     <textarea #editTextarea type="text" [(ngModel)]="editText"></textarea>
     <div>
       <!-- <button #emojiBtn class="icon-button blue-hover" (click)="toggleEmojiPicker($event)">
-        <div class="material-symbols textfield-icon">sentiment_satisfied</div>
+        <div class="material-symbols icon-sentiment_satisfied textfield-icon"></div>
       </button> -->
       <div>
         <button class="secondary-btn" (click)="toggleEdit()">Abbrechen</button>
@@ -82,17 +82,14 @@
     <span class="owner-occupied-removed" (click)="addReaction(reaction)">{{ reaction }}</span>
     } }
 
-    <span #emojiBtn class="material-symbols action-btn owner-occupied-removed" (click)="toggleEmojiPicker($event)">
-      mood
+    <span #emojiBtn class="material-symbols icon-mood action-btn owner-occupied-removed" (click)="toggleEmojiPicker($event)">
     </span>
 
-    <div class="material-symbols action-btn" [class.d-none]="chatType === 'thread'" (click)="onThreadClick()">
-      comment
+    <div class="material-symbols icon-comment action-btn" [class.d-none]="chatType === 'thread'" (click)="onThreadClick()">
     </div>
 
-    <div #optionsBtn class="material-symbols action-btn" [class.d-none]="message.mSenderId != activeUserId"
+    <div #optionsBtn class="material-symbols icon-build_circle action-btn" [class.d-none]="message.mSenderId != activeUserId"
       (click)="toggleOptions($event)">
-      build_circle
     </div>
 
     @if (isOptionsOpen) {
@@ -100,7 +97,7 @@
       <div (click)="openEdit()">Bearbeiten</div>
       <div (click)="togglePermanentDelete()" class="wrapper">
         Löschen 
-        <div class="material-symbols">delete</div>
+        <div class="material-symbols icon-delete"></div>
       </div>
     </div>
     }

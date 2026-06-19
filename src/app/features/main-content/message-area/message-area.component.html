@@ -1,7 +1,7 @@
 @if (isLoading) {
   
 <div class="loading-screen">
-  <div class="material-symbols renew-icon rotating-icon">autorenew</div>
+  <div class="material-symbols icon-autorenew renew-icon rotating-icon"></div>
 </div>
 }@else {
 <section>
@@ -19,7 +19,7 @@
     <div class="new-suggestions">
       @for (ch of foundChannelsNew; track ch.cId) {
       <div (click)="selectChannelNew(ch)">
-        <div class="material-symbols">tag</div>
+        <div class="material-symbols icon-tag"></div>
         <span>{{ ch.cName }}</span>
       </div>
       } @for (u of foundUsersNew; track u.uId) {
@@ -52,9 +52,9 @@
     } @else if (chatType === 'channel') {
     <div class="channel-header">
       <a class="channel-name" (click)="toggleEdit()">
-        <div class="material-symbols tag-icon">tag</div>
+        <div class="material-symbols icon-tag tag-icon"></div>
         <h1>{{ channelData?.cName }}</h1>
-        <div class="material-symbols tag-icon">keyboard_arrow_down</div>
+        <div class="material-symbols icon-keyboard_arrow_down tag-icon"></div>
       </a>
       <div class="channel-members">
         <div class="channel-every-member" (click)="toggleChannelMembers()">
@@ -69,13 +69,13 @@
           class="addButtonBefore openAddMemberPopUpButton"
           (click)="openAddMemberPopUp()"
         >
-          <span class="material-symbols add-person-icon">person_add</span>
+          <span class="material-symbols icon-person_add add-person-icon"></span>
         </button>
         <button
           class="addButtonAfter openAddMemberPopUpButton"
           (click)="toggleChannelMembers()"
         >
-          <span class="material-symbols add-person-icon">person_add</span>
+          <span class="material-symbols icon-person_add add-person-icon"></span>
         </button>
       </div>
     </div>
@@ -85,7 +85,7 @@
         <h1>Thread</h1>
         <span>{{ threadContextName }}</span>
       </div>
-      <div class="material-symbols" (click)="handleCloseThread()">close</div>
+      <div class="material-symbols icon-close" (click)="handleCloseThread()"></div>
     </div>
     }
   </div>
@@ -144,7 +144,7 @@
     } @else if(chatType === 'channel'){
     <div class="empty-channel-chat">
       <div>
-        <div class="material-symbols tag-icon">tag</div>
+        <div class="material-symbols icon-tag tag-icon"></div>
         <h1>{{ channelData?.cName }}</h1>
       </div>
       <p>

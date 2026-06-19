@@ -74,7 +74,8 @@ section{
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 40;
-  font-size: 28px;
+  width: 28px;
+  height: 28px;
   transition: opacity 0.3s ease;
 }
 

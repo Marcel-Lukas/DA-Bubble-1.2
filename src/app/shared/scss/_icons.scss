@@ -1,0 +1,52 @@
+// Local SVG icon system (replaces the former Material Symbols icon font).
+//
+// Each icon element keeps the generic `.material-symbols` box (size, cursor,
+// flex centering, border-radius) and additionally gets an `.icon-<name>`
+// class. The concrete SVG is applied as a CSS mask, while the visible color
+// comes from `background-color: currentColor`. This preserves every existing
+// `color` rule (including hover/active states) and click behaviour 1:1.
+
+// All icons share the same mask setup; only the mask-image differs per icon.
+%icon-mask-base {
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+@mixin icon($name) {
+  @extend %icon-mask-base;
+  -webkit-mask-image: url("/assets/icons/#{$name}.svg");
+  mask-image: url("/assets/icons/#{$name}.svg");
+}
+
+.icon-close { @include icon("close"); }
+.icon-edit { @include icon("edit"); }
+.icon-check_circle { @include icon("check_circle"); }
+.icon-left_panel_close { @include icon("left_panel_close"); }
+.icon-left_panel_open { @include icon("left_panel_open"); }
+.icon-refresh { @include icon("refresh"); }
+.icon-edit_square { @include icon("edit_square"); }
+.icon-delete { @include icon("delete"); }
+.icon-tag { @include icon("tag"); }
+.icon-person_add { @include icon("person_add"); }
+.icon-arrow_drop_down { @include icon("arrow_drop_down"); }
+.icon-arrow_right { @include icon("arrow_right"); }
+.icon-account_circle { @include icon("account_circle"); }
+.icon-sentiment_satisfied { @include icon("sentiment_satisfied"); }
+.icon-schedule { @include icon("schedule"); }
+.icon-alternate_email { @include icon("alternate_email"); }
+.icon-send { @include icon("send"); }
+.icon-sort { @include icon("sort"); }
+.icon-add_circle { @include icon("add_circle"); }
+.icon-keyboard_arrow_left { @include icon("keyboard_arrow_left"); }
+.icon-autorenew { @include icon("autorenew"); }
+.icon-keyboard_arrow_down { @include icon("keyboard_arrow_down"); }
+.icon-crop_free { @include icon("crop_free"); }
+.icon-logout { @include icon("logout"); }
+.icon-mood { @include icon("mood"); }
+.icon-comment { @include icon("comment"); }
+.icon-build_circle { @include icon("build_circle"); }

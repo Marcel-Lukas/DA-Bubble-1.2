@@ -22,7 +22,7 @@
 
 @if (isRateLimited) {
 <div class="rate-limit-hint">
-  <span class="material-symbols">schedule</span>
+  <span class="material-symbols icon-schedule"></span>
   <span class="hint">Spamschutz – du sendest zu schnell</span>
 </div>
 }
@@ -41,15 +41,15 @@
 <div class="textfield-buttons">
   <div>
     <button class="icon-button blue-hover" (click)="toggleEmojiPicker($event)">
-      <div class="material-symbols textfield-icon">sentiment_satisfied</div>
+      <div class="material-symbols icon-sentiment_satisfied textfield-icon"></div>
     </button>
 
     <button class="icon-button blue-hover" (click)="openUserSuggestions()">
-      <div class="material-symbols textfield-icon">alternate_email</div>
+      <div class="material-symbols icon-alternate_email textfield-icon"></div>
     </button>
   </div>
 
   <button class="icon-button" [disabled]="!newMessageText.trim()">
-    <div class="material-symbols send-icon" (click)="sendMessage()">send</div>
+    <div class="material-symbols icon-send send-icon" (click)="sendMessage()"></div>
   </button>
 </div>

@@ -50,10 +50,22 @@
     }
   }
   .add-person-icon {
+    // Circular background + glyph: render the SVG mask on ::before so the
+    // element can keep its $main1 background.
+    -webkit-mask-image: none;
+    mask-image: none;
     width: 40px;
     height: 40px;
     background-color: $main1;
     border: none;
     border-radius: 50px;
+    &::before {
+      content: "";
+      width: 24px;
+      height: 24px;
+      background-color: currentColor;
+      -webkit-mask: url("/assets/icons/person_add.svg") no-repeat center / contain;
+      mask: url("/assets/icons/person_add.svg") no-repeat center / contain;
+    }
   }
 }

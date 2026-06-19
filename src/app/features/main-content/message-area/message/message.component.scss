@@ -305,12 +305,15 @@ section.thread:not(.row-reverse) {
     cursor: pointer;
     width: 40px;
     height: 40px;
-    font-size: 20px;
+    mask-size: 20px;
+    -webkit-mask-size: 20px;
     @include flexBox(initial, center, center, 0);
   }
   .action-btn {
     width: 40px;
     height: 40px;
+    mask-size: 20px;
+    -webkit-mask-size: 20px;
   }
 }
 
@@ -350,7 +353,8 @@ emoji-mart {
     justify-content: space-between;
     .material-symbols {
       margin-left: 6px;
-      font-size: 21px;
+      width: 21px;
+      height: 21px;
     }
   }
 

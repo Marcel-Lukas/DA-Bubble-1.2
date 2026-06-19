@@ -8,7 +8,7 @@
                 <h1 >Dein Profil bearbeiten</h1>
             }
             <button (click)="closeProfil()" class="closeProfil">
-                <div class="material-symbols closeIcon">close</div>
+                <div class="material-symbols icon-close closeIcon"></div>
             </button>
         </header>
         @if (!showEditProfil) {
@@ -20,7 +20,7 @@
                     <img class="profilPic" [src]="userImage" appImageFallback>
                 </button>
                 <button type="button" class="randomAvatarButton" (click)="setRandomAvatar()">
-                    <div class="material-symbols">refresh</div>
+                    <div class="material-symbols icon-refresh"></div>
                     <span>Zufälliges Bild</span>
                 </button>
                 @if (showAvatarChoice) {
@@ -41,7 +41,7 @@
                     @if (!showButton) {
                         <a (click)="onEditClick()">Bearbeiten</a>
                         <button (click)="onEditClick()" class="editIconShow">
-                            <div class="material-symbols editIcon">edit_square</div>
+                            <div class="material-symbols icon-edit_square editIcon"></div>
                         </button>
                     }
                 </div>
@@ -99,7 +99,7 @@
             @if (!showEditProfil) {
                 <div class="messageArea">
                     <button (click)="deleteMember()" class="button deleteButtonBackground">
-                        <div class="material-symbols deleteIcon">delete</div>
+                        <div class="material-symbols icon-delete deleteIcon"></div>
                         <span>Account Löschen</span>
                     </button>
                 </div>

@@ -1,11 +1,10 @@
 @use "./app/shared/scss/variables" as vari;
+@use "./app/shared/scss/icons";
 @import "@fontsource/nunito/400.css";
 @import "@fontsource/nunito/600.css";
 @import "@fontsource/nunito/700.css";
 @import "@fontsource/figtree/400.css";
 @import "@fontsource/figtree/500.css";
-@import "@fontsource/material-symbols-rounded/400.css";
-@import "@fontsource/material-symbols-rounded/700.css";
 
 * {
   padding: 0;
@@ -192,10 +191,9 @@ textarea {
   cursor: pointer;
   width: 24px;
   height: 24px;
+  // `color` is the source for the SVG mask color (background-color:
+  // currentColor in _icons.scss), so existing color rules keep working.
   color: vari.$black;
-  font-family: "Material Symbols Rounded";
-  font-size: 24px;
-  font-weight: 400;
   border-radius: 50%;
   @include flexBox(row, center, center, 0);
 }
