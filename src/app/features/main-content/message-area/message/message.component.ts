@@ -28,6 +28,7 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { PermanentDeleteComponent } from '../../../general-components/permanent-delete/permanent-delete.component';
 import { FormsModule } from '@angular/forms';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
+import { FormatTag, toggleFormatTag } from '../../../../shared/utils/text-format.util';
 
 // NOTE: `<emoji-mart>` is only referenced inside a `@defer` block in the
 // template. Angular therefore emits `@ctrl/ngx-emoji-mart` (and its CSS) as
@@ -552,31 +553,23 @@ export class MessageComponent implements OnInit {
   }
 
   /**
-   * Wraps the current selection in the edit textarea in the given formatting
-   * tag (`b`, `i` or `u`). With nothing selected, an empty tag pair is inserted
-   * and the caret placed in between. Mirrors the composer's `applyFormat`.
+   * Toggles the given formatting tag (`b`, `i` or `u`) around the current
+   * selection in the edit textarea: wraps on first press, removes the tags when
+   * pressed again on an already-wrapped selection. With nothing selected an
+   * empty tag pair is inserted. Mirrors the composer's `applyFormat`.
    */
-  applyEditFormat(tag: 'b' | 'i' | 'u', event: MouseEvent) {
+  applyEditFormat(tag: FormatTag, event: MouseEvent) {
     event.preventDefault();
     const ta = this.editTextareaRef?.nativeElement;
     if (!ta) return;
 
     const start = ta.selectionStart ?? this.editText.length;
     const end = ta.selectionEnd ?? start;
-    const open = `<${tag}>`;
-    const close = `</${tag}>`;
-    const selected = this.editText.slice(start, end);
+    const result = toggleFormatTag(this.editText, start, end, tag);
 
-    this.editText =
-      this.editText.slice(0, start) +
-      open +
-      selected +
-      close +
-      this.editText.slice(end);
-
-    const caret = start + open.length;
+    this.editText = result.text;
     setTimeout(() => {
-      ta.setSelectionRange(caret, caret + selected.length);
+      ta.setSelectionRange(result.selectionStart, result.selectionEnd);
       ta.focus();
     });
   }

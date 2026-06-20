@@ -25,6 +25,7 @@ import { User } from '../../../../shared/interfaces/user.interface';
 import { Channel } from '../../../../shared/interfaces/channel.interface';
 import { OnlinePipe } from '../../../../shared/pipes/online.pipe';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
+import { FormatTag, toggleFormatTag } from '../../../../shared/utils/text-format.util';
 
 @Component({
   selector: 'app-message-composer',
@@ -221,34 +222,26 @@ export class MessageComposerComponent implements OnDestroy {
   }
 
   /**
-   * Wraps the current text selection in the given formatting tag (`b`, `i` or
-   * `u`). When nothing is selected, an empty tag pair is inserted and the caret
-   * is placed in between so the user can type the text to be formatted. This
-   * lets users style text without knowing the markup themselves.
+   * Toggles the given formatting tag (`b`, `i` or `u`) around the current text
+   * selection: it wraps the selection on first press and removes the tags when
+   * pressed again on an already-wrapped selection. With nothing selected an
+   * empty tag pair is inserted and the caret placed in between. This lets users
+   * style text without knowing the markup themselves.
    */
-  applyFormat(tag: 'b' | 'i' | 'u', event: MouseEvent) {
+  applyFormat(tag: FormatTag, event: MouseEvent) {
     event.preventDefault();
     const ta = this.messageInputRef?.nativeElement;
     if (!ta) return;
 
     const start = ta.selectionStart ?? this.newMessageText.length;
     const end = ta.selectionEnd ?? start;
-    const open = `<${tag}>`;
-    const close = `</${tag}>`;
-    const selected = this.newMessageText.slice(start, end);
+    const result = toggleFormatTag(this.newMessageText, start, end, tag);
 
-    this.newMessageText =
-      this.newMessageText.slice(0, start) +
-      open +
-      selected +
-      close +
-      this.newMessageText.slice(end);
-    ta.value = this.newMessageText;
+    this.newMessageText = result.text;
+    ta.value = result.text;
 
-    // Keep the selection wrapped (or place the caret between the tags when
-    // nothing was selected) and restore focus.
-    const caret = start + open.length;
-    ta.setSelectionRange(caret, caret + selected.length);
+    // Keep the (un)formatted text selected and restore focus.
+    ta.setSelectionRange(result.selectionStart, result.selectionEnd);
     ta.focus();
   }
 
