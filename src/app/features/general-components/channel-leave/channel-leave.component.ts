@@ -11,12 +11,13 @@ import { DeviceVisibleComponent } from '../../../shared/services/responsive';
 import { MemberListComponent } from '../member-list/member-list.component';
 import { ProfilComponent } from '../profil/profil.component';
 import { AddNewMembersComponent } from '../add-new-members/add-new-members.component';
+import { PermanentDeleteComponent } from '../permanent-delete/permanent-delete.component';
 import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-channel-leave',
   standalone: true,
-  imports: [CommonModule, FormsModule, DeviceVisibleComponent, MemberListComponent, ProfilComponent, AddNewMembersComponent],
+  imports: [CommonModule, FormsModule, DeviceVisibleComponent, MemberListComponent, ProfilComponent, AddNewMembersComponent, PermanentDeleteComponent],
   templateUrl: './channel-leave.component.html',
   styleUrl: './channel-leave.component.scss',
 })
@@ -58,6 +59,8 @@ export class ChannelLeaveComponent implements OnInit{
   nameExists = false;
   createdByUserName: string = 'Unbekannt';
   confirmLeave: boolean = false;
+  /** Member pending removal while the confirmation dialog is open. */
+  memberToRemove: User | null = null;
 
   constructor(private userService: UserService, private channelService: ChannelService) {}
 
@@ -163,12 +166,33 @@ export class ChannelLeaveComponent implements OnInit{
   }
 
 
+  /** Opens the confirmation dialog before removing another member. */
+  requestRemoveOtherMember(member: User) {
+    if (!this.isOwner || member.uId === this.channelData?.cCreatedByUser) return;
+    this.memberToRemove = member;
+  }
+
+
+  /** Heading for the member-removal confirmation dialog (includes the name). */
+  get removeMemberHeading(): string {
+    return `${this.memberToRemove?.uName ?? 'Mitglied'} wirklich aus dem Channel entfernen?`;
+  }
+
+
+  /** Closes the member-removal confirmation dialog. */
+  cancelRemoveOtherMember() {
+    this.memberToRemove = null;
+  }
+
+
   /**
-   * Removes another member from the channel (owner only). Only membership
+   * Removes the confirmed member from the channel (owner only). Only membership
    * (`cUserIds`) changes; the member's existing messages are kept.
    */
-  async removeOtherMember(member: User) {
-    if (!this.isOwner || !this.channelData?.cId || !member.uId) return;
+  async confirmRemoveOtherMember() {
+    const member = this.memberToRemove;
+    this.memberToRemove = null;
+    if (!member || !this.isOwner || !this.channelData?.cId || !member.uId) return;
     if (member.uId === this.channelData.cCreatedByUser) return;
     await this.channelService.removeUserFromChannel(this.channelData.cId, member.uId);
     this.channelMembers = this.channelMembers.filter(m => m.uId !== member.uId);

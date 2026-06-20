@@ -3,7 +3,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { MessageService } from '../../../shared/services/message.service';
 import { ChannelService } from '../../../shared/services/channel.service';
 
-type DeleteTarget = 'message' | 'channel' | 'user';
+type DeleteTarget = 'message' | 'channel' | 'user' | 'member';
 
 @Component({
   selector: 'app-permanent-delete',
@@ -24,9 +24,11 @@ export class PermanentDeleteComponent {
   @Input({ required: true }) id!: any;
   /** Id of the currently logged-in user – required for the owner check when deleting a channel. */
   @Input() requestingUserId: string | null = null;
+  /** Optional override for the dialog heading (e.g. to include a member's name). */
+  @Input() headingText: string | null = null;
 
   @Output() close = new EventEmitter<void>();
-  /** Emitted when the user confirms deletion of a `'user'` target. */
+  /** Emitted when the user confirms a `'user'` or `'member'` target. */
   @Output() confirm = new EventEmitter<void>();
 
   onNo(): void {
@@ -55,6 +57,7 @@ export class PermanentDeleteComponent {
           });
         break;
       case 'user':
+      case 'member':
         this.confirm.emit();
         break;
 
@@ -64,6 +67,9 @@ export class PermanentDeleteComponent {
     }
   }
   get heading(): string {
+    if (this.headingText) {
+      return this.headingText;
+    }
     switch (this.target) {
       case 'message':
         return 'Nachricht permanent löschen?';
@@ -71,6 +77,8 @@ export class PermanentDeleteComponent {
         return 'Channel permanent löschen?';
       case 'user':
         return 'Account permanent löschen?';
+      case 'member':
+        return 'Mitglied wirklich entfernen?';
       default:
         return 'Permanent löschen?';
     }

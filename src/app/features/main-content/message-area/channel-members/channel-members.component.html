@@ -22,7 +22,7 @@
       [channelCreatorId]="channelCreatorId"
       (addMember)="addChannelMember()"
       (showProfil)="toggleMemberProfil($event)"
-      (removeMember)="removeOtherMember($event)"
+      (removeMember)="requestRemoveOtherMember($event)"
     ></app-member-list>
   </section>
 </main>
@@ -40,5 +40,14 @@
     [showButton]="activeUserId !== activChannelMemberProfil?.uId"
     (close)="toggleMemberProfil()"
   ></app-profil>
+}
+@if (memberToRemove) {
+  <app-permanent-delete
+    [target]="'member'"
+    [id]="memberToRemove.uId"
+    [headingText]="removeMemberHeading"
+    (confirm)="confirmRemoveOtherMember()"
+    (close)="cancelRemoveOtherMember()"
+  ></app-permanent-delete>
 }
 

@@ -110,7 +110,7 @@
                     [channelCreatorId]="channelData?.cCreatedByUser ?? null"
                     (addMember)="addMember.emit()"
                     (showProfil)="toggleMemberProfil($event)"
-                    (removeMember)="removeOtherMember($event)"
+                    (removeMember)="requestRemoveOtherMember($event)"
                   ></app-member-list>
                 </app-device-visible>
             </div>
@@ -154,6 +154,15 @@
       ></app-add-new-members>
     </div>
   }
+@if (memberToRemove) {
+    <app-permanent-delete
+        [target]="'member'"
+        [id]="memberToRemove.uId"
+        [headingText]="removeMemberHeading"
+        (confirm)="confirmRemoveOtherMember()"
+        (close)="cancelRemoveOtherMember()"
+    ></app-permanent-delete>
+}
 @if (confirmLeave) {
     <div (click)="cancelLeave()" class="confirmLeaveOverlay">
         <div (click)="$event.stopPropagation()" class="confirmLeaveModal">
