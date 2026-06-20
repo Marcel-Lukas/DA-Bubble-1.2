@@ -208,6 +208,18 @@ section.thread:not(.row-reverse) {
         background-color: oklch(from #{$accent} calc(l + 0.03) c h / 0.12);
       }
     }
+
+    .message-link {
+      color: $accent;
+      font-weight: bold;
+      text-decoration: none;
+      word-break: break-all;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   .message-attachments {
@@ -235,6 +247,15 @@ section.thread:not(.row-reverse) {
       &:hover {
         color: $white;
         background-color: rgba(255, 255, 255, 0.22);
+      }
+    }
+
+    .message-link {
+      color: $white;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
       }
     }
   }

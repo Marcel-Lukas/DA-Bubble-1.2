@@ -40,11 +40,13 @@ import { FormatTag, toggleFormatTag } from '../../../../shared/utils/text-format
  * of a user (`@`) or a channel (`#`).
  */
 export interface MessageSegment {
-  type: 'text' | 'user' | 'channel';
-  /** Text to display (e.g. `@Max`, `#general` or plain text). */
+  type: 'text' | 'user' | 'channel' | 'link';
+  /** Text to display (e.g. `@Max`, `#general`, a URL or plain text). */
   label: string;
   /** Id of the referenced user/channel, if resolvable. */
   refId?: string;
+  /** Absolute URL to open for `link` segments. */
+  href?: string;
   /** Whether the segment is bold (`<b>`). */
   bold?: boolean;
   /** Whether the segment is italic (`<i>`). */
@@ -144,6 +146,9 @@ export class MessageComponent implements OnInit {
       .subscribe({
         next: (u) => {
           this.senderData = u;
+          // The sender's account type (guest vs. registered) decides whether
+          // URLs become clickable, so re-parse once the data has arrived.
+          this.parseMessageText();
           this.cdr.markForCheck();
         },
         error: (err) => console.error('Sender live subscription failed', err),
@@ -267,8 +272,74 @@ export class MessageComponent implements OnInit {
     value: string,
     format: FormatState
   ): void {
-    if (value)
+    if (!value) return;
+
+    // Guests' messages never get clickable links; their URLs and e-mail
+    // addresses stay plain text.
+    if (this.isSenderGuest()) {
       segments.push({ type: 'text', label: value, ...this.formatFlags(format) });
+      return;
+    }
+    this.pushTextWithLinks(segments, value, format);
+  }
+
+  /**
+   * Splits a plain-text chunk into text and `link` segments. Detects `http(s)`
+   * and `www.` URLs as well as e-mail addresses. `www.` links get an `https://`
+   * prefix and e-mails a `mailto:` prefix for the `href`; the original raw text
+   * is kept as the visible label.
+   */
+  private pushTextWithLinks(
+    segments: MessageSegment[],
+    value: string,
+    format: FormatState
+  ): void {
+    const linkRegex =
+      /(https?:\/\/[^\s<]+|www\.[^\s<]+|(?:mailto:)?[^\s<@]+@[^\s<@]+\.[^\s<@]+)/gi;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = linkRegex.exec(value)) !== null) {
+      const raw = this.trimTrailingPunctuation(match[0]);
+      const before = value.slice(lastIndex, match.index);
+      if (before)
+        segments.push({ type: 'text', label: before, ...this.formatFlags(format) });
+
+      segments.push({
+        type: 'link',
+        // Strip a leading `mailto:` from the visible label for a clean look.
+        label: raw.replace(/^mailto:/i, ''),
+        href: this.buildHref(raw),
+        ...this.formatFlags(format),
+      });
+      lastIndex = match.index + raw.length;
+    }
+
+    const tail = value.slice(lastIndex);
+    if (tail)
+      segments.push({ type: 'text', label: tail, ...this.formatFlags(format) });
+  }
+
+  /**
+   * Builds the `href` for a detected link: `mailto:` for e-mail addresses
+   * (avoiding a double prefix if the user already typed `mailto:`), `https://`
+   * for `www.` links, otherwise the URL as-is.
+   */
+  private buildHref(raw: string): string {
+    if (/^https?:\/\//i.test(raw)) return raw;
+    if (raw.startsWith('www.')) return `https://${raw}`;
+    if (/^mailto:/i.test(raw)) return raw;
+    return `mailto:${raw}`;
+  }
+
+  /** Removes trailing punctuation that is usually not part of a URL/e-mail. */
+  private trimTrailingPunctuation(url: string): string {
+    return url.replace(/[.,;:!?)\]}'"]+$/, '');
+  }
+
+  /** True when the message sender is an anonymous guest (no email). */
+  private isSenderGuest(): boolean {
+    return (this.senderData?.uEmail ?? '') === '';
   }
 
   /** Copies the current formatting state onto a fresh segment object. */
