@@ -1,7 +1,7 @@
 @use "../../../shared/scss/global" as *;
 
 .memberlist {
-  @include flexBox(column, flex-start, center, 16);
+  @include flexBox(column, flex-start, flex-start, 12);
   overflow-y: auto;
   padding-top: 8px;
   overflow: visible;
@@ -20,27 +20,57 @@
   padding-right: 16px;
   overflow-y: auto;
   .card {
-    @include flexBox(row, initial, center, 12);
-    width: 244px;
-    padding: 4px 10px;
-    cursor: pointer;
+    @include flexBox(row, space-between, center, 12);
+    width: 300px;
+    padding: 5px 10px;
     &:hover {
       background-color: $main1;
       border-radius: 28px;
     }
+    .card-info {
+      @include flexBox(row, initial, center, 12);
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
     .user-img-status {
       padding: 0;
       margin: 0;
+    }
+    .remove-member-btn {
+      @include flexBox(row, center, center, 0);
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      padding: 0;
+      border: none;
+      background-color: transparent;
+      border-radius: 50%;
+      cursor: pointer;
+      &:hover {
+        background-color: $white;
+        .remove-member-icon {
+          color: $accent;
+        }
+      }
+      .remove-member-icon {
+        width: 20px;
+        height: 20px;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        color: $black;
+      }
     }
   }
 }
 
 
 .add-member {
-  @include flexBox(row, center, center, 10);
-  padding: 4px 10px;
+  @include flexBox(row, flex-start, center, 10);
+  padding: 6px 10px;
   cursor: pointer;
-  width: 244px;
+  width: 300px;
+  margin-left: 4px;
   &:hover {
     background-color: $main1;
     border-radius: 30px;

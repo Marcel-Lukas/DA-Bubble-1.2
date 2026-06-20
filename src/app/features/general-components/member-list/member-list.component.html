@@ -2,16 +2,24 @@
 <div class="memberlist">
     <div class="members">
       @for (member of channelMembers; track member) {
-        <div class="card" (click)="showProfil.emit(member)">
-          <div class="user-img-status">
-            <img src="{{ member?.uUserImage }}" appImageFallback alt="" />
-            <span [ngClass]="(member | online) ? 'online' : 'offline'"></span>
+        <div class="card">
+          <div class="card-info" (click)="showProfil.emit(member)">
+            <div class="user-img-status">
+              <img src="{{ member?.uUserImage }}" appImageFallback alt="" />
+              <span [ngClass]="(member | online) ? 'online' : 'offline'"></span>
+            </div>
+            <span>{{ member?.uName }}
+              @if (member.uId === activeUserId) {
+                <span>(Du)</span>
+              }
+            </span>
           </div>
-          <span>{{ member?.uName }}
-            @if (member.uId === activeUserId) {
-              <span>(Du)</span>
-            }
-          </span>
+          @if (canRemove(member)) {
+            <button class="remove-member-btn" title="Mitglied entfernen"
+              (click)="removeMember.emit(member); $event.stopPropagation()">
+              <div class="material-symbols icon-group_off remove-member-icon"></div>
+            </button>
+          }
         </div>
       }
     </div>

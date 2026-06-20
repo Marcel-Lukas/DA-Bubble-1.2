@@ -107,8 +107,10 @@
                     <app-member-list
                     [channelMembers]="channelMembers"
                     [activeUserId]="activeUserId"
+                    [channelCreatorId]="channelData?.cCreatedByUser ?? null"
                     (addMember)="addMember.emit()"
                     (showProfil)="toggleMemberProfil($event)"
+                    (removeMember)="removeOtherMember($event)"
                   ></app-member-list>
                 </app-device-visible>
             </div>

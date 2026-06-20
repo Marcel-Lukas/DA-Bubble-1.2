@@ -19,7 +19,19 @@ import { ImageFallbackDirective } from '../../../shared/directives/image-fallbac
 export class MemberListComponent {
   @Input() channelMembers: User[] = [];
   @Input() activeUserId!: string | null;
+  @Input() channelCreatorId: string | null = null;
 
   @Output() addMember = new EventEmitter<void>();
-  @Output() showProfil = new EventEmitter<User>();  
+  @Output() showProfil = new EventEmitter<User>();
+  @Output() removeMember = new EventEmitter<User>();
+
+  /** Whether the active user is the channel creator (only owner may remove members). */
+  get isOwner(): boolean {
+    return !!this.activeUserId && this.channelCreatorId === this.activeUserId;
+  }
+
+  /** True for every member except the creator (the creator cannot be removed). */
+  canRemove(member: User): boolean {
+    return this.isOwner && member.uId !== this.channelCreatorId;
+  }
 }

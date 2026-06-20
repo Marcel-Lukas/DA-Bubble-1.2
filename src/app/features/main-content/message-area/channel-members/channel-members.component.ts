@@ -6,11 +6,13 @@ import {
   EventEmitter,
   ElementRef,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { User } from '../../../../shared/interfaces/user.interface';
 import { ProfilComponent } from '../../../general-components/profil/profil.component';
 import { AddNewMembersComponent } from '../../../general-components/add-new-members/add-new-members.component';
 import { MemberListComponent } from '../../../general-components/member-list/member-list.component';
+import { ChannelService } from '../../../../shared/services/channel.service';
 
 @Component({
   selector: 'app-channel-members',
@@ -29,8 +31,11 @@ import { MemberListComponent } from '../../../general-components/member-list/mem
  * outside click.
  */
 export class ChannelMembersComponent{
+  private channelService = inject(ChannelService);
+
   @Input() channelMembers: User[] = [];
   @Input() activeUserId: string | null = null;
+  @Input() channelCreatorId: string | null = null;
   @Input() channelId: any;
   @Input() channelName: any = '';
   @Input() activChannelMemberProfil: User | null = null;
@@ -79,5 +84,17 @@ export class ChannelMembersComponent{
   addChannelMember() {
     this.newChannelMembers = true;
     this.newChannelMembersChange.emit(true);
+  }
+
+
+  /**
+   * Removes another member from the channel (creator only). Only membership
+   * (`cUserIds`) changes; the member's existing messages are kept.
+   */
+  async removeOtherMember(member: User) {
+    if (this.activeUserId !== this.channelCreatorId || !this.channelId || !member.uId) return;
+    if (member.uId === this.channelCreatorId) return;
+    await this.channelService.removeUserFromChannel(this.channelId, member.uId);
+    this.channelMembers = this.channelMembers.filter(m => m.uId !== member.uId);
   }
 }

@@ -19,8 +19,10 @@
     <app-member-list
       [channelMembers]="channelMembers"
       [activeUserId]="activeUserId"
+      [channelCreatorId]="channelCreatorId"
       (addMember)="addChannelMember()"
       (showProfil)="toggleMemberProfil($event)"
+      (removeMember)="removeOtherMember($event)"
     ></app-member-list>
   </section>
 </main>

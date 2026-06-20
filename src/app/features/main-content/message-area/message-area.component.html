@@ -210,6 +210,7 @@
     [channelName]="channelData?.cName"
     [channelMembers]="channelMembers"
     [activeUserId]="activeUserId"
+    [channelCreatorId]="channelData?.cCreatedByUser ?? null"
     [channelId]="channelData?.cId"
     (addMember)="addChannelMember()"
     (close)="toggleChannelMembers()"

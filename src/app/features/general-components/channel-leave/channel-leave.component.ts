@@ -163,6 +163,18 @@ export class ChannelLeaveComponent implements OnInit{
   }
 
 
+  /**
+   * Removes another member from the channel (owner only). Only membership
+   * (`cUserIds`) changes; the member's existing messages are kept.
+   */
+  async removeOtherMember(member: User) {
+    if (!this.isOwner || !this.channelData?.cId || !member.uId) return;
+    if (member.uId === this.channelData.cCreatedByUser) return;
+    await this.channelService.removeUserFromChannel(this.channelData.cId, member.uId);
+    this.channelMembers = this.channelMembers.filter(m => m.uId !== member.uId);
+  }
+
+
   closeWindow() {  
     this.close.emit();
   }
