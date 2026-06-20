@@ -44,6 +44,19 @@ export interface MessageSegment {
   label: string;
   /** Id of the referenced user/channel, if resolvable. */
   refId?: string;
+  /** Whether the segment is bold (`<b>`). */
+  bold?: boolean;
+  /** Whether the segment is italic (`<i>`). */
+  italic?: boolean;
+  /** Whether the segment is underlined (`<u>`). */
+  underline?: boolean;
+}
+
+/** The inline formatting state active while parsing a message. */
+interface FormatState {
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
 }
 
 @Component({
@@ -202,27 +215,40 @@ export class MessageComponent implements OnInit {
   }
 
   /**
-   * Splits `message.mText` into text and mention segments. At every `@`/`#`
-   * position the text is matched against the known user/channel names. This
-   * also supports multi-word names with spaces like `@First Last`. Only
-   * resolved mentions are highlighted; otherwise the text is left unchanged.
+   * Splits `message.mText` into text and mention segments while honoring the
+   * inline formatting tags `<b>`, `<i>` and `<u>` (plus their closing tags).
+   * At every `@`/`#` position the text is matched against the known
+   * user/channel names (supporting multi-word names like `@First Last`). The
+   * raw text is never injected as HTML, so only this fixed set of tags has any
+   * effect and arbitrary markup stays harmless plain text.
    */
   private parseMessageText(): void {
     const text = this.message?.mText ?? '';
     const segments: MessageSegment[] = [];
+    const format: FormatState = {
+      bold: false,
+      italic: false,
+      underline: false,
+    };
 
     let plainStart = 0;
     let i = 0;
 
     while (i < text.length) {
       const symbol = text[i];
+      const tag = symbol === '<' ? this.matchFormatTag(text, i) : null;
       const mention =
         symbol === '@' || symbol === '#'
-          ? this.matchMentionAt(text, i, symbol)
+          ? this.matchMentionAt(text, i, symbol, format)
           : null;
 
-      if (mention) {
-        this.pushPlainText(segments, text.slice(plainStart, i));
+      if (tag) {
+        this.pushPlainText(segments, text.slice(plainStart, i), format);
+        format[tag.format] = tag.open;
+        i += tag.length;
+        plainStart = i;
+      } else if (mention) {
+        this.pushPlainText(segments, text.slice(plainStart, i), format);
         segments.push(mention.segment);
         i += mention.length;
         plainStart = i;
@@ -231,23 +257,66 @@ export class MessageComponent implements OnInit {
       }
     }
 
-    this.pushPlainText(segments, text.slice(plainStart));
+    this.pushPlainText(segments, text.slice(plainStart), format);
     this.messageSegments = segments;
   }
 
-  private pushPlainText(segments: MessageSegment[], value: string): void {
-    if (value) segments.push({ type: 'text', label: value });
+  private pushPlainText(
+    segments: MessageSegment[],
+    value: string,
+    format: FormatState
+  ): void {
+    if (value)
+      segments.push({ type: 'text', label: value, ...this.formatFlags(format) });
+  }
+
+  /** Copies the current formatting state onto a fresh segment object. */
+  private formatFlags(format: FormatState): Partial<MessageSegment> {
+    return {
+      bold: format.bold,
+      italic: format.italic,
+      underline: format.underline,
+    };
+  }
+
+  /**
+   * Detects a supported formatting tag (`<b>`, `<i>`, `<u>` or their closing
+   * counterparts) at position `pos`. Returns the affected format key, whether
+   * it opens or closes and the number of consumed characters, or `null`.
+   */
+  private matchFormatTag(
+    text: string,
+    pos: number
+  ): { format: keyof FormatState; open: boolean; length: number } | null {
+    const tags: { token: string; format: keyof FormatState; open: boolean }[] =
+      [
+        { token: '<b>', format: 'bold', open: true },
+        { token: '</b>', format: 'bold', open: false },
+        { token: '<i>', format: 'italic', open: true },
+        { token: '</i>', format: 'italic', open: false },
+        { token: '<u>', format: 'underline', open: true },
+        { token: '</u>', format: 'underline', open: false },
+      ];
+
+    const lower = text.slice(pos, pos + 4).toLowerCase();
+    for (const t of tags) {
+      if (lower.startsWith(t.token))
+        return { format: t.format, open: t.open, length: t.token.length };
+    }
+    return null;
   }
 
   /**
    * Tries to detect the longest matching known name at position `pos` (the
    * `@`/`#`). Returns the segment plus the number of consumed characters, or
-   * `null` if no known mention starts there.
+   * `null` if no known mention starts there. Carries the active formatting so
+   * a mention inside `<b>…</b>` is rendered bold too.
    */
   private matchMentionAt(
     text: string,
     pos: number,
-    symbol: string
+    symbol: string,
+    format: FormatState
   ): { segment: MessageSegment; length: number } | null {
     const rest = text.slice(pos + 1).toLowerCase();
     const candidates = this.mentionCandidates(symbol);
@@ -261,6 +330,7 @@ export class MessageComponent implements OnInit {
             // user typed the mention (e.g. `@peter müller`).
             label: symbol + c.name,
             refId: c.id,
+            ...this.formatFlags(format),
           },
           length: 1 + c.lowerName.length,
         };
@@ -479,6 +549,36 @@ export class MessageComponent implements OnInit {
     }
     this.addReaction(char);
     this.isEmojiPickerOpen = false;
+  }
+
+  /**
+   * Wraps the current selection in the edit textarea in the given formatting
+   * tag (`b`, `i` or `u`). With nothing selected, an empty tag pair is inserted
+   * and the caret placed in between. Mirrors the composer's `applyFormat`.
+   */
+  applyEditFormat(tag: 'b' | 'i' | 'u', event: MouseEvent) {
+    event.preventDefault();
+    const ta = this.editTextareaRef?.nativeElement;
+    if (!ta) return;
+
+    const start = ta.selectionStart ?? this.editText.length;
+    const end = ta.selectionEnd ?? start;
+    const open = `<${tag}>`;
+    const close = `</${tag}>`;
+    const selected = this.editText.slice(start, end);
+
+    this.editText =
+      this.editText.slice(0, start) +
+      open +
+      selected +
+      close +
+      this.editText.slice(end);
+
+    const caret = start + open.length;
+    setTimeout(() => {
+      ta.setSelectionRange(caret, caret + selected.length);
+      ta.focus();
+    });
   }
 
   openEdit() {

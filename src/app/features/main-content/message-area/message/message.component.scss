@@ -96,11 +96,48 @@ section.thread:not(.row-reverse) {
 
   > div {
     width: 100%;
-    @include flexBox(row, flex-end, center, 0);
+    @include flexBox(row, space-between, center, 0);
     > div {
       margin-top: 6px;
       @include flexBox(row, initial, initial, 24);
     }
+  }
+  .edit-format-buttons {
+    @include flexBox(row, initial, center, 4);
+  }
+  .format-button {
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    background-color: transparent;
+    border: none;
+    border-radius: 50px;
+    @include flexBox(row, center, center, 0);
+
+    span {
+      color: $grey;
+      font-size: 18px;
+      line-height: 1;
+    }
+    @media (pointer: fine) {
+      &:hover {
+        background-color: $main1;
+        span {
+          color: $accent;
+        }
+      }
+    }
+  }
+  .format-bold {
+    font-weight: 700;
+  }
+  .format-italic {
+    font-style: italic;
+    font-weight: 700;
+  }
+  .format-underline {
+    text-decoration: underline;
+    font-weight: 700;
   }
   .secondary-btn, .primary-btn {
     padding: 6px 10px;
@@ -413,6 +450,20 @@ emoji-mart {
 }
 
 
+@media (max-width: 520px) {
+  .edit-message {
+    > div {
+      @include flexBox(row, flex-end, center, 0);
+      padding-bottom: 30px;
+    }
+    .edit-format-buttons {
+      position: absolute;
+      bottom: 18px;
+    }
+  }
+}
+
+
 @media (max-width: 470px) {
   emoji-mart {
     left: -90px;
@@ -433,3 +484,16 @@ emoji-mart {
 
 
 
+
+// Inline text formatting tags (<b>, <i>, <u>) inside message text.
+.message-text {
+  .fmt-bold {
+    font-weight: 700;
+  }
+  .fmt-italic {
+    font-style: italic;
+  }
+  .fmt-underline {
+    text-decoration: underline;
+  }
+}

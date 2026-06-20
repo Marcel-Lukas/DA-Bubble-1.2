@@ -135,6 +135,42 @@ textarea.rate-limited {
   }
 }
 
+.format-button {
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  @include flexBox(row, center, center, 0);
+
+  span {
+    color: $grey;
+    font-size: 20px;
+    line-height: 1;
+  }
+  @media (pointer: fine) {
+    &:hover {
+      background-color: $main1;
+      span {
+        color: $accent;
+      }
+    }
+  }
+}
+
+.format-bold {
+  font-weight: bold;
+}
+.format-italic {
+  font-style: italic;
+  font-weight: 400;
+}
+.format-underline {
+  text-decoration: underline;
+  font-weight: 400;
+}
+
 
 @media (max-width: 400px) {
   emoji-mart {

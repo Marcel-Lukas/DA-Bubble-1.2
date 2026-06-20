@@ -47,6 +47,18 @@
     <button class="icon-button blue-hover" (click)="openUserSuggestions()">
       <div class="material-symbols icon-alternate_email textfield-icon"></div>
     </button>
+
+    <button class="format-button" title="Fett" (mousedown)="applyFormat('b', $event)">
+      <span class="format-bold">F</span>
+    </button>
+
+    <button class="format-button" title="Kursiv" (mousedown)="applyFormat('i', $event)">
+      <span class="format-italic">K</span>
+    </button>
+
+    <button class="format-button" title="Unterstrichen" (mousedown)="applyFormat('u', $event)">
+      <span class="format-underline">U</span>
+    </button>
   </div>
 
   <button class="icon-button" [disabled]="!newMessageText.trim()">

@@ -6,9 +6,17 @@
   <div class="edit-message">
     <textarea #editTextarea type="text" [(ngModel)]="editText"></textarea>
     <div>
-      <!-- <button #emojiBtn class="icon-button blue-hover" (click)="toggleEmojiPicker($event)">
-        <div class="material-symbols icon-sentiment_satisfied textfield-icon"></div>
-      </button> -->
+      <div class="edit-format-buttons">
+        <button class="format-button" title="Fett" (mousedown)="applyEditFormat('b', $event)">
+          <span class="format-bold">F</span>
+        </button>
+        <button class="format-button" title="Kursiv" (mousedown)="applyEditFormat('i', $event)">
+          <span class="format-italic">K</span>
+        </button>
+        <button class="format-button" title="Unterstrichen" (mousedown)="applyEditFormat('u', $event)">
+          <span class="format-underline">U</span>
+        </button>
+      </div>
       <div>
         <button class="secondary-btn" (click)="toggleEdit()">Abbrechen</button>
         <button class="primary-btn" (click)="saveEdit()" [disabled]="!editText.trim()">
@@ -33,9 +41,11 @@
     </div>
 
     <div class="message-text">@for (segment of messageSegments; track $index)
-      {@if (segment.type === 'text') {<span>{{ segment.label }}</span>} @else
-      {<span class="mention" [class.mention-channel]="segment.type === 'channel'" (click)="onMentionClick(segment)">{{
-        segment.label }}</span>}}</div>
+      {@if (segment.type === 'text') {<span [class.fmt-bold]="segment.bold"
+        [class.fmt-italic]="segment.italic" [class.fmt-underline]="segment.underline">{{ segment.label }}</span>} @else
+      {<span class="mention" [class.mention-channel]="segment.type === 'channel'" [class.fmt-bold]="segment.bold"
+        [class.fmt-italic]="segment.italic" [class.fmt-underline]="segment.underline"
+        (click)="onMentionClick(segment)">{{ segment.label }}</span>}}</div>
 
     <div class="message-attachments">
       @if (groupedReactions && groupedReactions.length > 0) {

@@ -220,6 +220,38 @@ export class MessageComposerComponent implements OnDestroy {
     ta.focus();
   }
 
+  /**
+   * Wraps the current text selection in the given formatting tag (`b`, `i` or
+   * `u`). When nothing is selected, an empty tag pair is inserted and the caret
+   * is placed in between so the user can type the text to be formatted. This
+   * lets users style text without knowing the markup themselves.
+   */
+  applyFormat(tag: 'b' | 'i' | 'u', event: MouseEvent) {
+    event.preventDefault();
+    const ta = this.messageInputRef?.nativeElement;
+    if (!ta) return;
+
+    const start = ta.selectionStart ?? this.newMessageText.length;
+    const end = ta.selectionEnd ?? start;
+    const open = `<${tag}>`;
+    const close = `</${tag}>`;
+    const selected = this.newMessageText.slice(start, end);
+
+    this.newMessageText =
+      this.newMessageText.slice(0, start) +
+      open +
+      selected +
+      close +
+      this.newMessageText.slice(end);
+    ta.value = this.newMessageText;
+
+    // Keep the selection wrapped (or place the caret between the tags when
+    // nothing was selected) and restore focus.
+    const caret = start + open.length;
+    ta.setSelectionRange(caret, caret + selected.length);
+    ta.focus();
+  }
+
   /** Closes the emoji picker when clicking outside it and its toggle button. */
   @HostListener('document:click', ['$event'])
   closePickerOnOutside(event: MouseEvent) {
