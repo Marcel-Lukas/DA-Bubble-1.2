@@ -15,6 +15,29 @@ export interface FormatToggleResult {
 const ALL_TAGS: FormatTag[] = ['b', 'i', 'u'];
 
 /**
+ * Removes empty formatting tag pairs from `text`, e.g. `<b></b>`, `<i> </i>`
+ * (whitespace only) and nested empties like `<b><i></i></b>`. Runs repeatedly
+ * until nothing changes so that nested wrappers collapse fully. This prevents
+ * messages that only contain styling markup (and would render as an empty but
+ * styled bubble) from being sent.
+ */
+export function stripEmptyFormatTags(text: string): string {
+  const emptyPair = new RegExp(
+    `<(${ALL_TAGS.join('|')})>\\s*</\\1>`,
+    'gi'
+  );
+
+  let result = text;
+  let previous: string;
+  do {
+    previous = result;
+    result = result.replace(emptyPair, '');
+  } while (result !== previous);
+
+  return result;
+}
+
+/**
  * Toggles an inline formatting tag (`<b>`, `<i>`, `<u>`) around the selection
  * `[start, end)` within `text`.
  *

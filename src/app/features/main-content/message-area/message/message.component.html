@@ -19,7 +19,7 @@
       </div>
       <div>
         <button class="secondary-btn" (click)="toggleEdit()">Abbrechen</button>
-        <button class="primary-btn" (click)="saveEdit()" [disabled]="!editText.trim()">
+        <button class="primary-btn" (click)="saveEdit()" [disabled]="!hasEditableText">
           Speichern
         </button>
       </div>

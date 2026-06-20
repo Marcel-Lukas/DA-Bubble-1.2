@@ -25,7 +25,11 @@ import { User } from '../../../../shared/interfaces/user.interface';
 import { Channel } from '../../../../shared/interfaces/channel.interface';
 import { OnlinePipe } from '../../../../shared/pipes/online.pipe';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
-import { FormatTag, toggleFormatTag } from '../../../../shared/utils/text-format.util';
+import {
+  FormatTag,
+  stripEmptyFormatTags,
+  toggleFormatTag,
+} from '../../../../shared/utils/text-format.util';
 
 @Component({
   selector: 'app-message-composer',
@@ -69,6 +73,11 @@ export class MessageComposerComponent implements OnDestroy {
 
   focus(): void {
     setTimeout(() => this.messageInputRef?.nativeElement.focus());
+  }
+
+  /** True when the input holds text beyond empty formatting tags/whitespace. */
+  get hasSendableText(): boolean {
+    return stripEmptyFormatTags(this.newMessageText).trim().length > 0;
   }
 
   ngOnDestroy(): void {
@@ -256,7 +265,9 @@ export class MessageComposerComponent implements OnDestroy {
   }
 
   sendMessage() {
-    const trimmed = this.newMessageText.trim();
+    // Drop empty formatting tags (e.g. `<b></b>`) so a message that only
+    // contains styling markup is treated as empty and not sent.
+    const trimmed = stripEmptyFormatTags(this.newMessageText).trim();
     if (!trimmed) return;
 
     // Spam guard: block the message while the cooldown has not elapsed.

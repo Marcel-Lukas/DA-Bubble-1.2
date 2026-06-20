@@ -28,7 +28,11 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { PermanentDeleteComponent } from '../../../general-components/permanent-delete/permanent-delete.component';
 import { FormsModule } from '@angular/forms';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
-import { FormatTag, toggleFormatTag } from '../../../../shared/utils/text-format.util';
+import {
+  FormatTag,
+  stripEmptyFormatTags,
+  toggleFormatTag,
+} from '../../../../shared/utils/text-format.util';
 
 // NOTE: `<emoji-mart>` is only referenced inside a `@defer` block in the
 // template. Angular therefore emits `@ctrl/ngx-emoji-mart` (and its CSS) as
@@ -652,9 +656,16 @@ export class MessageComponent implements OnInit {
     setTimeout(() => this.editTextareaRef?.nativeElement.focus());
   }
 
+  /** True when the edit input holds text beyond empty tags/whitespace. */
+  get hasEditableText(): boolean {
+    return stripEmptyFormatTags(this.editText).trim().length > 0;
+  }
+
   saveEdit() {
     if (!this.message.mId) return;
-    const trimmed = this.editText.trim();
+    // Drop empty formatting tags so an edit that only contains styling markup
+    // is treated as empty and not saved.
+    const trimmed = stripEmptyFormatTags(this.editText).trim();
     if (!trimmed) return;
 
     if (trimmed === (this.message.mText ?? '').trim()) {

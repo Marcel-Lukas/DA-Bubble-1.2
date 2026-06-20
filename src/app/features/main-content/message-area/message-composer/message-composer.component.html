@@ -61,7 +61,7 @@
     </button>
   </div>
 
-  <button class="icon-button" [disabled]="!newMessageText.trim()">
+  <button class="icon-button" [disabled]="!hasSendableText">
     <div class="material-symbols icon-send send-icon" (click)="sendMessage()"></div>
   </button>
 </div>
