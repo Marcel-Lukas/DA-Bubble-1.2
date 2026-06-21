@@ -1,6 +1,10 @@
 {
   "name": "da-bubble",
   "version": "1.2.1",
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

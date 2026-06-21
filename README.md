@@ -211,19 +211,32 @@ DA-Bubble/
 │       │       └── search-information/ # Search results overlay
 │       │
 │       └── shared/
+│           ├── components/
+│           │   └── device-visible/     # Renders content per viewport breakpoint
+│           ├── directives/
+│           │   └── image-fallback.directive.ts  # Avatar fallback (no broken-image flicker)
 │           ├── guards/
-│           │   └── auth.guard.ts       # authGuard + publicOnlyGuard
+│           │   ├── auth.guard.ts       # authGuard + publicOnlyGuard
+│           │   └── can-deactivate.guard.ts      # Guards against accidental navigation away
 │           ├── interfaces/             # TypeScript interfaces (Channel, Message, Reaction, User)
+│           │   └── firestore.types.ts  # FirestoreTime = Timestamp | Date | FieldValue
+│           ├── pipes/
+│           │   └── online.pipe.ts      # Impure pipe – online status derived from uLastSeen
 │           ├── scss/                   # Global variables, mixins, base styles
-│           └── services/
-│               ├── authentification.service.ts  # Firebase Auth (login, register, guest, Google)
-│               ├── channel.service.ts           # Firestore channel CRUD + realtime listener
-│               ├── message.service.ts           # Firestore message CRUD + realtime listener
-│               ├── user.service.ts              # Firestore user CRUD + realtime listener
-│               ├── notification.service.ts      # Unread-message tracking + sound playback
-│               ├── component-switcher.service.ts# UI state (active chat, open panels)
-│               ├── visible-button.service.ts    # Hover-button visibility state
-│               └── responsive.ts               # Breakpoint / responsive helper
+│           ├── services/
+│           │   ├── authentification.service.ts  # Firebase Auth (login, register, guest, Google)
+│           │   ├── channel.service.ts           # Firestore channel CRUD + realtime listener
+│           │   ├── message.service.ts           # Firestore message CRUD + realtime listener
+│           │   ├── user.service.ts              # Firestore user CRUD + realtime listener
+│           │   ├── notification.service.ts      # Unread-message tracking + sound playback
+│           │   ├── component-switcher.service.ts# UI state (active chat, open panels)
+│           │   ├── visible-button.service.ts    # Hover-button visibility state
+│           │   └── firebase-user.type.ts        # FirebaseUser type alias (Firebase Auth user)
+│           └── utils/
+│               ├── error.util.ts        # getErrorCode() – safe Firebase error code extraction
+│               ├── message-parse.util.ts # Parses message text into segments (mentions, links)
+│               ├── text-format.util.ts   # Inline <b>/<i>/<u> formatting helpers
+│               └── time.util.ts          # toMillis() – normalizes Firestore time values
 │
 ├── firebase.json                       # Firebase CLI config (firestore rules/indexes only)
 ├── firestore.indexes.json              # Composite Firestore indexes
@@ -236,15 +249,17 @@ DA-Bubble/
 
 ## 🔐 Routing & Guards
 
-| Path | Guard | Description |
+| Path | Guard(s) | Description |
 |---|---|---|
-| `/` | — | Redirects to `/access` |
-| `/access` | `publicOnlyGuard` | Login / registration shell; signed-in users are redirected to `/home` |
-| `/home` | `authGuard` | Main chat shell; unauthenticated users are redirected to `/access` |
-| `/home/:activeUserId` | `authGuard` | Same shell with an active user context (e.g. DM deeplink) |
-| `/**` | — | Wildcard redirect to `/access` |
+| `/` | `publicOnlyGuard` | Login / registration shell (lives at the root path); signed-in users are redirected to `/home` |
+| `/home` | `authGuard`, `canDeactivateGuard` | Main chat shell; unauthenticated users are redirected to the login screen |
+| `/home/:activeUserId` | `authGuard`, `canDeactivateGuard` | Same shell with an active user context (e.g. DM deeplink) |
+| `/**` | — | Wildcard redirect to `/` |
 
-Both guards run **inside `runInInjectionContext`** to avoid Firebase "called outside of an injection context" errors after `await` boundaries.
+**Guards:**
+
+- `authGuard` / `publicOnlyGuard` (`auth.guard.ts`) – authenticated users are forwarded away from the login page; unauthenticated users cannot access the chat. Both run **inside `runInInjectionContext`** to avoid Firebase "called outside of an injection context" errors after `await` boundaries.
+- `canDeactivateGuard` (`can-deactivate.guard.ts`) – a functional `CanDeactivateFn` that guards both `home` routes against accidental navigation away (e.g. the browser back button). It delegates the decision to the component (`CanComponentDeactivate`) and is skipped during an intentional logout (`AuthentificationService.isLoggingOut`). A `window:beforeunload` handler covers tab close / full reload, where route guards do not run.
 
 ---
 
@@ -258,7 +273,9 @@ Both guards run **inside `runInInjectionContext`** to avoid Firebase "called out
 | `UserService` | Load and update user profiles; real-time presence via `onSnapshot` |
 | `NotificationService` | Tracks unread messages (even from offline periods via `uLastSeen`), plays sound, exposes `unread$` BehaviorSubject |
 | `ComponentSwitcherService` | Manages which panel/chat is currently active; coordinates sidebar ↔ message-area ↔ thread |
-| `ResponsiveService` | Provides breakpoint signals for conditional mobile/desktop rendering |
+| `VisibleButtonService` | Tracks hover-button visibility state (signals) |
+
+Responsive rendering is **not** handled by a dedicated service: viewport-dependent content is rendered via the standalone `DeviceVisibleComponent` (`shared/components/device-visible/`) together with SCSS breakpoints.
 
 ---
 
@@ -280,7 +297,7 @@ The application uses a fully responsive layout that adapts to different screen s
 
 - On **mobile**, the sidebar and the message area are shown alternately; the thread panel slides in as an overlay.
 - On **desktop**, sidebar, message area and thread panel are displayed side by side.
-- Breakpoints are managed centrally via `ResponsiveService` and SCSS variables in `src/app/shared/scss/_variables.scss`.
+- Viewport-dependent content is rendered via the standalone `DeviceVisibleComponent` (`src/app/shared/components/device-visible/`), which listens to `window:resize` and exposes `mobilBig` (< 600px), `tabletBig` (< 1000px) and `desktopBig` (> 1000px) modes, together with SCSS variables in `src/app/shared/scss/_variables.scss`.
 
 ---
 
