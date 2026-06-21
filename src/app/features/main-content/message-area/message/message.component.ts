@@ -37,38 +37,19 @@ import {
   stripEmptyFormatTags,
   toggleFormatTag,
 } from '../../../../shared/utils/text-format.util';
+import {
+  MessageSegment,
+  parseMessageText,
+} from '../../../../shared/utils/message-parse.util';
 
 // NOTE: `<emoji-mart>` is only referenced inside a `@defer` block in the
 // template. Angular therefore emits `@ctrl/ngx-emoji-mart` (and its CSS) as
 // its own lazy chunk that is only fetched the first time the user opens the
 // emoji picker.
 
-/**
- * A slice of a message text used for rendering: either plain text or a mention
- * of a user (`@`) or a channel (`#`).
- */
-export interface MessageSegment {
-  type: 'text' | 'user' | 'channel' | 'link';
-  /** Text to display (e.g. `@Max`, `#general`, a URL or plain text). */
-  label: string;
-  /** Id of the referenced user/channel, if resolvable. */
-  refId?: string;
-  /** Absolute URL to open for `link` segments. */
-  href?: string;
-  /** Whether the segment is bold (`<b>`). */
-  bold?: boolean;
-  /** Whether the segment is italic (`<i>`). */
-  italic?: boolean;
-  /** Whether the segment is underlined (`<u>`). */
-  underline?: boolean;
-}
-
-/** The inline formatting state active while parsing a message. */
-interface FormatState {
-  bold: boolean;
-  italic: boolean;
-  underline: boolean;
-}
+// `MessageSegment` is defined in and re-exported from the message parser util
+// so the rendering logic can live in a pure, unit-testable module.
+export type { MessageSegment };
 
 @Component({
   selector: 'app-message',
@@ -229,216 +210,24 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Splits `message.mText` into text and mention segments while honoring the
-   * inline formatting tags `<b>`, `<i>` and `<u>` (plus their closing tags).
-   * At every `@`/`#` position the text is matched against the known
-   * user/channel names (supporting multi-word names like `@First Last`). The
-   * raw text is never injected as HTML, so only this fixed set of tags has any
-   * effect and arbitrary markup stays harmless plain text.
+   * Parses `message.mText` into renderable segments via the pure message
+   * parser util. Guests' messages get no clickable links. The raw text is
+   * never injected as HTML, so arbitrary markup stays harmless plain text.
    */
   private parseMessageText(): void {
-    const text = this.message?.mText ?? '';
-    const segments: MessageSegment[] = [];
-    const format: FormatState = {
-      bold: false,
-      italic: false,
-      underline: false,
-    };
-
-    let plainStart = 0;
-    let i = 0;
-
-    while (i < text.length) {
-      const symbol = text[i];
-      const tag = symbol === '<' ? this.matchFormatTag(text, i) : null;
-      const mention =
-        symbol === '@' || symbol === '#'
-          ? this.matchMentionAt(text, i, symbol, format)
-          : null;
-
-      if (tag) {
-        this.pushPlainText(segments, text.slice(plainStart, i), format);
-        format[tag.format] = tag.open;
-        i += tag.length;
-        plainStart = i;
-      } else if (mention) {
-        this.pushPlainText(segments, text.slice(plainStart, i), format);
-        segments.push(mention.segment);
-        i += mention.length;
-        plainStart = i;
-      } else {
-        i++;
-      }
-    }
-
-    this.pushPlainText(segments, text.slice(plainStart), format);
-    this.messageSegments = segments;
-  }
-
-  private pushPlainText(
-    segments: MessageSegment[],
-    value: string,
-    format: FormatState
-  ): void {
-    if (!value) return;
-
-    // Guests' messages never get clickable links; their URLs and e-mail
-    // addresses stay plain text.
-    if (this.isSenderGuest()) {
-      segments.push({ type: 'text', label: value, ...this.formatFlags(format) });
-      return;
-    }
-    this.pushTextWithLinks(segments, value, format);
-  }
-
-  /**
-   * Splits a plain-text chunk into text and `link` segments. Detects `http(s)`
-   * and `www.` URLs as well as e-mail addresses. `www.` links get an `https://`
-   * prefix and e-mails a `mailto:` prefix for the `href`; the original raw text
-   * is kept as the visible label.
-   */
-  private pushTextWithLinks(
-    segments: MessageSegment[],
-    value: string,
-    format: FormatState
-  ): void {
-    const linkRegex =
-      /(https?:\/\/[^\s<]+|www\.[^\s<]+|(?:mailto:)?[^\s<@]+@[^\s<@]+\.[^\s<@]+)/gi;
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-
-    while ((match = linkRegex.exec(value)) !== null) {
-      const raw = this.trimTrailingPunctuation(match[0]);
-      const before = value.slice(lastIndex, match.index);
-      if (before)
-        segments.push({ type: 'text', label: before, ...this.formatFlags(format) });
-
-      segments.push({
-        type: 'link',
-        // Strip a leading `mailto:` from the visible label for a clean look.
-        label: raw.replace(/^mailto:/i, ''),
-        href: this.buildHref(raw),
-        ...this.formatFlags(format),
-      });
-      lastIndex = match.index + raw.length;
-    }
-
-    const tail = value.slice(lastIndex);
-    if (tail)
-      segments.push({ type: 'text', label: tail, ...this.formatFlags(format) });
-  }
-
-  /**
-   * Builds the `href` for a detected link: `mailto:` for e-mail addresses
-   * (avoiding a double prefix if the user already typed `mailto:`), `https://`
-   * for `www.` links, otherwise the URL as-is.
-   */
-  private buildHref(raw: string): string {
-    if (/^https?:\/\//i.test(raw)) return raw;
-    if (raw.startsWith('www.')) return `https://${raw}`;
-    if (/^mailto:/i.test(raw)) return raw;
-    return `mailto:${raw}`;
-  }
-
-  /** Removes trailing punctuation that is usually not part of a URL/e-mail. */
-  private trimTrailingPunctuation(url: string): string {
-    return url.replace(/[.,;:!?)\]}'"]+$/, '');
+    this.messageSegments = parseMessageText(this.message?.mText ?? '', {
+      users: this.knownUsers.map((u) => ({ name: u.uName, id: u.uId as string })),
+      channels: this.knownChannels.map((c) => ({
+        name: c.cName,
+        id: c.cId as string,
+      })),
+      isGuestSender: this.isSenderGuest(),
+    });
   }
 
   /** True when the message sender is an anonymous guest (no email). */
   private isSenderGuest(): boolean {
     return (this.senderData?.uEmail ?? '') === '';
-  }
-
-  /** Copies the current formatting state onto a fresh segment object. */
-  private formatFlags(format: FormatState): Partial<MessageSegment> {
-    return {
-      bold: format.bold,
-      italic: format.italic,
-      underline: format.underline,
-    };
-  }
-
-  /**
-   * Detects a supported formatting tag (`<b>`, `<i>`, `<u>` or their closing
-   * counterparts) at position `pos`. Returns the affected format key, whether
-   * it opens or closes and the number of consumed characters, or `null`.
-   */
-  private matchFormatTag(
-    text: string,
-    pos: number
-  ): { format: keyof FormatState; open: boolean; length: number } | null {
-    const tags: { token: string; format: keyof FormatState; open: boolean }[] =
-      [
-        { token: '<b>', format: 'bold', open: true },
-        { token: '</b>', format: 'bold', open: false },
-        { token: '<i>', format: 'italic', open: true },
-        { token: '</i>', format: 'italic', open: false },
-        { token: '<u>', format: 'underline', open: true },
-        { token: '</u>', format: 'underline', open: false },
-      ];
-
-    const lower = text.slice(pos, pos + 4).toLowerCase();
-    for (const t of tags) {
-      if (lower.startsWith(t.token))
-        return { format: t.format, open: t.open, length: t.token.length };
-    }
-    return null;
-  }
-
-  /**
-   * Tries to detect the longest matching known name at position `pos` (the
-   * `@`/`#`). Returns the segment plus the number of consumed characters, or
-   * `null` if no known mention starts there. Carries the active formatting so
-   * a mention inside `<b>…</b>` is rendered bold too.
-   */
-  private matchMentionAt(
-    text: string,
-    pos: number,
-    symbol: string,
-    format: FormatState
-  ): { segment: MessageSegment; length: number } | null {
-    const rest = text.slice(pos + 1).toLowerCase();
-    const candidates = this.mentionCandidates(symbol);
-
-    for (const c of candidates) {
-      if (rest.startsWith(c.lowerName)) {
-        return {
-          segment: {
-            type: symbol === '@' ? 'user' : 'channel',
-            // Always show the canonical original name, regardless of how the
-            // user typed the mention (e.g. `@peter müller`).
-            label: symbol + c.name,
-            refId: c.id,
-            ...this.formatFlags(format),
-          },
-          length: 1 + c.lowerName.length,
-        };
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Returns the name candidates matching the symbol, sorted by length
-   * descending so that e.g. `@First Last` is matched before `@First`.
-   */
-  private mentionCandidates(
-    symbol: string
-  ): { name: string; lowerName: string; id: string }[] {
-    const list =
-      symbol === '@'
-        ? this.knownUsers.map((u) => ({ name: u.uName, id: u.uId }))
-        : this.knownChannels.map((c) => ({ name: c.cName, id: c.cId }));
-
-    return list
-      .filter((e) => e.name && e.id)
-      .map((e) => ({
-        name: e.name,
-        lowerName: e.name.toLowerCase(),
-        id: e.id as string,
-      }))
-      .sort((a, b) => b.lowerName.length - a.lowerName.length);
   }
 
   /** Handles a click on a mention in the rendered text. */

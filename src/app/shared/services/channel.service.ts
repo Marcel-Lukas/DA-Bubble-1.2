@@ -28,6 +28,26 @@ export interface ChannelListItem {
   createdBy: string;
 }
 
+/**
+ * Maps raw channel documents to {@link ChannelListItem}s and sorts them
+ * alphabetically by name (German collation, case-insensitive). Pure function,
+ * extracted so the projection/sorting can be unit-tested without Firestore.
+ */
+export function mapAndSortChannels(
+  channels: (Channel & { id: string })[]
+): ChannelListItem[] {
+  return channels
+    .map((ch) => ({
+      id: ch.id,
+      name: ch.cName,
+      createdAt: 0,
+      createdBy: ch.cCreatedByUser,
+    }))
+    .sort((a, b) =>
+      a.name.localeCompare(b.name, 'de', { sensitivity: 'base' })
+    );
+}
+
 /** Firestore data access for channels (CRUD, membership and real-time reads). */
 @Injectable({
   providedIn: 'root',
@@ -179,16 +199,7 @@ export class ChannelService {
       const channelQuery = query(channelsRef, where('cUserIds', 'array-contains', userId));
 
       return (collectionData(channelQuery, { idField: 'id' }) as Observable<(Channel & { id: string })[]>).pipe(
-        map((channels) =>
-          channels
-            .map((ch) => ({
-              id: ch.id,
-              name: ch.cName,
-              createdAt: 0,
-              createdBy: ch.cCreatedByUser,
-            }))
-            .sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }))
-        )
+        map((channels) => mapAndSortChannels(channels))
       );
     });
   }
