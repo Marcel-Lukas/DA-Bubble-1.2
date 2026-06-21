@@ -8,7 +8,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { SearchInformationComponent } from '../../search-information/search-information.component';
-import { DeviceVisibleComponent } from '../../../../shared/services/responsive';
+import { DeviceVisibleComponent } from '../../../../shared/components/device-visible/device-visible.component';
 import { FormsModule } from '@angular/forms';
 
 @Component({

@@ -2,7 +2,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { UserNameComponent } from './user-name/user-name.component';
-import { DeviceVisibleComponent } from '../../../shared/services/responsive';
+import { DeviceVisibleComponent } from '../../../shared/components/device-visible/device-visible.component';
 
 @Component({
   selector: 'app-header',

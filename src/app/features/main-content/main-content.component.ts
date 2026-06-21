@@ -5,7 +5,7 @@ import { HeaderComponent } from './header/header.component';
 import { ContactBarComponent } from './contact-bar/contact-bar.component';
 import { MessageAreaComponent } from './message-area/message-area.component';
 import { SearchBarComponent } from './header/search-bar/search-bar.component';
-import { DeviceVisibleComponent } from '../../shared/services/responsive';
+import { DeviceVisibleComponent } from '../../shared/components/device-visible/device-visible.component';
 import { AuthentificationService } from '../../shared/services/authentification.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { CanComponentDeactivate } from '../../shared/guards/can-deactivate.guard';

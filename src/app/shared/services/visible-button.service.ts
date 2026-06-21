@@ -5,16 +5,14 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class VisibleButtonService {
-  private _visibleButton = signal(true);
-  readonly visibleButton = this._visibleButton.asReadonly();
+  private readonly visibleButtonSignal = signal(true);
+  readonly visibleButton = this.visibleButtonSignal.asReadonly();
 
-  constructor() {}
-
-  show() {
-    this._visibleButton.set(true);
+  show(): void {
+    this.visibleButtonSignal.set(true);
   }
 
-  hide() {
-    this._visibleButton.set(false);
+  hide(): void {
+    this.visibleButtonSignal.set(false);
   }
 }

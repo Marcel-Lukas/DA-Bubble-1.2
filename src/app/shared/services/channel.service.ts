@@ -20,6 +20,14 @@ import { Channel } from '../interfaces/channel.interface';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+/** Lightweight channel projection used by the contact-bar channel list. */
+export interface ChannelListItem {
+  id: string;
+  name: string;
+  createdAt: number;
+  createdBy: string;
+}
+
 /** Firestore data access for channels (CRUD, membership and real-time reads). */
 @Injectable({
   providedIn: 'root',
@@ -85,6 +93,21 @@ export class ChannelService {
 
   async createChannel(name: string, description: string, userId: string): Promise<string | void> {
     if (!name || !userId) return;
+    return this.createChannelWithUsers(name, description, userId, [userId]);
+  }
+
+  /**
+   * Creates a channel with an explicit member list (the creator should be
+   * included in `userIds`). Returns the new channel id, or `void` when the
+   * required data is missing.
+   */
+  async createChannelWithUsers(
+    name: string,
+    description: string,
+    userId: string,
+    userIds: string[]
+  ): Promise<string | void> {
+    if (!name || !userId || !userIds.length) return;
     const channelsCollectionRef = collection(this.firestore, 'channels');
     const newDocRef = doc(channelsCollectionRef);
     const newId = newDocRef.id;
@@ -93,14 +116,13 @@ export class ChannelService {
       cName: name,
       cDescription: description,
       cCreatedByUser: userId,
-      cUserIds: [userId],
-      cTime: serverTimestamp() as any,
+      cUserIds: userIds,
+      cTime: serverTimestamp(),
     };
     await setDoc(newDocRef, newChannel);
     return newId;
   }
 
- 
   async removeUserFromChannel(channelId: string, userId: string): Promise<void> {
     const channelRef = doc(this.firestore, 'channels', channelId);
     const channelSnap = await getDoc(channelRef);
@@ -151,18 +173,18 @@ export class ChannelService {
    * Streams the channels the user is a member of, alphabetically sorted.
    * Includes `createdBy` so the UI can show owner-only actions (e.g. delete).
    */
-  getSortedChannels(userId: string | null): Observable<{ id: string; name: string; createdAt: any; createdBy: string }[]> {
+  getSortedChannels(userId: string | null): Observable<ChannelListItem[]> {
     return runInInjectionContext(this.injector, () => {
-      const channelsRef  = collection(this.firestore, 'channels');
+      const channelsRef = collection(this.firestore, 'channels');
       const channelQuery = query(channelsRef, where('cUserIds', 'array-contains', userId));
 
-      return collectionData(channelQuery, { idField: 'id' }).pipe(
-        map((channels: any[]) =>
+      return (collectionData(channelQuery, { idField: 'id' }) as Observable<(Channel & { id: string })[]>).pipe(
+        map((channels) =>
           channels
-            .map(ch => ({
-              id:        ch.id,
-              name:      ch.cName,
-              createdAt: ch.createdAt || 0,
+            .map((ch) => ({
+              id: ch.id,
+              name: ch.cName,
+              createdAt: 0,
               createdBy: ch.cCreatedByUser,
             }))
             .sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }))

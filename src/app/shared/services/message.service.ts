@@ -8,6 +8,7 @@ import {
   onSnapshot,
   Query,
   DocumentData,
+  DocumentReference,
   QuerySnapshot,
   Timestamp,
   addDoc,
@@ -23,6 +24,9 @@ import { Observable } from 'rxjs';
 import { Message } from '../interfaces/message.interface';
 import { Reaction } from '../interfaces/reaction.interface';
 
+/** Chat contexts a message stream can be requested for. */
+export type ChatType = 'private' | 'channel' | 'thread' | 'new';
+
 /**
  * Firestore data access for messages across the three chat types:
  * direct (private), channel and thread replies. Provides real-time queries,
@@ -36,21 +40,21 @@ export class MessageService {
   private injector = inject(Injector);
 
   /** Maps a raw Firestore document into a fully populated Message object. */
-  setNoteObject(obj: any, id: string): Message {
+  setNoteObject(obj: DocumentData, id: string): Message {
     return {
       mId: id || '',
-      mText: obj.mText || '',
-      mReactions: obj.mReactions || [],
-      mTime: obj.mTime || new Date(),
-      mSenderId: obj.mSenderId || '',
-      mUserId: obj.mUserId || '',
-      mThreadId: obj.mThreadId || '',
-      mChannelId: obj.mChannelId || '',
+      mText: obj['mText'] || '',
+      mReactions: obj['mReactions'] || [],
+      mTime: obj['mTime'] || new Date(),
+      mSenderId: obj['mSenderId'] || '',
+      mUserId: obj['mUserId'] || '',
+      mThreadId: obj['mThreadId'] || '',
+      mChannelId: obj['mChannelId'] || '',
     };
   }
 
   getMessages(
-    chatType: 'private' | 'channel' | 'thread' | 'new',
+    chatType: ChatType,
     chatId: string | null,
     activeUserId: string | null
   ): Observable<Message[]> {
@@ -146,49 +150,39 @@ export class MessageService {
   }
 
   private getChannelMessages(chatId: string | null): Observable<Message[]> {
-    return new Observable<Message[]>((observer) => {
-      const unsubscribe = runInInjectionContext(this.injector, () => {
-        const messagesCollection = collection(this.firestore, 'messages');
-        const q = query(
-          messagesCollection,
-          where('mChannelId', '==', chatId),
-          orderBy('mTime', 'asc')
-        );
-        return onSnapshot(q, (snapshot) => {
-          const messages: Message[] = [];
-          snapshot.forEach((doc) => {
-            messages.push(this.setNoteObject(doc.data(), doc.id));
-          });
-          observer.next(messages);
-        });
-      });
-
-      return () => unsubscribe && unsubscribe();
-    });
+    return this.streamMessagesByField('mChannelId', chatId);
   }
 
   getThreadMessages(chatId: string | null): Observable<Message[]> {
+    return this.streamMessagesByField('mThreadId', chatId);
+  }
+
+  /**
+   * Streams all messages where the given field equals `value`, ordered by
+   * time. Shared by the channel and thread message streams.
+   */
+  private streamMessagesByField(
+    field: 'mChannelId' | 'mThreadId',
+    value: string | null
+  ): Observable<Message[]> {
     return new Observable<Message[]>((observer) => {
       const unsubscribe = runInInjectionContext(this.injector, () => {
         const messagesCollection = collection(this.firestore, 'messages');
         const q = query(
           messagesCollection,
-          where('mThreadId', '==', chatId),
+          where(field, '==', value),
           orderBy('mTime', 'asc')
         );
-        return onSnapshot(q, (snapshot) => {
-          const messages: Message[] = [];
-          snapshot.forEach((doc) => {
-            messages.push(this.setNoteObject(doc.data(), doc.id));
-          });
-          observer.next(messages);
-        });
+        return onSnapshot(q, (snapshot) =>
+          observer.next(this.mapDocsToMessages(snapshot))
+        );
       });
-      return () => unsubscribe && unsubscribe();
+
+      return () => unsubscribe?.();
     });
   }
 
-  createMessage(message: Partial<Message>): Promise<any> {
+  createMessage(message: Partial<Message>): Promise<DocumentReference<DocumentData>> {
     const messagesCollection = collection(this.firestore, 'messages');
     const newMessage = {
       ...message,
@@ -230,19 +224,15 @@ export class MessageService {
     }
     let batch = writeBatch(this.firestore);
     let inBatch = 0;
-    let batchIndex = 1;
-    let processed = 0;
     snap.forEach((docSnap) => {
       batch.delete(docSnap.ref);
       inBatch++;
-      processed++;
 
       // Firestore caps a write batch at 500 operations -> commit and restart.
       if (inBatch === 500) {
         batch.commit();
         batch = writeBatch(this.firestore);
         inBatch = 0;
-        batchIndex++;
       }
     });
 
@@ -311,7 +301,7 @@ export class MessageService {
     const docRef = doc(this.firestore, 'messages', id);
     const docSnap = await getDoc(docRef);
     return docSnap.exists()
-      ? { mId: docSnap.id, ...(docSnap.data() as Message) }
+      ? { ...(docSnap.data() as Message), mId: docSnap.id }
       : undefined;
   }
 }

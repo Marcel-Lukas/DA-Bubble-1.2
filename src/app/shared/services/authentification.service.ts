@@ -26,9 +26,11 @@ import {
   signInWithPopup,
   UserCredential,
 } from '@angular/fire/auth';
-import { NotificationService } from './notification.service';
 import { MessageService } from './message.service';
 import { ChannelService } from './channel.service';
+import { toMillis } from '../utils/time.util';
+import { PresenceTime } from '../interfaces/user.interface';
+import { FirebaseUser } from './firebase-user.type';
 
 /**
  * Handles all authentication flows (email/password, Google, anonymous guest)
@@ -69,6 +71,9 @@ export class AuthentificationService {
 
   /** ID of the default channel that every new/logged-in user joins. */
   private readonly defaultChannelId = '4ViNXTttFDYKlytrxQw4';
+
+  /** Default "recently used reactions" assigned to every new user/guest. */
+  private readonly defaultReactions: readonly string[] = ['👍', '🙏🏻', '🔥'];
 
   /**
    * Maximum inactivity duration (ms) for guest accounts. A guest whose last
@@ -117,16 +122,15 @@ export class AuthentificationService {
   
     await this.runInContext(async () => {
       const userData: UserInterface = {
-        uId:            uid,
-        uName:          username,
-        uEmail:         email,
-        uUserImage:     'assets/img/' + profilePictureUrl,
-        uStatus:        false,
-        uLastReactions: ['👍', '🙏🏻', '🔥'],
+        uId: uid,
+        uName: username,
+        uEmail: email,
+        uUserImage: 'assets/img/' + profilePictureUrl,
+        uStatus: false,
+        uLastReactions: [...this.defaultReactions],
       };
 
-      const userRef    = collection(this.firestore, 'users');
-      const userDocRef = doc(userRef, uid);
+      const userDocRef = doc(collection(this.firestore, 'users'), uid);
       await setDoc(userDocRef, userData);
     });
 
@@ -140,11 +144,10 @@ export class AuthentificationService {
   async loginWithEmail(email: string, password: string): Promise<void | UserCredential> {
     return this.runInContext(async () => {
       const result = await signInWithEmailAndPassword(this.auth, email, password);
-      this.currentUid = result.user.uid;
-      await this.cleanupGhostUsers(this.currentUid!);
-      await this.cleanupInactiveGuests(this.currentUid!);
-      const userRef = collection(this.firestore, 'users');
-      const userDocRef = doc(userRef, this.currentUid!);
+      const uid = (this.currentUid = result.user.uid);
+      await this.cleanupGhostUsers(uid);
+      await this.cleanupInactiveGuests(uid);
+      const userDocRef = doc(collection(this.firestore, 'users'), uid);
       await updateDoc(userDocRef, { uStatus: true });
       return result;
     });
@@ -155,21 +158,20 @@ export class AuthentificationService {
     const provider = new GoogleAuthProvider();
     return this.runInContext(async () => {
       const result = await signInWithPopup(this.auth, provider);
-      this.currentUid = result.user.uid;
-      await this.cleanupGhostUsers(this.currentUid!);
-      await this.cleanupInactiveGuests(this.currentUid!);
+      const uid = (this.currentUid = result.user.uid);
+      await this.cleanupGhostUsers(uid);
+      await this.cleanupInactiveGuests(uid);
       const userData: UserInterface = {
-        uId: this.currentUid!,
+        uId: uid,
         uName: result.user.displayName || '',
         uEmail: result.user.email || '',
         uUserImage: result.user.photoURL || 'assets/img/profile.png',
         uStatus: true,
-        uLastReactions: ['👍', '🙏🏻', '🔥'],
+        uLastReactions: [...this.defaultReactions],
       };
-      const userRef = collection(this.firestore, 'users');
-      const userDocRef = doc(userRef, result.user.uid);
+      const userDocRef = doc(collection(this.firestore, 'users'), uid);
       await setDoc(userDocRef, userData, { merge: true });
-      await this.addUserToDefaultChannel(this.currentUid!);
+      await this.addUserToDefaultChannel(uid);
       return result;
     });
   }
@@ -182,26 +184,25 @@ export class AuthentificationService {
   async loginAsGuest(): Promise<void | UserCredential> {
     return this.runInContext(async () => {
       const result = await signInAnonymously(this.auth);
-      this.currentUid = result.user.uid;
-      const guestName = await this.cleanupOrphanedGuests(this.currentUid!);
+      const uid = (this.currentUid = result.user.uid);
+      const guestName = await this.cleanupOrphanedGuests(uid);
       const now = Timestamp.now();
       const guestData: UserInterface = {
-        uId: this.currentUid!,
+        uId: uid,
         uName: guestName,
         uEmail: '',
-        uUserImage: this.buildGuestAvatarUrl(this.currentUid!),
+        uUserImage: this.buildGuestAvatarUrl(uid),
         uStatus: true,
-        uLastReactions: ['👍', '🙏🏻', '🔥'],
+        uLastReactions: [...this.defaultReactions],
         // Set presence fields immediately so a freshly created guest is never
         // treated as "orphaned" (missing uLastSeen) and deleted by a cleanup
         // running concurrently/right afterwards (bug starting at Gast3).
         uLastSeen: now,
         uLastRead: now,
       };
-      const userRef = collection(this.firestore, 'users');
-      const userDocRef = doc(userRef, this.currentUid!);
+      const userDocRef = doc(collection(this.firestore, 'users'), uid);
       await setDoc(userDocRef, guestData, { merge: true });
-      await this.addUserToDefaultChannel(this.currentUid!);
+      await this.addUserToDefaultChannel(uid);
       return result;
     });
   }
@@ -335,34 +336,9 @@ export class AuthentificationService {
    * @returns true if the guest should be deleted.
    */
   private isGuestExpired(data: Partial<UserInterface>): boolean {
-    const lastSeen = (data as { uLastSeen?: unknown }).uLastSeen;
-    const lastSeenMs = this.toMillis(lastSeen);
+    const lastSeenMs = toMillis(data.uLastSeen as PresenceTime);
     if (lastSeenMs === null) return true;
     return Date.now() - lastSeenMs > this.guestInactivityMs;
-  }
-
-  /**
-   * Normalizes a Firestore Timestamp (or compatible value) into milliseconds.
-   * Returns null when the value is not a point in time.
-   */
-  private toMillis(value: unknown): number | null {
-    if (value instanceof Date) return value.getTime();
-    if (typeof value === 'number') return value;
-    if (
-      value &&
-      typeof value === 'object' &&
-      typeof (value as { toMillis?: unknown }).toMillis === 'function'
-    ) {
-      return (value as { toMillis: () => number }).toMillis();
-    }
-    if (
-      value &&
-      typeof value === 'object' &&
-      typeof (value as { seconds?: unknown }).seconds === 'number'
-    ) {
-      return (value as { seconds: number }).seconds * 1000;
-    }
-    return null;
   }
 
   /**
@@ -497,7 +473,7 @@ export class AuthentificationService {
     }
   }
 
-  private async handleAnonymousGuest(user: any | null, uid: string | null): Promise<void> {
+  private async handleAnonymousGuest(user: FirebaseUser | null, uid: string | null): Promise<void> {
     if (user?.isAnonymous && uid) {
       try {
         // Remove the guest's messages/channels before deleting the account so

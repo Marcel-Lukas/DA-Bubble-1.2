@@ -274,7 +274,7 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
     if (!ids.includes(this.activeUserId)) {
       ids.unshift(this.activeUserId);
     }
-    await this.userService.createChannelWithUsers(
+    await this.channelService.createChannelWithUsers(
       name,
       description,
       this.activeUserId,

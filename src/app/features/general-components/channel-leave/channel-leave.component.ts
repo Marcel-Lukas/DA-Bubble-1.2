@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../shared/services/user.service';
 import { User } from '../../../shared/interfaces/user.interface';
 import { ChannelService } from '../../../shared/services/channel.service';
-import { DeviceVisibleComponent } from '../../../shared/services/responsive';
+import { DeviceVisibleComponent } from '../../../shared/components/device-visible/device-visible.component';
 import { MemberListComponent } from '../member-list/member-list.component';
 import { ProfilComponent } from '../profil/profil.component';
 import { AddNewMembersComponent } from '../add-new-members/add-new-members.component';

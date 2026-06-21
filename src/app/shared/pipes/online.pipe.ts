@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { NotificationService } from '../services/notification.service';
+import { NotificationService, PresenceData } from '../services/notification.service';
 
 /**
  * Returns true if the specified user is currently considered to be online.
@@ -21,9 +21,7 @@ import { NotificationService } from '../services/notification.service';
   pure: false,
 })
 export class OnlinePipe implements PipeTransform {
-  transform(
-    user: { uStatus?: unknown; uLastSeen?: unknown } | null | undefined
-  ): boolean {
+  transform(user: PresenceData | null | undefined): boolean {
     return NotificationService.isUserOnline(user);
   }
 }

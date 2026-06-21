@@ -17,6 +17,22 @@ import {
   Timestamp,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { toMillis } from '../utils/time.util';
+import { PresenceTime } from '../interfaces/user.interface';
+
+/** Minimal shape of the presence fields read from a user document. */
+export interface PresenceData {
+  uStatus?: unknown;
+  uLastSeen?: PresenceTime;
+}
+
+/** Minimal shape of the message fields relevant for notifications. */
+interface MessageData {
+  mSenderId?: string | null;
+  mUserId?: string | null;
+  mChannelId?: string | null;
+  mThreadId?: string | null;
+}
 
 /**
  * Manages notifications for new messages:
@@ -226,34 +242,13 @@ export class NotificationService {
    * Falls back to the legacy uStatus flag only when no uLastSeen is present
    * (e.g. for users that never sent a heartbeat yet).
    */
-  static isUserOnline(user: {
-    uStatus?: unknown;
-    uLastSeen?: unknown;
-  } | null | undefined): boolean {
+  static isUserOnline(user: PresenceData | null | undefined): boolean {
     if (!user) return false;
-    const lastSeenMs = NotificationService.toMillis(user.uLastSeen);
+    const lastSeenMs = toMillis(user.uLastSeen);
     if (lastSeenMs === null) {
       return user.uStatus === true || user.uStatus === 'true';
     }
     return Date.now() - lastSeenMs < NotificationService.ONLINE_THRESHOLD_MS;
-  }
-
-  /**
-   * Normalizes a Firestore Timestamp (or compatible value) into milliseconds.
-   * Returns null when the value cannot be interpreted as a point in time.
-   */
-  private static toMillis(value: unknown): number | null {
-    if (value instanceof Timestamp) return value.toMillis();
-    if (value instanceof Date) return value.getTime();
-    if (typeof value === 'number') return value;
-    if (
-      value &&
-      typeof value === 'object' &&
-      typeof (value as { seconds?: unknown }).seconds === 'number'
-    ) {
-      return (value as { seconds: number }).seconds * 1000;
-    }
-    return null;
   }
 
   /** Starts the periodic heartbeat + beforeunload safeguard. */
@@ -373,7 +368,7 @@ export class NotificationService {
    * Evaluates a single user's online state and plays the knock-knock sound on
    * an offline -> online transition (for other users only, after init).
    */
-  private handleUserPresence(uid: string, data: any): void {
+  private handleUserPresence(uid: string, data: PresenceData): void {
     const isOnline = NotificationService.isUserOnline(data);
     const wasOnline = this.onlineStates.get(uid) ?? false;
     this.onlineStates.set(uid, isOnline);
@@ -385,7 +380,7 @@ export class NotificationService {
   }
 
   /** Processes a single newly arrived message. */
-  private handleNewMessage(data: any): void {
+  private handleNewMessage(data: MessageData): void {
     const senderId: string | null = data?.mSenderId ?? null;
     // Own messages do not trigger a notification.
     if (!senderId || senderId === this.activeUserId) return;
@@ -405,16 +400,16 @@ export class NotificationService {
    * - DM to me -> ID of the sender (that's the chat's name in the DM list)
    * - channel message -> channel ID
    */
-  private resolveChatId(data: any): string | null {
+  private resolveChatId(data: MessageData): string | null {
     if (data?.mThreadId) return null; // Ignore thread replies
     if (data?.mChannelId) {
       // Only consider channels the user is a member of.
       return this.memberChannelIds.has(data.mChannelId)
-        ? (data.mChannelId as string)
+        ? data.mChannelId
         : null;
     }
     if (data?.mUserId === this.activeUserId) {
-      return (data?.mSenderId as string) ?? null;
+      return data?.mSenderId ?? null;
     }
     return null;
   }

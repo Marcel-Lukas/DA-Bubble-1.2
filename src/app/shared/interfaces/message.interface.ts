@@ -1,11 +1,11 @@
-import { Timestamp } from '@angular/fire/firestore';
 import { Reaction } from './reaction.interface';
+import { FirestoreTime } from './firestore.types';
 
 export interface Message {
   mId?: string | null;
   mText: string;
   mReactions?: Reaction[];
-  mTime: Timestamp | any;
+  mTime: FirestoreTime;
   mSenderId: string | null;
   mUserId?: string | null;
   mThreadId?: string | null;

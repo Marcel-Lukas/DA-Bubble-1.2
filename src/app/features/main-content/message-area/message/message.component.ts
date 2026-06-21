@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { Message } from '../../../../shared/interfaces/message.interface';
 import { Timestamp } from '@angular/fire/firestore';
+import { FirestoreTime } from '../../../../shared/interfaces/firestore.types';
 import { UserService } from '../../../../shared/services/user.service';
 import { ChannelService } from '../../../../shared/services/channel.service';
 import { User } from '../../../../shared/interfaces/user.interface';
@@ -523,7 +524,7 @@ export class MessageComponent implements OnInit {
         : 7;
   }
 
-  getTimeInHours(ts: Timestamp | null): string | undefined {
+  getTimeInHours(ts: FirestoreTime | null): string | undefined {
     return ts instanceof Timestamp
       ? ts
           .toDate()

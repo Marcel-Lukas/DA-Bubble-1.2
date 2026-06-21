@@ -8,17 +8,14 @@ import {
   getDocs,
   onSnapshot,
   updateDoc,
-  setDoc,
-  serverTimestamp,
   query,
 } from '@angular/fire/firestore';
 import { User } from '../interfaces/user.interface';
 import { Observable, map } from 'rxjs';
-import { Channel } from '../interfaces/channel.interface';
 
 /**
- * Firestore data access for user documents (real-time reads, lookups,
- * profile updates) plus the channel creation helper used by the UI.
+ * Firestore data access for user documents (real-time reads, lookups and
+ * profile updates).
  */
 @Injectable({
   providedIn: 'root',
@@ -97,20 +94,18 @@ export class UserService {
       return [];
     }
 
-    const results: User[] = [];
+    const snapshots = await Promise.all(
+      userIds.map((id) => getDoc(doc(this.firestore, 'users', id)))
+    );
 
-    for (const id of userIds) {
-      const docRef = doc(this.firestore, 'users', id);
-      const docSnap = await getDoc(docRef);
+    return snapshots.reduce<User[]>((users, docSnap) => {
       if (docSnap.exists()) {
-        const userData = docSnap.data() as User;
-        results.push(userData);
+        users.push(docSnap.data() as User);
       } else {
-        console.warn(`User not found for ID: ${id}`);
+        console.warn(`User not found for ID: ${docSnap.id}`);
       }
-    }
-
-    return results;
+      return users;
+    }, []);
   }
 
   getEveryUsers(): Observable<User[]> {
@@ -171,33 +166,12 @@ export class UserService {
     }
   }
 
-    
-  async createChannelWithUsers( name: string, description: string, userId: string, userIds: string[] ): Promise<string | void> {
-    if (!name || !userId || !userIds.length) return;
-    const channelsCollectionRef = collection(this.firestore, 'channels');
-    const newDocRef = doc(channelsCollectionRef);
-    const newId = newDocRef.id;
-    const newChannel: Channel = {
-      cId: newId,
-      cName: name,
-      cDescription: description,
-      cCreatedByUser: userId,
-      cUserIds: userIds,
-      cTime: serverTimestamp() as any,
-    };
-    await setDoc(newDocRef, newChannel);
-    return newId;
-  }
-
-
   getUserById(userId: string): Observable<User | undefined> {
     return runInInjectionContext(this.injector, () => {
       const usersCollection = collection(this.firestore, 'users');
       const usersQuery = query(usersCollection);
-      return collectionData(usersQuery, { idField: 'uId' }).pipe(
-        map((users: any[]) =>
-          users.find((user) => user.uId === userId)
-        )
+      return (collectionData(usersQuery, { idField: 'uId' }) as Observable<User[]>).pipe(
+        map((users) => users.find((user) => user.uId === userId))
       );
     });
   }

@@ -1,6 +1,6 @@
 
 import { Component, EventEmitter, Output } from '@angular/core';
-import { DeviceVisibleComponent } from '../../../../shared/services/responsive';
+import { DeviceVisibleComponent } from '../../../../shared/components/device-visible/device-visible.component';
 
 @Component({
   selector: 'app-header-bar',

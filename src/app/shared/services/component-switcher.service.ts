@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, Type } from '@angular/core';
 import { LoginComponent } from '../../features/access/login/login.component';
 import { CreateAccountComponent } from '../../features/access/create-account/create-account.component';
 import { ImprintComponent } from '../../features/access/imprint/imprint.component';
@@ -18,9 +18,7 @@ import { GoToEmailComponent } from '../../features/access/go-to-email/go-to-emai
   providedIn: 'root'
 })
 export class ComponentSwitcherService {
-  currentComponent = signal<any>(LoginComponent);
-
-  constructor() {}
+  readonly currentComponent = signal<Type<unknown>>(LoginComponent);
 
   /** Sets the active access view by key; falls back to the login screen. */
   setComponent(componentName: string): void {

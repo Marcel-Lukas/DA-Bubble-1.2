@@ -11,11 +11,12 @@ import {
 } from '@angular/core';
 import { ProfilComponent } from '../../../general-components/profil/profil.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DeviceVisibleComponent } from '../../../../shared/services/responsive';
+import { DeviceVisibleComponent } from '../../../../shared/components/device-visible/device-visible.component';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 import { OnlinePipe } from '../../../../shared/pipes/online.pipe';
 import { AuthentificationService } from '../../../../shared/services/authentification.service';
 import { UserService } from '../../../../shared/services/user.service';
+import { PresenceData } from '../../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-user-name',
@@ -43,7 +44,7 @@ export class UserNameComponent {
    * the app (member list, message area, profile) instead of the legacy
    * uStatus-only check.
    */
-  presenceUser: { uStatus?: unknown; uLastSeen?: unknown } | null = null;
+  presenceUser: PresenceData | null = null;
   userName: string = '';
   userEmail: string = '';
   userImage: string = '';
