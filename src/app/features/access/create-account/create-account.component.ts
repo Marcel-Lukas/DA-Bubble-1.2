@@ -34,6 +34,11 @@ function strongPasswordValidator(): ValidatorFn {
   };
 }
 
+/**
+ * Registration form: collects name, email and password (with strong-password
+ * validation) plus a privacy-policy checkbox, then hands the data to the auth
+ * service. Lives inside the access flow driven by `ComponentSwitcherService`.
+ */
 @Component({
   selector: 'app-create-account',
   imports: [ButtonComponent, ReactiveFormsModule, CustomInputComponent],

@@ -359,7 +359,7 @@ export class MessageAreaComponent implements AfterViewInit, OnChanges, OnDestroy
     this.isProfilOpen = true;
   }
 
-  /** \u00d6ffnet den per `#channel`-Erw\u00e4hnung angeklickten Channel. */
+  /** Opens the channel that was clicked via a `#channel` mention. */
   openChannelMention(channelId: string) {
     this.openChat.emit({ chatType: 'channel', chatId: channelId });
   }

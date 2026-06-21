@@ -11,6 +11,11 @@ import { SearchInformationComponent } from '../../search-information/search-info
 import { DeviceVisibleComponent } from '../../../../shared/components/device-visible/device-visible.component';
 import { FormsModule } from '@angular/forms';
 
+/**
+ * Global search input in the header. Shows the results overlay
+ * (`SearchInformationComponent`) while typing and re-emits the user's chat/
+ * thread selection to the parent so the main content can open it.
+ */
 @Component({
   selector: 'app-search-bar',
   standalone: true,
