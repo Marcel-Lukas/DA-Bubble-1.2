@@ -16,8 +16,6 @@ import { ImageFallbackDirective } from '../../../../shared/directives/image-fall
 import { OnlinePipe } from '../../../../shared/pipes/online.pipe';
 import { AuthentificationService } from '../../../../shared/services/authentification.service';
 import { UserService } from '../../../../shared/services/user.service';
-import { ChannelService } from '../../../../shared/services/channel.service';
-import { MessageService } from '../../../../shared/services/message.service';
 
 @Component({
   selector: 'app-user-name',
@@ -33,8 +31,6 @@ import { MessageService } from '../../../../shared/services/message.service';
  */
 export class UserNameComponent {
   private authService = inject(AuthentificationService);
-  private channelService = inject(ChannelService);
-  private messageService = inject(MessageService);
   @Input() activeUserId!: string | null;
   isLogOutVisible: boolean = false;
   showProfil: boolean = false;
@@ -166,9 +162,9 @@ export class UserNameComponent {
   }
 
   /**
-   * Logs the user out. Guests (identified by an empty email – their name can be
-   * Gast, Gast2, …) additionally have their created channels and sent messages
-   * removed so they leave no leftover data behind.
+   * Logs the user out. Guests have their created channels and sent messages
+   * removed by the AuthentificationService (see handleAnonymousGuest) so they
+   * leave no leftover data behind.
    */
   async logOut() {
     if (document.fullscreenElement) {
@@ -176,10 +172,6 @@ export class UserNameComponent {
         console.error('Vollbild konnte nicht beendet werden:', err);
       });
     }
-    if (this.userEmail === '') {
-      await this.channelService.deleteChannelsByCreator(this.activeUserId!);
-      await this.messageService.deleteMessagesBySender(this.activeUserId!);
-    } 
     await this.authService.logout();
     await this.router.navigate(['/']);
   }

@@ -27,6 +27,8 @@ import {
   UserCredential,
 } from '@angular/fire/auth';
 import { NotificationService } from './notification.service';
+import { MessageService } from './message.service';
+import { ChannelService } from './channel.service';
 
 /**
  * Handles all authentication flows (email/password, Google, anonymous guest)
@@ -43,6 +45,8 @@ export class AuthentificationService {
   private auth: Auth = inject(Auth);
   private firestore: Firestore = inject(Firestore);
   private injector = inject(Injector);
+  private messageService = inject(MessageService);
+  private channelService = inject(ChannelService);
 
   /** Runs the given async block inside the Angular injection context. */
   private runInContext<T>(fn: () => Promise<T>): Promise<T> {
@@ -230,6 +234,8 @@ export class AuthentificationService {
 
         const activeGuestNames: string[] = [];
         const deletions: Promise<void>[] = [];
+        // IDs of guests that get removed -> their messages/channels are purged too.
+        const purgedIds: string[] = [];
 
         snapshot.docs.forEach((docSnap) => {
           if (docSnap.id === currentUid) return;
@@ -240,19 +246,49 @@ export class AuthentificationService {
 
           if (isGhost) {
             deletions.push(deleteDoc(doc(usersCollection, docSnap.id)));
+            purgedIds.push(docSnap.id);
           } else if (isGuest && this.isGuestExpired(data)) {
             deletions.push(deleteDoc(doc(usersCollection, docSnap.id)));
+            purgedIds.push(docSnap.id);
           } else if (isGuest) {
             activeGuestNames.push(name);
           }
         });
 
         await Promise.all(deletions);
+        await this.purgeGuestData(purgedIds);
         return this.generateGuestName(activeGuestNames);
       });
     } catch (cleanupErr) {
       console.warn('Cleanup of old guest/ghost documents failed', cleanupErr);
       return 'Gast';
+    }
+  }
+
+  /**
+   * Removes all data created by the given (already deleted) guests: every
+   * message they sent and every channel they created. This ensures a guest who
+   * just closed the browser (no explicit logout) does not leave orphaned
+   * messages/channels behind once they are cleaned up by another user's login.
+   *
+   * Runs inside the injection context and never throws – cleanup must never
+   * abort the surrounding login flow.
+   *
+   * @param guestIds UIDs of the guests whose data should be removed.
+   */
+  private async purgeGuestData(guestIds: string[]): Promise<void> {
+    if (!guestIds.length) return;
+    try {
+      await this.runInContext(async () => {
+        await Promise.all(
+          guestIds.map(async (uid) => {
+            await this.messageService.deleteMessagesBySender(uid);
+            await this.channelService.deleteChannelsByCreator(uid);
+          })
+        );
+      });
+    } catch (purgeErr) {
+      console.warn('Purging guest messages/channels failed', purgeErr);
     }
   }
 
@@ -271,16 +307,18 @@ export class AuthentificationService {
       await this.runInContext(async () => {
         const usersCollection = collection(this.firestore, 'users');
         const snapshot = await getDocs(usersCollection);
-        const deletions = snapshot.docs
+        const expiredGuests = snapshot.docs
           .filter((docSnap) => docSnap.id !== currentUid)
           .filter((docSnap) => {
             const data = docSnap.data() as Partial<UserInterface>;
             const isGuest = (data.uEmail ?? '') === '';
             const hasName = (data.uName ?? '').trim() !== '';
             return isGuest && hasName && this.isGuestExpired(data);
-          })
-          .map((docSnap) => deleteDoc(doc(usersCollection, docSnap.id)));
-        await Promise.all(deletions);
+          });
+        await Promise.all(
+          expiredGuests.map((docSnap) => deleteDoc(doc(usersCollection, docSnap.id)))
+        );
+        await this.purgeGuestData(expiredGuests.map((docSnap) => docSnap.id));
       });
     } catch (cleanupErr) {
       console.warn('Cleanup of inactive guest documents failed', cleanupErr);
@@ -462,6 +500,10 @@ export class AuthentificationService {
   private async handleAnonymousGuest(user: any | null, uid: string | null): Promise<void> {
     if (user?.isAnonymous && uid) {
       try {
+        // Remove the guest's messages/channels before deleting the account so
+        // an explicit logout leaves no leftover data behind (same guarantee as
+        // the inactivity cleanup that runs on another user's login).
+        await this.purgeGuestData([uid]);
         await this.runInContext(async () => {
           const userDocRef = doc(collection(this.firestore, 'users'), uid);
           await deleteDoc(userDocRef);
