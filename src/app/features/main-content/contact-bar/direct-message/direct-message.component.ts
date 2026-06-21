@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, Injector, inject, runInInjectionContext } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, Injector, inject, runInInjectionContext, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Firestore, collectionData, collection, query } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { User } from '../../../../shared/interfaces/user.interface';
 import { NotificationService } from '../../../../shared/services/notification.service';
-import { ActivatedRoute } from '@angular/router';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 
 @Component({
@@ -17,11 +17,11 @@ import { ImageFallbackDirective } from '../../../../shared/directives/image-fall
 })
 
 /** Sidebar list of users for direct messaging, with online + unread state. */
-export class DirectMessageComponent implements OnInit, OnDestroy {
+export class DirectMessageComponent implements OnInit {
   showMessages = false;
   activeUser?: User;
-  activeUsers$!: Observable<any[]>;
-  inactiveUsers$!: Observable<any[]>;
+  activeUsers$!: Observable<User[]>;
+  inactiveUsers$!: Observable<User[]>;
   /** UIDs of chat partners with unread messages (for the blinking indicator). */
   unreadChats = new Set<string>();
   /** Timestamp (ms) at which a user was first observed as online, keyed by uId.
@@ -32,43 +32,35 @@ export class DirectMessageComponent implements OnInit, OnDestroy {
   @Output() toggleMessage = new EventEmitter<boolean>();
 
   private notificationService = inject(NotificationService);
-  private unreadSub?: Subscription;
+  private injector = inject(Injector);
+  private destroyRef = inject(DestroyRef);
 
-  someAction() {
+  constructor(private firestore: Firestore) {}
+
+  someAction(): void {
     const screenWidth = window.innerWidth;
-    
+
     if (screenWidth < 1000) {
       this.toggleMessage.emit(true);
     }
   }
-  
-  private injector = inject(Injector);
-
-  constructor(private firestore: Firestore, private route: ActivatedRoute) {}
-
 
   ngOnInit(): void {
     if (this.activeUserId) {
       this.loadUsers();
     }
-    this.unreadSub = this.notificationService.unread$.subscribe((set) => {
-      this.unreadChats = set;
-    });
+    this.notificationService.unread$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((set) => {
+        this.unreadChats = set;
+      });
   }
-
-  ngOnDestroy(): void {
-    this.unreadSub?.unsubscribe();
-  }
-
-
 
   loadUsers(): void {
     const users$ = runInInjectionContext(this.injector, () => {
       const usersCollection = collection(this.firestore, 'users');
       const usersQuery = query(usersCollection);
-      return collectionData(usersQuery, { idField: 'uId' }).pipe(
-        map((users: any[]) => users.map(user => user as User))
-      );
+      return collectionData(usersQuery, { idField: 'uId' }) as Observable<User[]>;
     });
     // Hide orphaned/offline guest accounts (empty email). An active guest stays
     // visible to everyone so they can be messaged. The own account is always
@@ -83,9 +75,11 @@ export class DirectMessageComponent implements OnInit, OnDestroy {
       map(users => users.filter(user => user.uId !== this.activeUserId)),
       map(users => this.sortByOnlineStatus(users))
     );
-    visibleUsers$.subscribe(users => {
-      this.activeUser = users.find(user => user.uId === this.activeUserId);
-    });
+    visibleUsers$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(users => {
+        this.activeUser = users.find(user => user.uId === this.activeUserId);
+      });
   }
 
 

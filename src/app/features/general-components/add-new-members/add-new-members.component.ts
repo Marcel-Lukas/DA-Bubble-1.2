@@ -46,8 +46,8 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
 
   @Input() channelMembers: User[] = [];
   @Input() activeUserId!: string | null;
-  @Input() channelId: any = '';
-  @Input() channelName: any = '';
+  @Input() channelId: string | null | undefined = '';
+  @Input() channelName: string | null | undefined = '';
   @Input() showInput: boolean = true;
   @Input() channelDescription: string = '';
   @Input() showXLine: boolean = false;
@@ -256,8 +256,8 @@ export class AddNewMembersComponent implements OnInit, OnChanges{
     return ids.filter(id => guestIds.has(id));
   }
 
-  async createNewChannel(name: string, description: string) {
-    if (!name || !this.activeUserId) return;    
+  async createNewChannel(name: string | null | undefined, description: string): Promise<void> {
+    if (!name || !this.activeUserId) return;
     let ids: string[];
     if (this.selectedOption === 'option1') {
       const allUsers = await this.userService.allUsers();

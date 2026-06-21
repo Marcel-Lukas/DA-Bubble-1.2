@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, HostListener, Output, Input, ViewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, EventEmitter, HostListener, inject, OnInit, Output, Input, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AddNewMembersComponent } from '../../../../general-components/add-new-members/add-new-members.component';
 import { debounceTime, distinctUntilChanged, Subject, switchMap, tap } from 'rxjs';
 import { ChannelService } from '../../../../../shared/services/channel.service';
@@ -18,21 +19,22 @@ import { FormsModule } from '@angular/forms';
  * a debounced uniqueness check), step 2 adds members. Closes with a slide-out
  * animation when clicking outside.
  */
-export class AddChannelComponent{
+export class AddChannelComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Input() activeUserId!: string | null;
   showAddMember: boolean = true;
-  channelId: any = '';
+  channelId: string = '';
   channelName: string = '';
   channelDescription: string = '';
   animateOut = false;
-  nameExists = false;  
-  isVisible: boolean = true; 
+  nameExists = false;
+  isVisible: boolean = true;
   private nameCheck$ = new Subject<string>();
+  private destroyRef = inject(DestroyRef);
   @ViewChild('addChannel') channelWrapper?: ElementRef;
   @ViewChild('addChannelAll') memberAddWrapper?: ElementRef;
-  
-  constructor( private elRef: ElementRef, private channelService: ChannelService) {}
+
+  constructor(private elRef: ElementRef, private channelService: ChannelService) {}
 
   ngOnInit(): void {
     // Debounced live check whether the typed channel name already exists.
@@ -41,7 +43,8 @@ export class AddChannelComponent{
         debounceTime(300),
         distinctUntilChanged(),
         switchMap(name => this.channelService.checkChannelNameExists(name)),
-        tap(exists => (this.nameExists = exists))
+        tap(exists => (this.nameExists = exists)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }

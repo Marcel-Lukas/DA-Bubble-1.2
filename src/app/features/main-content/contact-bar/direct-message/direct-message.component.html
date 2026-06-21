@@ -18,7 +18,7 @@
 @if (!showMessages) {
   <section>
     @for (user of activeUsers$ | async; track $index) {
-      <button (click)="selectPrivateChat(user.uId); someAction()" class="directUser">
+      <button (click)="selectPrivateChat(user.uId ?? ''); someAction()" class="directUser">
         <div class="user-img-status">
           <img [src]="user.uUserImage" appImageFallback alt="" />
           <span [ngClass]="isOnline(user) ? 'online' : 'offline'"></span>
@@ -27,16 +27,16 @@
       </button>
       @for (user of inactiveUsers$ | async; track user) {
         <button
-          (click)="selectPrivateChat(user.uId); someAction()"
+          (click)="selectPrivateChat(user.uId ?? ''); someAction()"
           class="directUser"
-          [class.hasUnread]="unreadChats.has(user.uId)"
+          [class.hasUnread]="unreadChats.has(user.uId ?? '')"
         >
           <div class="user-img-status">
             <img [src]="user.uUserImage" appImageFallback alt="" />
             <span [ngClass]="isOnline(user) ? 'online' : 'offline'"></span>
           </div>
           <span>{{ user.uName }}</span>
-          @if (unreadChats.has(user.uId)) {
+          @if (unreadChats.has(user.uId ?? '')) {
           <span class="unreadDot unreadDot--trailing" aria-label="Neue Nachricht"></span>
           }
         </button>

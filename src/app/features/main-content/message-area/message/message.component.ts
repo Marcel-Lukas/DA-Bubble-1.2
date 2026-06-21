@@ -5,6 +5,8 @@ import {
   EventEmitter,
   inject,
   Input,
+  OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
@@ -24,7 +26,7 @@ import {
   Reaction,
 } from '../../../../shared/interfaces/reaction.interface';
 import { Subscription } from 'rxjs';
-import { MessageService } from '../../../../shared/services/message.service';
+import { MessageService, ChatType } from '../../../../shared/services/message.service';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { PermanentDeleteComponent } from '../../../general-components/permanent-delete/permanent-delete.component';
 import { FormsModule } from '@angular/forms';
@@ -80,7 +82,7 @@ interface FormatState {
  * grouped reactions, inline editing, deletion and thread preview. Uses OnPush
  * change detection with explicit markForCheck() after async updates.
  */
-export class MessageComponent implements OnInit {
+export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   private userService = inject(UserService);
   private channelService = inject(ChannelService);
   private messageService = inject(MessageService);
@@ -92,7 +94,7 @@ export class MessageComponent implements OnInit {
   private threadSub?: Subscription;
   private senderSub?: Subscription;
 
-  @Input() chatType: 'private' | 'channel' | 'thread' | 'new' | null = null;
+  @Input() chatType: ChatType | null = null;
   @Input() message!: Message;
   @Input() activeUserId: string | null = null;
 
@@ -139,7 +141,7 @@ export class MessageComponent implements OnInit {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.userSub?.unsubscribe();
     this.threadSub?.unsubscribe();
     this.senderSub?.unsubscribe();

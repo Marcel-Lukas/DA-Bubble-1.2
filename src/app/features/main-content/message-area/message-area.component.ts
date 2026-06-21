@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -13,7 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { MessageService } from '../../../shared/services/message.service';
+import { MessageService, ChatType } from '../../../shared/services/message.service';
 import { UserService } from '../../../shared/services/user.service';
 import { ChannelService } from '../../../shared/services/channel.service';
 import { Message } from '../../../shared/interfaces/message.interface';
@@ -27,6 +28,7 @@ import { AddNewMembersComponent } from '../../general-components/add-new-members
 import { MessageComposerComponent } from './message-composer/message-composer.component';
 import { OnlinePipe } from '../../../shared/pipes/online.pipe';
 import { ImageFallbackDirective } from '../../../shared/directives/image-fallback.directive';
+import { FirestoreTime } from '../../../shared/interfaces/firestore.types';
 
 @Component({
   selector: 'app-message-area',
@@ -53,7 +55,7 @@ import { ImageFallbackDirective } from '../../../shared/directives/image-fallbac
  * search, and reacts to channel/partner deletions by emitting events so the
  * parent can close the chat.
  */
-export class MessageAreaComponent implements OnChanges, OnDestroy {
+export class MessageAreaComponent implements AfterViewInit, OnChanges, OnDestroy {
   private userService = inject(UserService);
   private channelService = inject(ChannelService);
   private messageService = inject(MessageService);
@@ -63,7 +65,7 @@ export class MessageAreaComponent implements OnChanges, OnDestroy {
   private chatPartnerSub?: Subscription;
   private channelMemberSubs: Subscription[] = [];
 
-  @Input() chatType: 'private' | 'channel' | 'thread' | 'new' = 'private';
+  @Input() chatType: ChatType = 'private';
   @Input() chatId: string | null = null;
   @Input() activeUserId: string | null = null;
 
@@ -480,12 +482,19 @@ export class MessageAreaComponent implements OnChanges, OnDestroy {
     );
   }
   /** Normalizes any timestamp (Firestore Timestamp/Date/number) to midnight ms. */
-  private getDay(t: any): number {
-    const d = t?.toDate?.() ?? t ?? new Date(t);
+  private getDay(t: FirestoreTime): number {
+    const d = this.toDate(t);
     return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
   }
-  getDateString(t: any): string {
-    const d = t?.toDate?.() ?? t ?? new Date(t);
+
+  /** Converts a Firestore time value into a JS Date. */
+  private toDate(t: FirestoreTime): Date {
+    const value = t as { toDate?: () => Date };
+    return value?.toDate?.() ?? (t as Date) ?? new Date();
+  }
+
+  getDateString(t: FirestoreTime): string {
+    const d = this.toDate(t);
     const diff = this.getDay(d) - this.getDay(new Date());
 
     if (diff === 0) return 'Heute';

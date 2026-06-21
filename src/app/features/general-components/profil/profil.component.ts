@@ -6,9 +6,11 @@ import {
   EventEmitter,
   ElementRef,
   ViewChild,
+  OnInit,
   inject,
 } from '@angular/core';
 import { Firestore, doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { PresenceTime } from '../../../shared/interfaces/user.interface';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../../shared/services/user.service';
@@ -30,7 +32,7 @@ import { PermanentDeleteComponent } from '../permanent-delete/permanent-delete.c
  * can start a DM; in edit mode (own profile) it allows changing the name and
  * choosing/randomizing the avatar before saving.
  */
-export class ProfilComponent {
+export class ProfilComponent implements OnInit {
   private originalUserImage!: string;
   
   /** Prefix that is kept in front of a guest's chosen display name. */
@@ -48,14 +50,14 @@ export class ProfilComponent {
   viewerIsGuest: boolean = false;
 
   @Input() showButton: boolean = false;
-  @Input() userName: any;
-  @Input() userEmail: any;
-  @Input() userImage: any;
-  @Input() userStatus: any;
+  @Input() userName: string | null | undefined = '';
+  @Input() userEmail: string | null | undefined = '';
+  @Input() userImage: string | null | undefined = '';
+  @Input() userStatus: boolean | string | undefined = false;
   /** Last sign of life (uLastSeen) used for presence detection. */
-  @Input() userLastSeen: any;
-  @Input() userId: any;
-  @Input() activeUserId!: any;
+  @Input() userLastSeen: PresenceTime | null | undefined = null;
+  @Input() userId: string | null | undefined = '';
+  @Input() activeUserId: string | null = null;
   @Input() size: 'small' | 'big' = 'small';
   @Output() close = new EventEmitter<void>();
   @Output() openChat = new EventEmitter<{chatType: 'private'; chatId: string}>();
@@ -71,9 +73,9 @@ export class ProfilComponent {
     // Derive online state from presence; remember the image to allow reverting.
     this.isActive = NotificationService.isUserOnline({
       uStatus: this.userStatus,
-      uLastSeen: this.userLastSeen,
+      uLastSeen: this.userLastSeen ?? undefined,
     });
-    this.originalUserImage = this.userImage;
+    this.originalUserImage = this.userImage ?? '';
     this.resolveViewerIsGuest();
   }
 
@@ -116,12 +118,16 @@ export class ProfilComponent {
 
 
   async saveAvatarChange(): Promise<void> {
+    if (!this.activeUserId || this.userImage == null) {
+      this.showAvatarChoice = false;
+      return;
+    }
     try {
       await this.userService.updateUserImage(this.activeUserId, this.userImage);
       this.originalUserImage = this.userImage;
     } finally {
       this.showAvatarChoice = false;
-    }    
+    }
   }
 
 

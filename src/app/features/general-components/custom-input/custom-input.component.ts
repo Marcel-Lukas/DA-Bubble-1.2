@@ -89,8 +89,8 @@ export class CustomInputComponent implements ControlValueAccessor {
   @ViewChild('inputElement') inputElement!: ElementRef;
 
   value: string = '';
-  onChange: any = () => {};
-  onTouch: any = () => {};
+  private onChange: (value: string) => void = () => {};
+  private onTouch: () => void = () => {};
   disabled: boolean = false;
   isPasswordVisible: boolean = false;
 
@@ -103,17 +103,17 @@ export class CustomInputComponent implements ControlValueAccessor {
   }
 
   /** Toggles whether the password value is shown as plain text. */
-  togglePasswordVisibility() {
+  togglePasswordVisibility(): void {
     this.isPasswordVisible = !this.isPasswordVisible;
   }
 
-  onInputChange(event: Event) {
+  onInputChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.value = value;
     this.onChange(value);
   }
 
-  onBlur() {
+  onBlur(): void {
     this.onTouch();
   }
 
@@ -124,11 +124,11 @@ export class CustomInputComponent implements ControlValueAccessor {
     }
   }
 
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (value: string) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouch = fn;
   }
 

@@ -17,6 +17,7 @@ import { OnlinePipe } from '../../../../shared/pipes/online.pipe';
 import { AuthentificationService } from '../../../../shared/services/authentification.service';
 import { UserService } from '../../../../shared/services/user.service';
 import { PresenceData } from '../../../../shared/services/notification.service';
+import { PresenceTime } from '../../../../shared/interfaces/user.interface';
 
 @Component({
   selector: 'app-user-name',
@@ -37,7 +38,7 @@ export class UserNameComponent {
   showProfil: boolean = false;
   userStatus: boolean | string = false;
   /** Last sign of life (uLastSeen) used for presence detection. */
-  userLastSeen: unknown = null;
+  userLastSeen: PresenceTime | undefined = undefined;
   /**
    * Presence input for the OnlinePipe. Bundles uStatus + uLastSeen so the
    * header indicator uses the exact same uLastSeen-based logic as the rest of

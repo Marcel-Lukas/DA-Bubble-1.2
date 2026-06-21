@@ -21,7 +21,7 @@ export class PermanentDeleteComponent {
   private channelService = inject(ChannelService);
 
   @Input({ required: true }) target!: DeleteTarget;
-  @Input({ required: true }) id!: any;
+  @Input({ required: true }) id!: string | null | undefined;
   /** Id of the currently logged-in user – required for the owner check when deleting a channel. */
   @Input() requestingUserId: string | null = null;
   /** Optional override for the dialog heading (e.g. to include a member's name). */
@@ -39,23 +39,13 @@ export class PermanentDeleteComponent {
   onYes(): void {
     switch (this.target) {
       case 'message':
-        this.messageService
-          .deleteMessage(this.id)
-          .then(() => this.close.emit())
-          .catch((err) =>
-            console.error('Error while deleting the message', err)
-          );
+        this.deleteMessage();
         break;
 
       case 'channel':
-        this.channelService
-          .deleteChannel(this.id, this.requestingUserId)
-          .then(() => this.close.emit())
-          .catch((err) => {
-            console.error('Error while deleting the channel', err);
-            this.close.emit();
-          });
+        this.deleteChannel();
         break;
+
       case 'user':
       case 'member':
         this.confirm.emit();
@@ -65,6 +55,25 @@ export class PermanentDeleteComponent {
         console.warn('Unknown delete target:', this.target);
         this.close.emit();
     }
+  }
+
+  private deleteMessage(): void {
+    if (!this.id) return this.close.emit();
+    this.messageService
+      .deleteMessage(this.id)
+      .then(() => this.close.emit())
+      .catch((err) => console.error('Error while deleting the message', err));
+  }
+
+  private deleteChannel(): void {
+    if (!this.id) return this.close.emit();
+    this.channelService
+      .deleteChannel(this.id, this.requestingUserId)
+      .then(() => this.close.emit())
+      .catch((err) => {
+        console.error('Error while deleting the channel', err);
+        this.close.emit();
+      });
   }
   get heading(): string {
     if (this.headingText) {
