@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ButtonComponent } from '../../general-components/button/button.component';
 import { ComponentSwitcherService } from '../../../shared/services/component-switcher.service';
 import {
@@ -83,7 +83,7 @@ export class CreateAccountComponent implements OnInit, OnDestroy {
     .catch(error => this.handleRegisterError(error));
   }
   
-  private handleRegisterError(error: any): void {
+  private handleRegisterError(error: unknown): void {
     console.error('Email is taken:', error);
     this.confError = 'Diese E-Mail ist bereits vorhanden! Bitte geben Sie eine andere E-Mail-Adresse ein.';
   }

@@ -104,7 +104,7 @@ export class ConfirmPasswordComponent implements OnInit {
     this.isConfirmationVisible = visible;
   }
   
-  private handleResetError(error: any): void {
+  private handleResetError(error: unknown): void {
     this.visibleBtn.show();
     console.error('Error when resetting the password:', error);
   }

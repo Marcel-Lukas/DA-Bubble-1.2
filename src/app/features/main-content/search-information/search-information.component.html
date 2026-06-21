@@ -19,7 +19,7 @@
           <h1>Gefundene Channels und Nutzer in Channels</h1>
           <ng-container>
             @for (channel of channelsWithNames; track $index) {
-              <button (click)="selectChat(channel.cId, 'channel')" class="channelName">
+              <button (click)="selectChat(channel.cId ?? '', 'channel')" class="channelName">
                 <h3># {{ channel.cName }}</h3>
               </button>
             }

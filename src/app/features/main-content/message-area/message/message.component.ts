@@ -534,9 +534,10 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
       : undefined;
   }
 
-  getDayLabel(mTime: any): string {
+  getDayLabel(mTime: FirestoreTime): string {
+    const source = mTime as { toDate?: () => Date };
     const date =
-      mTime instanceof Date ? mTime : mTime?.toDate?.() ?? new Date(mTime);
+      mTime instanceof Date ? mTime : source?.toDate?.() ?? new Date();
     const todayMid = new Date().setHours(0, 0, 0, 0);
     const msgMid = new Date(
       date.getFullYear(),

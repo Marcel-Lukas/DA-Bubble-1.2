@@ -77,7 +77,7 @@ export class ConfirmEmailComponent implements OnInit, OnDestroy {
     this.isConfirmationVisible = visible;
   }
   
-  private handleSendError(error: any): void {
+  private handleSendError(error: unknown): void {
     this.visibleBtn.show();
     console.error('Error when sending the reset email:', error);
     this.findEmail = 'Es wurde keine übereinstimmende E-Mail gefunden.';

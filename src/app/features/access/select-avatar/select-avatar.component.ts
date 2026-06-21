@@ -72,7 +72,7 @@ export class SelectAvatarComponent {
     this.isConfirmationVisible = visible;
   }
 
-  private handleAvatarError(error: any): void {
+  private handleAvatarError(error: unknown): void {
     this.visibleBtn.show();
     console.error('Error when adding the profile picture:', error);
   }

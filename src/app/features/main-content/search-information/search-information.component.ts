@@ -16,6 +16,11 @@ import { Message } from '../../../shared/interfaces/message.interface';
 import { Channel } from '../../../shared/interfaces/channel.interface';
 import { ImageFallbackDirective } from '../../../shared/directives/image-fallback.directive';
 
+/** A channel search hit enriched with the resolved member display names. */
+interface ChannelHit extends Channel {
+  memberNames: string[];
+}
+
 interface ChannelMessage {
   mText: string;
   channelName: string;
@@ -70,7 +75,7 @@ export class SearchInformationComponent implements OnInit {
 
   activeUserId: string | null = null;
   users: User[] = [];
-  channelsWithNames: any[] = [];
+  channelsWithNames: ChannelHit[] = [];
 
   matchedMessages: ChannelMessage[] = [];
   directMessages: DirectMessage[] = [];
@@ -120,7 +125,7 @@ export class SearchInformationComponent implements OnInit {
     return users.filter((u) => (u.uName || '').toLowerCase().includes(q));
   }
 
-  private filterChannels(channels: Channel[], users: User[], q: string) {
+  private filterChannels(channels: Channel[], users: User[], q: string): ChannelHit[] {
     return channels
       .filter((ch) => (ch.cName || '').toLowerCase().includes(q))
       .map((ch) => ({

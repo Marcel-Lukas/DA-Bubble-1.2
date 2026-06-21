@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, inject} from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Channel } from '../../../shared/interfaces/channel.interface';
-import { Firestore} from '@angular/fire/firestore';
-import {map, takeUntil } from 'rxjs/operators';
+import { Firestore } from '@angular/fire/firestore';
+import { map } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../shared/services/user.service';
 import { User } from '../../../shared/interfaces/user.interface';
@@ -12,7 +13,6 @@ import { MemberListComponent } from '../member-list/member-list.component';
 import { ProfilComponent } from '../profil/profil.component';
 import { AddNewMembersComponent } from '../add-new-members/add-new-members.component';
 import { PermanentDeleteComponent } from '../permanent-delete/permanent-delete.component';
-import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-channel-leave',
@@ -44,7 +44,6 @@ export class ChannelLeaveComponent implements OnInit{
   @Output() nameUpdated = new EventEmitter<string>();
   @Output() openChat = new EventEmitter<{chatType: 'private'; chatId: string}>();
 
-  private destroy$ = new Subject<void>();
   channelNameSave: boolean = false;
   descriptionSave: boolean = false;
   editedChannelName: string = '';
@@ -62,6 +61,8 @@ export class ChannelLeaveComponent implements OnInit{
   /** Member pending removal while the confirmation dialog is open. */
   memberToRemove: User | null = null;
 
+  private destroyRef = inject(DestroyRef);
+
   constructor(private userService: UserService, private channelService: ChannelService) {}
 
 
@@ -75,19 +76,13 @@ export class ChannelLeaveComponent implements OnInit{
     this.userService.getEveryUsers()
       .pipe(
         map(users => users.find(u => u.uId === this.channelData?.cCreatedByUser)),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(user => {
         if (user) {
           this.createdByUserName = user.uName;
         }
       });
-  }
-
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
 

@@ -14,6 +14,7 @@ import { CustomInputComponent } from '../../general-components/custom-input/cust
 import { SuccessIndicatorComponent } from '../../general-components/success-indicator/success-indicator.component';
 import { Subscription } from 'rxjs';
 import { VisibleButtonService } from '../../../shared/services/visible-button.service';
+import { getErrorCode } from '../../../shared/utils/error.util';
 
 @Component({
   selector: 'app-login',
@@ -106,10 +107,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.isConfirmationVisible = visible;
   }
   
-  private handleLoginError(error: any): void {
+  private handleLoginError(error: unknown): void {
     this.visibleBtn.show();
     console.error('Login error:', error);
-    this.authError = this.mapErrorToMessage(error.code);
+    this.authError = this.mapErrorToMessage(getErrorCode(error));
   }
   
   private mapErrorToMessage(code: string): string {
