@@ -1,14 +1,21 @@
 {
-  // Fehler/Warnungen aus node_modules ausblenden (z. B. veraltete tsconfig-Optionen in rxjs)
+  // Hide errors/warnings from ‘node_modules’ (e.g. deprecated tsconfig options in rxjs)
   "typescript.tsserver.experimental.enableProjectDiagnostics": false,
 
-  // node_modules nicht überwachen (bessere Performance, keine Fremd-Fehler)
+  // Do not monitor `node_modules` (better performance, no third-party errors)
   "files.watcherExclude": {
     "**/node_modules/**": true
   },
 
-  // node_modules im Such- und Datei-Explorer ausblenden bzw. von der Suche ausnehmen
+  // Hide `node_modules` in File Explorer or exclude it from searches
   "search.exclude": {
+    "**/node_modules": true
+  },
+
+  // Hide the entire `node_modules` folder from File Explorer,
+  // so that third-party files are not opened by mistake
+  // and their deprecation warnings are not displayed
+  "files.exclude": {
     "**/node_modules": true
   }
 }
