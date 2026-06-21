@@ -3,10 +3,10 @@
     <span class="avatarNameText">{{ userName }}</span>
     <div class="userStatus">
       <app-device-visible mode="tabletBig">
-          <img #tabletToggleBtn (click)="toggleImage()" [src]="userImage" appImageFallback />
+          <img #tabletToggleBtn (click)="toggleImage()" [src]="userImage" appImageFallback alt="Eigenes Profilbild" />
       </app-device-visible>
       <app-device-visible mode="desktopBig">
-        <img class="normalImage" (click)="toggleImage()" [src]="userImage" appImageFallback />
+        <img class="normalImage" (click)="toggleImage()" [src]="userImage" appImageFallback alt="Eigenes Profilbild" />
         <span class="normalImagePoint" [ngClass]="(presenceUser | online) ? 'online' : 'offline'"></span>
       </app-device-visible>
     </div>

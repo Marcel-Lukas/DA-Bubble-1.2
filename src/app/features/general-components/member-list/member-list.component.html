@@ -1,7 +1,7 @@
 
 <div class="memberlist">
     <div class="members">
-      @for (member of channelMembers; track member) {
+      @for (member of channelMembers; track member.uId) {
         <div class="card">
           <div class="card-info" (click)="showProfil.emit(member)">
             <div class="user-img-status">

@@ -5,7 +5,7 @@
         <div class="everyContactButton">
           <h1>Gefundene Nutzer</h1>
           <ng-container>
-            @for (user of users; track $index) {
+            @for (user of users; track user.uId) {
               <button (click)="selectChat(user.uId!, 'private')" class="userPhoto">
                 <img [src]="user.uUserImage" appImageFallback alt="{{ user.uName }}" />
                 <h3>{{ user.uName }}</h3>
@@ -18,7 +18,7 @@
         <div class="everyChannelButton">
           <h1>Gefundene Channels und Nutzer in Channels</h1>
           <ng-container>
-            @for (channel of channelsWithNames; track $index) {
+            @for (channel of channelsWithNames; track channel.cId) {
               <button (click)="selectChat(channel.cId ?? '', 'channel')" class="channelName">
                 <h3># {{ channel.cName }}</h3>
               </button>

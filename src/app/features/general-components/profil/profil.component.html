@@ -12,12 +12,12 @@
             </button>
         </header>
         @if (!showEditProfil) {
-            <img [src]="userImage" appImageFallback>
+            <img [src]="userImage" appImageFallback alt="Profilbild von {{ userName }}">
         }
         @else {
             <div class="avatarsMain">
                 <button class="buttonImg" (click)="bigUserImg()">
-                    <img class="profilPic" [src]="userImage" appImageFallback>
+                    <img class="profilPic" [src]="userImage" appImageFallback alt="Profilbild von {{ userName }}">
                 </button>
                 <button type="button" class="randomAvatarButton" (click)="setRandomAvatar()">
                     <div class="material-symbols icon-refresh"></div>
@@ -26,8 +26,8 @@
                 @if (showAvatarChoice) {
                     <div class="avatarChoice">
                         @for (item of items; track $index) {
-                            <button (click)="selectAvatar(item)" class="avatarButtons">
-                                <img [src]="'assets/img/avatar-' + item + '.png'">
+                            <button type="button" (click)="selectAvatar(item)" class="avatarButtons">
+                                <img [src]="'assets/img/avatar-' + item + '.png'" alt="Avatar {{ item }}">
                             </button>
                         }
                     </div>
@@ -63,7 +63,7 @@
             @if (showEditProfil && canEditName) {
                 <div class="editInput">
                     <div class="editAccountText">
-                        <img src="assets/icons/account_circle.svg">
+                        <img src="assets/icons/account_circle.svg" alt="">
                         <h2>Vollständiger Name</h2>
                     </div>
                     @if (isOwnGuestProfile) {
@@ -81,7 +81,7 @@
         @if (!showEditProfil && canViewEmail) {
             <div class="mailAdress">
                 <div>
-                    <img src="assets/icons/mail.svg">
+                    <img src="assets/icons/mail.svg" alt="">
                     <h2>E-Mail-Adresse</h2>
                 </div>
                 <span>{{ userEmail }}</span>
@@ -89,8 +89,8 @@
         }
         @if (showButton) {
             <div class="messageArea">
-                <button (click)="onStartChat()" class="button messageButtonBackgroundBlue">
-                    <img src="assets/icons/mode_comment.svg">
+                <button type="button" (click)="onStartChat()" class="button messageButtonBackgroundBlue">
+                    <img src="assets/icons/mode_comment.svg" alt="">
                     <span>Nachricht</span>
                 </button>
             </div>

@@ -17,7 +17,7 @@
 </button>
 @if (!showMessages) {
   <section>
-    @for (user of activeUsers$ | async; track $index) {
+    @for (user of activeUsers$ | async; track user.uId) {
       <button (click)="selectPrivateChat(user.uId ?? ''); someAction()" class="directUser">
         <div class="user-img-status">
           <img [src]="user.uUserImage" appImageFallback alt="" />
@@ -25,7 +25,7 @@
         </div>
         <span>{{ user.uName }} (Du)</span>
       </button>
-      @for (user of inactiveUsers$ | async; track user) {
+      @for (user of inactiveUsers$ | async; track user.uId) {
         <button
           (click)="selectPrivateChat(user.uId ?? ''); someAction()"
           class="directUser"

@@ -6,7 +6,7 @@
 
 @if (displaySuggestions) {
 <div class="suggestions">
-  @for(user of foundUsers; track user) {
+  @for(user of foundUsers; track user.uId) {
   <div (click)="insertUserSuggestion(user)">
     <div class="user-img-status">
       <img src="{{ user?.uUserImage }}" appImageFallback alt="" />
@@ -14,7 +14,7 @@
     </div>
     <span>{{ user?.uName }}</span>
   </div>
-  } @for(channel of foundChannels; track channel) {
+  } @for(channel of foundChannels; track channel.cId) {
   <div (click)="insertChannelSuggestion(channel)">#{{ channel?.cName }}</div>
   }
 </div>

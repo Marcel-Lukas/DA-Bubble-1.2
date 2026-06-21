@@ -58,7 +58,7 @@
       </a>
       <div class="channel-members">
         <div class="channel-every-member" (click)="toggleChannelMembers()">
-          @for (member of channelMembers.slice(0,3); track member) {
+          @for (member of channelMembers.slice(0,3); track member.uId) {
           <img src="{{ member.uUserImage }}" appImageFallback alt="" />
           } @if (channelMembers.length > 3) {
           <div>...</div>

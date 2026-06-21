@@ -2,7 +2,7 @@
     <section (click)="$event.stopPropagation()">
         <header>
             <div>
-                <img src="assets/icons/hashtag.svg">
+                <img src="assets/icons/hashtag.svg" alt="">
                 <h1>{{ channelData?.cName}}</h1>
             </div>
             <button (click)="closeWindow()" class="closeChannelLeave">
@@ -22,7 +22,7 @@
                         }
                     </div>
                     <div class="channelHashtagName">
-                        <img src="assets/icons/hashtag.svg">
+                        <img src="assets/icons/hashtag.svg" alt="">
                         <span>{{ channelData?.cName}}</span>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                         </button>
                     </div>
                     <div class="editChannelName" >
-                        <img src="assets/icons/hashtag.svg">
+                        <img src="assets/icons/hashtag.svg" alt="">
                         <input [(ngModel)]="editedChannelName"  (ngModelChange)="onNameInput($event)" [placeholder]="editedChannelName"/>
                     </div>
                 </div>
