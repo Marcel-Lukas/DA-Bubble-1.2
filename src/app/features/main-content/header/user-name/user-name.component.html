@@ -7,7 +7,7 @@
       </app-device-visible>
       <app-device-visible mode="desktopBig">
         <img class="normalImage" (click)="toggleImage()" [src]="userImage" appImageFallback />
-        <span class="normalImagePoint" [ngClass]="userStatus === 'true' || userStatus === true ? 'online' : 'offline'"></span>
+        <span class="normalImagePoint" [ngClass]="(presenceUser | online) ? 'online' : 'offline'"></span>
       </app-device-visible>
     </div>
   </div>

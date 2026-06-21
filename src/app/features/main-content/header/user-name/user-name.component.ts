@@ -13,6 +13,7 @@ import { ProfilComponent } from '../../../general-components/profil/profil.compo
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeviceVisibleComponent } from '../../../../shared/services/responsive';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
+import { OnlinePipe } from '../../../../shared/pipes/online.pipe';
 import { AuthentificationService } from '../../../../shared/services/authentification.service';
 import { UserService } from '../../../../shared/services/user.service';
 import { ChannelService } from '../../../../shared/services/channel.service';
@@ -21,7 +22,7 @@ import { MessageService } from '../../../../shared/services/message.service';
 @Component({
   selector: 'app-user-name',
   standalone: true,
-  imports: [CommonModule, ProfilComponent, DeviceVisibleComponent, ImageFallbackDirective],
+  imports: [CommonModule, ProfilComponent, DeviceVisibleComponent, ImageFallbackDirective, OnlinePipe],
   templateUrl: './user-name.component.html',
   styleUrl: './user-name.component.scss',
 })
@@ -40,6 +41,13 @@ export class UserNameComponent {
   userStatus: boolean | string = false;
   /** Last sign of life (uLastSeen) used for presence detection. */
   userLastSeen: unknown = null;
+  /**
+   * Presence input for the OnlinePipe. Bundles uStatus + uLastSeen so the
+   * header indicator uses the exact same uLastSeen-based logic as the rest of
+   * the app (member list, message area, profile) instead of the legacy
+   * uStatus-only check.
+   */
+  presenceUser: { uStatus?: unknown; uLastSeen?: unknown } | null = null;
   userName: string = '';
   userEmail: string = '';
   userImage: string = '';
@@ -73,6 +81,7 @@ export class UserNameComponent {
         this.userStatus = user.uStatus;
         this.userLastSeen = user.uLastSeen;
         this.userId = user.uId;
+        this.presenceUser = { uStatus: user.uStatus, uLastSeen: user.uLastSeen };
       }
     });
   }
