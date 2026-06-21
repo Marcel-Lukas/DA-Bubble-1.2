@@ -30,6 +30,7 @@ import { FormsModule } from '@angular/forms';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 import {
   FormatTag,
+  hasVisibleContent,
   stripEmptyFormatTags,
   toggleFormatTag,
 } from '../../../../shared/utils/text-format.util';
@@ -656,15 +657,16 @@ export class MessageComponent implements OnInit {
     setTimeout(() => this.editTextareaRef?.nativeElement.focus());
   }
 
-  /** True when the edit input holds text beyond empty tags/whitespace. */
+  /** True when the edit input holds visible text beyond tags/whitespace. */
   get hasEditableText(): boolean {
-    return stripEmptyFormatTags(this.editText).trim().length > 0;
+    return hasVisibleContent(this.editText);
   }
 
   saveEdit() {
     if (!this.message.mId) return;
-    // Drop empty formatting tags so an edit that only contains styling markup
-    // is treated as empty and not saved.
+    // Reject edits that only contain styling markup (e.g. `<b></b>` or a lone
+    // `<b>`); otherwise drop empty tag pairs from the text that is saved.
+    if (!hasVisibleContent(this.editText)) return;
     const trimmed = stripEmptyFormatTags(this.editText).trim();
     if (!trimmed) return;
 

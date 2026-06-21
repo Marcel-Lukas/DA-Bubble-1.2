@@ -37,6 +37,19 @@ export function stripEmptyFormatTags(text: string): string {
   return result;
 }
 
+/** Matches any formatting tag, opening or closing (e.g. `<b>`, `</i>`). */
+const ANY_FORMAT_TAG = new RegExp(`</?(${ALL_TAGS.join('|')})>`, 'gi');
+
+/**
+ * Returns whether `text` contains anything other than formatting tags and
+ * whitespace. This treats messages that only consist of markup as empty,
+ * including unbalanced/unclosed tags like a lone `<b>` (which `stripEmpty
+ * FormatTags` would not catch) so they cannot create an empty styled bubble.
+ */
+export function hasVisibleContent(text: string): boolean {
+  return text.replace(ANY_FORMAT_TAG, '').trim().length > 0;
+}
+
 /**
  * Toggles an inline formatting tag (`<b>`, `<i>`, `<u>`) around the selection
  * `[start, end)` within `text`.

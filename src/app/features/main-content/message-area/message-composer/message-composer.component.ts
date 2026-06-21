@@ -27,6 +27,7 @@ import { OnlinePipe } from '../../../../shared/pipes/online.pipe';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 import {
   FormatTag,
+  hasVisibleContent,
   stripEmptyFormatTags,
   toggleFormatTag,
 } from '../../../../shared/utils/text-format.util';
@@ -75,9 +76,9 @@ export class MessageComposerComponent implements OnDestroy {
     setTimeout(() => this.messageInputRef?.nativeElement.focus());
   }
 
-  /** True when the input holds text beyond empty formatting tags/whitespace. */
+  /** True when the input holds visible text beyond formatting tags/whitespace. */
   get hasSendableText(): boolean {
-    return stripEmptyFormatTags(this.newMessageText).trim().length > 0;
+    return hasVisibleContent(this.newMessageText);
   }
 
   ngOnDestroy(): void {
@@ -265,8 +266,9 @@ export class MessageComposerComponent implements OnDestroy {
   }
 
   sendMessage() {
-    // Drop empty formatting tags (e.g. `<b></b>`) so a message that only
-    // contains styling markup is treated as empty and not sent.
+    // Reject messages that only contain styling markup (e.g. `<b></b>` or a
+    // lone `<b>`); otherwise drop empty tag pairs from the text that is sent.
+    if (!hasVisibleContent(this.newMessageText)) return;
     const trimmed = stripEmptyFormatTags(this.newMessageText).trim();
     if (!trimmed) return;
 
