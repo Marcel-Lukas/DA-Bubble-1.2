@@ -11,11 +11,5 @@
   "search.exclude": {
     "**/node_modules": true
   },
-
-  // Hide the entire `node_modules` folder from File Explorer,
-  // so that third-party files are not opened by mistake
-  // and their deprecation warnings are not displayed
-  "files.exclude": {
-    "**/node_modules": true
-  }
+  
 }
